@@ -1,15 +1,13 @@
-import { env as publicEnv } from "$env/dynamic/public";
-import { listLocations } from "$lib/server/repository.js";
+import { listMapLocations } from "$lib/server/repository.js";
 
-export async function load() {
+export async function load({ url }) {
 	try {
 		return {
-			locations: await listLocations(),
-			apiKey: publicEnv.PUBLIC_GOOGLE_MAPS_API_KEY || "",
-			mapId: publicEnv.PUBLIC_GOOGLE_MAP_ID || "",
+			locations: await listMapLocations(),
+			highlightedEventId: url.searchParams.get("event") || "",
 			setupError: ""
 		};
 	} catch (error) {
-		return { locations: [], apiKey: "", mapId: "", setupError: error.message };
+		return { locations: [], highlightedEventId: "", setupError: error.message };
 	}
 }

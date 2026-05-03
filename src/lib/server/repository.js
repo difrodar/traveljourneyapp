@@ -10,12 +10,17 @@ const fallbackCoordinates = {
 	"gaslamp quarter": { lat: 32.7115, lng: -117.1604 },
 	"sunset cliffs": { lat: 32.7353, lng: -117.2558 },
 	"los angeles": { lat: 34.0522, lng: -118.2437 },
+	"griffith observatory": { lat: 34.1184, lng: -118.3004 },
 	"new york": { lat: 40.7128, lng: -74.006 },
 	"new york city": { lat: 40.7128, lng: -74.006 },
 	nyc: { lat: 40.7128, lng: -74.006 },
+	"central park": { lat: 40.7829, lng: -73.9654 },
 	tijuana: { lat: 32.5149, lng: -117.0382 },
+	"avenida revolucion": { lat: 32.5325, lng: -117.0386 },
 	denver: { lat: 39.7392, lng: -104.9903 },
+	"red rocks park and amphitheatre": { lat: 39.6654, lng: -105.2057 },
 	"san francisco": { lat: 37.7749, lng: -122.4194 },
+	"golden gate bridge": { lat: 37.8199, lng: -122.4783 },
 	"tokyo": { lat: 35.6762, lng: 139.6503 },
 	"zurich": { lat: 47.3769, lng: 8.5417 },
 	"zürich": { lat: 47.3769, lng: 8.5417 },
@@ -85,10 +90,32 @@ export async function seedIfEmpty() {
 		["Balboa Park", "1549 El Prado", "San Diego", "culture", fallbackCoordinates["balboa park"]],
 		["Pacific Beach", "Garnet Ave", "San Diego", "beach", fallbackCoordinates["pacific beach"]],
 		["Gaslamp Quarter", "Fifth Ave", "San Diego", "nightlife", fallbackCoordinates["gaslamp quarter"]],
-		["Tijuana", "Zona Centro", "Tijuana", "culture", fallbackCoordinates.tijuana, "Mexico"],
-		["Denver", "Downtown Denver", "Denver", "outdoor", fallbackCoordinates.denver, "USA"],
-		["San Francisco", "Golden Gate Bridge", "San Francisco", "sightseeing", fallbackCoordinates["san francisco"], "USA"],
-		["New York City", "Manhattan", "New York City", "weekend trip", fallbackCoordinates["new york city"], "USA"]
+		[
+			"Griffith Observatory",
+			"2800 E Observatory Rd",
+			"Los Angeles",
+			"weekend trip",
+			fallbackCoordinates["griffith observatory"],
+			"USA"
+		],
+		["Avenida Revolucion", "Zona Centro", "Tijuana", "culture", fallbackCoordinates["avenida revolucion"], "Mexico"],
+		[
+			"Red Rocks Park and Amphitheatre",
+			"18300 W Alameda Pkwy",
+			"Morrison",
+			"outdoor",
+			fallbackCoordinates["red rocks park and amphitheatre"],
+			"USA"
+		],
+		[
+			"Golden Gate Bridge",
+			"Golden Gate Bridge",
+			"San Francisco",
+			"sightseeing",
+			fallbackCoordinates["golden gate bridge"],
+			"USA"
+		],
+		["Central Park", "Central Park", "New York City", "weekend trip", fallbackCoordinates["central park"], "USA"]
 	].map(([name, address, city, backgroundType, coordinates, country = "USA"]) => ({
 		name,
 		address,
@@ -167,10 +194,22 @@ export async function seedIfEmpty() {
 					updatedAt: now
 				},
 				{
+					title: "Weekend Trip to Los Angeles",
+					date: "2026-06-07",
+					time: "07:30",
+					locationId: locationIds[4],
+					category: "Weekend Trip",
+					description: "Roadtrip weekend to Los Angeles with Griffith Observatory, Venice Beach and food stops.",
+					status: "planned",
+					friendIds: [friendIds[0], friendIds[1]],
+					createdAt: now,
+					updatedAt: now
+				},
+				{
 					title: "Day Trip to Tijuana",
 					date: "2026-06-01",
 					time: "10:00",
-					locationId: locationIds[4],
+					locationId: locationIds[5],
 					category: "Culture",
 					description: "Cross-border day trip for street food, markets and Avenida Revolucion.",
 					status: "planned",
@@ -182,7 +221,7 @@ export async function seedIfEmpty() {
 					title: "Denver Mountain Weekend",
 					date: "2026-06-14",
 					time: "08:00",
-					locationId: locationIds[5],
+					locationId: locationIds[6],
 					category: "Weekend Trip",
 					description: "Weekend escape to Denver with skyline views and a possible mountain day.",
 					status: "planned",
@@ -194,7 +233,7 @@ export async function seedIfEmpty() {
 					title: "Golden Gate Photo Walk",
 					date: "2026-04-28",
 					time: "16:30",
-					locationId: locationIds[6],
+					locationId: locationIds[7],
 					category: "Sightseeing",
 					description: "Photo walk around the Golden Gate Bridge during golden hour.",
 					status: "completed",
@@ -206,7 +245,7 @@ export async function seedIfEmpty() {
 					title: "Weekend Trip to NYC",
 					date: "2026-07-03",
 					time: "07:00",
-					locationId: locationIds[7],
+					locationId: locationIds[8],
 					category: "Weekend Trip",
 					description: "Long weekend in New York City with skyline views, food stops and museum time.",
 					status: "planned",
@@ -236,7 +275,7 @@ export async function seedIfEmpty() {
 			updatedAt: now
 		},
 		{
-			eventId: eventIds[6],
+			eventId: eventIds[7],
 			rating: 5,
 			memoryText: "The Golden Gate walk made the journey feel bigger than San Diego. Fog, wind and a lot of photos.",
 			imageUrl: "",
@@ -475,6 +514,19 @@ export async function listLocations() {
 			events: events.filter((event) => event.locationId === serialized.id)
 		};
 	});
+}
+
+export async function listMapLocations() {
+	const locations = await listLocations();
+	return locations
+		.filter((location) => location.events.length > 0)
+		.sort((a, b) => {
+			const country = (a.country || "").localeCompare(b.country || "");
+			if (country) return country;
+			const city = (a.city || "").localeCompare(b.city || "");
+			if (city) return city;
+			return (a.name || "").localeCompare(b.name || "");
+		});
 }
 
 export async function listIdeas() {

@@ -1,5 +1,6 @@
 <script>
 	import EventForm from "$lib/components/EventForm.svelte";
+	import EventMapPanel from "$lib/components/EventMapPanel.svelte";
 	import RatingInput from "$lib/components/RatingInput.svelte";
 	import SharePreview from "$lib/components/SharePreview.svelte";
 
@@ -43,6 +44,8 @@
 			{/if}
 		</div>
 	</section>
+
+	<EventMapPanel event={event} />
 
 	<section class="grid two">
 		<div>

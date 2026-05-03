@@ -58,7 +58,21 @@ export const locationMedia = {
 		imageLicense: "CC BY-SA 2.0",
 		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:California_Road_Trip_(16570143476).jpg"
 	},
+	"griffith observatory": {
+		imageUrl: wikimedia("Griffith Observatory, Los Angeles 2015-07-19.jpg"),
+		imageAlt: "Griffith Observatory in Los Angeles",
+		imageCredit: "Eric C Gardner / Wikimedia Commons",
+		imageLicense: "CC BY-SA 4.0",
+		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Griffith_Observatory,_Los_Angeles_2015-07-19.jpg"
+	},
 	tijuana: {
+		imageUrl: wikimedia("Tijuana skyline.jpg"),
+		imageAlt: "Tijuana skyline from Colonia La Cacho",
+		imageCredit: "Urbaner44 / Wikimedia Commons",
+		imageLicense: "CC BY-SA 4.0",
+		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Tijuana_skyline.jpg"
+	},
+	"avenida revolucion": {
 		imageUrl: wikimedia("Tijuana skyline.jpg"),
 		imageAlt: "Tijuana skyline from Colonia La Cacho",
 		imageCredit: "Urbaner44 / Wikimedia Commons",
@@ -72,7 +86,21 @@ export const locationMedia = {
 		imageLicense: "CC BY 2.0",
 		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Denver_Skyline_(15242286069).jpg"
 	},
+	"red rocks park and amphitheatre": {
+		imageUrl: wikimedia("Denver Skyline (15242286069).jpg"),
+		imageAlt: "Denver skyline seen from Rocky Mountain Arsenal National Wildlife Refuge",
+		imageCredit: "USFWS Mountain-Prairie / Wikimedia Commons",
+		imageLicense: "CC BY 2.0",
+		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Denver_Skyline_(15242286069).jpg"
+	},
 	"san francisco": {
+		imageUrl: wikimedia("San Francisco golden gate bridge.JPG"),
+		imageAlt: "Golden Gate Bridge in San Francisco",
+		imageCredit: "Rhasan / Wikimedia Commons",
+		imageLicense: "CC BY-SA 3.0",
+		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:San_Francisco_golden_gate_bridge.JPG"
+	},
+	"golden gate bridge": {
 		imageUrl: wikimedia("San Francisco golden gate bridge.JPG"),
 		imageAlt: "Golden Gate Bridge in San Francisco",
 		imageCredit: "Rhasan / Wikimedia Commons",
@@ -87,6 +115,13 @@ export const locationMedia = {
 		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Iconic_Skyline_of_New_York_City.jpg"
 	},
 	"new york city": {
+		imageUrl: wikimedia("Iconic Skyline of New York City.jpg"),
+		imageAlt: "New York City skyline",
+		imageCredit: "Farida Belal / Wikimedia Commons",
+		imageLicense: "CC0 1.0",
+		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Iconic_Skyline_of_New_York_City.jpg"
+	},
+	"central park": {
 		imageUrl: wikimedia("Iconic Skyline of New York City.jpg"),
 		imageAlt: "New York City skyline",
 		imageCredit: "Farida Belal / Wikimedia Commons",
@@ -157,13 +192,13 @@ export const categoryMedia = {
 export const eventMedia = {
 	"taco tuesday in pacific beach": categoryMedia.food,
 	"gaslamp rooftop night": categoryMedia.party,
-	"weekend trip to los angeles": categoryMedia["weekend trip"],
+	"weekend trip to los angeles": locationMedia["griffith observatory"],
 	"coronado beach bike ride": locationMedia["coronado island"],
 	"sunset cliffs memory walk": locationMedia["sunset cliffs"],
-	"day trip to tijuana": locationMedia.tijuana,
-	"denver mountain weekend": locationMedia.denver,
-	"golden gate photo walk": locationMedia["san francisco"],
-	"weekend trip to nyc": locationMedia["new york city"]
+	"day trip to tijuana": locationMedia["avenida revolucion"],
+	"denver mountain weekend": locationMedia["red rocks park and amphitheatre"],
+	"golden gate photo walk": locationMedia["golden gate bridge"],
+	"weekend trip to nyc": locationMedia["central park"]
 };
 
 export function resolveLocationMedia(location = {}) {

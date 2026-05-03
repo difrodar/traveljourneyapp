@@ -31,17 +31,32 @@ const locations = [
 	location("Balboa Park", "1549 El Prado", "San Diego", "USA", { lat: 32.7341, lng: -117.1446 }, "culture"),
 	location("Pacific Beach", "Garnet Ave", "San Diego", "USA", { lat: 32.8025, lng: -117.2366 }, "beach"),
 	location("Gaslamp Quarter", "Fifth Ave", "San Diego", "USA", { lat: 32.7115, lng: -117.1604 }, "nightlife"),
-	location("Tijuana", "Zona Centro", "Tijuana", "Mexico", { lat: 32.5149, lng: -117.0382 }, "culture"),
-	location("Denver", "Downtown Denver", "Denver", "USA", { lat: 39.7392, lng: -104.9903 }, "outdoor"),
 	location(
-		"San Francisco",
+		"Griffith Observatory",
+		"2800 E Observatory Rd",
+		"Los Angeles",
+		"USA",
+		{ lat: 34.1184, lng: -118.3004 },
+		"weekend trip"
+	),
+	location("Avenida Revolucion", "Zona Centro", "Tijuana", "Mexico", { lat: 32.5325, lng: -117.0386 }, "culture"),
+	location(
+		"Red Rocks Park and Amphitheatre",
+		"18300 W Alameda Pkwy",
+		"Morrison",
+		"USA",
+		{ lat: 39.6654, lng: -105.2057 },
+		"outdoor"
+	),
+	location(
+		"Golden Gate Bridge",
 		"Golden Gate Bridge",
 		"San Francisco",
 		"USA",
-		{ lat: 37.7749, lng: -122.4194 },
+		{ lat: 37.8199, lng: -122.4783 },
 		"sightseeing"
 	),
-	location("New York City", "Manhattan", "New York City", "USA", { lat: 40.7128, lng: -74.006 }, "weekend trip")
+	location("Central Park", "Central Park", "New York City", "USA", { lat: 40.7829, lng: -73.9654 }, "weekend trip")
 ];
 
 try {
@@ -119,10 +134,22 @@ try {
 					updatedAt: now
 				},
 				{
+					title: "Weekend Trip to Los Angeles",
+					date: "2026-06-07",
+					time: "07:30",
+					locationId: locationIds[4],
+					category: "Weekend Trip",
+					description: "Roadtrip weekend to Los Angeles with Griffith Observatory, Venice Beach and food stops.",
+					status: "planned",
+					friendIds: [friendIds[0], friendIds[1]],
+					createdAt: now,
+					updatedAt: now
+				},
+				{
 					title: "Day Trip to Tijuana",
 					date: "2026-06-01",
 					time: "10:00",
-					locationId: locationIds[4],
+					locationId: locationIds[5],
 					category: "Culture",
 					description: "Cross-border day trip for street food, markets and Avenida Revolucion.",
 					status: "planned",
@@ -134,7 +161,7 @@ try {
 					title: "Denver Mountain Weekend",
 					date: "2026-06-14",
 					time: "08:00",
-					locationId: locationIds[5],
+					locationId: locationIds[6],
 					category: "Weekend Trip",
 					description: "Weekend escape to Denver with skyline views and a possible mountain day.",
 					status: "planned",
@@ -146,7 +173,7 @@ try {
 					title: "Golden Gate Photo Walk",
 					date: "2026-04-28",
 					time: "16:30",
-					locationId: locationIds[6],
+					locationId: locationIds[7],
 					category: "Sightseeing",
 					description: "Photo walk around the Golden Gate Bridge during golden hour.",
 					status: "completed",
@@ -158,7 +185,7 @@ try {
 					title: "Weekend Trip to NYC",
 					date: "2026-07-03",
 					time: "07:00",
-					locationId: locationIds[7],
+					locationId: locationIds[8],
 					category: "Weekend Trip",
 					description: "Long weekend in New York City with skyline views, food stops and museum time.",
 					status: "planned",
@@ -188,7 +215,7 @@ try {
 			updatedAt: now
 		},
 		{
-			eventId: eventIds[6],
+			eventId: eventIds[7],
 			rating: 5,
 			memoryText: "The Golden Gate walk made the journey feel bigger than San Diego. Fog, wind and a lot of photos.",
 			imageUrl: "",

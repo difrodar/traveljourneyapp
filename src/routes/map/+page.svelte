@@ -1,5 +1,5 @@
 <script>
-	import GoogleMapView from "$lib/components/GoogleMapView.svelte";
+	import LeafletMapView from "$lib/components/LeafletMapView.svelte";
 
 	let { data } = $props();
 </script>
@@ -8,8 +8,8 @@
 	<header class="page-header">
 		<div>
 			<p class="eyebrow">Map</p>
-			<h1>Places behind the plans</h1>
-			<p class="lead">Stored locations appear on Google Maps when an API key is configured, otherwise as stable pinpoint cards.</p>
+			<h1>World map of your plans</h1>
+			<p class="lead">Browse the journey on an OpenStreetMap view by country, city and concrete place.</p>
 		</div>
 	</header>
 
@@ -17,5 +17,5 @@
 		<div class="message error">{data.setupError}</div>
 	{/if}
 
-	<GoogleMapView locations={data.locations} apiKey={data.apiKey} mapId={data.mapId} />
+	<LeafletMapView locations={data.locations} highlightedEventId={data.highlightedEventId} />
 </main>

@@ -22,6 +22,9 @@
 		<span>{event.date} at {event.time}</span>
 		<span>{event.location?.name || "No location"}</span>
 	</div>
+	{#if event.location?.id}
+		<a class="map-link" href="/map?event={event.id}#location-{event.location.id}">View on map</a>
+	{/if}
 	{#if !compact}
 		<div class="friends">
 			{#each event.friends || [] as friend}
@@ -111,6 +114,18 @@
 		flex-wrap: wrap;
 		gap: 7px;
 		margin-top: 14px;
+	}
+
+	.map-link {
+		display: inline-flex;
+		margin-top: 12px;
+		color: var(--brand);
+		font-weight: 900;
+		font-size: 0.88rem;
+	}
+
+	.map-link:hover {
+		color: var(--coral);
 	}
 
 	.friends span {

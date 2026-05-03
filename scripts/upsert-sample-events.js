@@ -29,47 +29,47 @@ const client = new MongoClient(uri);
 const locationSeeds = [
 	{
 		key: "losAngeles",
-		name: "Los Angeles",
-		address: "Downtown Los Angeles",
+		name: "Griffith Observatory",
+		address: "2800 E Observatory Rd",
 		city: "Los Angeles",
 		country: "USA",
-		coordinates: { lat: 34.0522, lng: -118.2437 },
+		coordinates: { lat: 34.1184, lng: -118.3004 },
 		backgroundType: "weekend trip"
 	},
 	{
 		key: "tijuana",
-		name: "Tijuana",
+		name: "Avenida Revolucion",
 		address: "Zona Centro",
 		city: "Tijuana",
 		country: "Mexico",
-		coordinates: { lat: 32.5149, lng: -117.0382 },
+		coordinates: { lat: 32.5325, lng: -117.0386 },
 		backgroundType: "culture"
 	},
 	{
 		key: "denver",
-		name: "Denver",
-		address: "Downtown Denver",
-		city: "Denver",
+		name: "Red Rocks Park and Amphitheatre",
+		address: "18300 W Alameda Pkwy",
+		city: "Morrison",
 		country: "USA",
-		coordinates: { lat: 39.7392, lng: -104.9903 },
+		coordinates: { lat: 39.6654, lng: -105.2057 },
 		backgroundType: "outdoor"
 	},
 	{
 		key: "sanFrancisco",
-		name: "San Francisco",
+		name: "Golden Gate Bridge",
 		address: "Golden Gate Bridge",
 		city: "San Francisco",
 		country: "USA",
-		coordinates: { lat: 37.7749, lng: -122.4194 },
+		coordinates: { lat: 37.8199, lng: -122.4783 },
 		backgroundType: "sightseeing"
 	},
 	{
 		key: "newYorkCity",
-		name: "New York City",
-		address: "Manhattan",
+		name: "Central Park",
+		address: "Central Park",
 		city: "New York City",
 		country: "USA",
-		coordinates: { lat: 40.7128, lng: -74.006 },
+		coordinates: { lat: 40.7829, lng: -73.9654 },
 		backgroundType: "weekend trip"
 	}
 ];
