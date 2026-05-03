@@ -68,6 +68,35 @@
 			<label for="description">Description</label>
 			<textarea id="description" name="description">{event?.description || ""}</textarea>
 		</div>
+		<div class="field full media-fields">
+			<h3>Event image optional</h3>
+			<p class="muted">Leave empty to use the automatic TripTales image for this location or category.</p>
+		</div>
+		<div class="field">
+			<label for="imageUrl">Event image URL</label>
+			<input id="imageUrl" name="imageUrl" value={event?.imageUrl || ""} />
+		</div>
+		<div class="field">
+			<label for="imageAlt">Event image alt text</label>
+			<input id="imageAlt" name="imageAlt" value={event?.imageAlt || ""} />
+		</div>
+		<div class="field">
+			<label for="imageCredit">Image credit</label>
+			<input id="imageCredit" name="imageCredit" value={event?.imageCredit || ""} />
+		</div>
+		<div class="field">
+			<label for="imageLicense">Image license</label>
+			<input id="imageLicense" name="imageLicense" value={event?.imageLicense || ""} />
+		</div>
+		<div class="field full">
+			<label for="imageSourceUrl">Image source URL</label>
+			<input id="imageSourceUrl" name="imageSourceUrl" value={event?.imageSourceUrl || ""} />
+		</div>
+		<input type="hidden" name="locationImageUrl" value={location.imageUrl || ""} />
+		<input type="hidden" name="locationImageAlt" value={location.imageAlt || ""} />
+		<input type="hidden" name="locationImageCredit" value={location.imageCredit || ""} />
+		<input type="hidden" name="locationImageLicense" value={location.imageLicense || ""} />
+		<input type="hidden" name="locationImageSourceUrl" value={location.imageSourceUrl || ""} />
 		<div class="field full">
 			<span class="field-label">Invited friends</span>
 			<FriendPicker initial={event?.friends || []} />
@@ -90,5 +119,15 @@
 	.field-label {
 		font-weight: 800;
 		color: #253044;
+	}
+
+	.media-fields {
+		margin-top: 4px;
+		border-top: 1px solid var(--line);
+		padding-top: 14px;
+	}
+
+	.media-fields h3 {
+		margin-bottom: 4px;
 	}
 </style>

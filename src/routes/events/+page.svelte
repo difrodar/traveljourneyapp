@@ -9,7 +9,7 @@
 		<div>
 			<p class="eyebrow">Events</p>
 			<h1>Plans and past adventures</h1>
-			<p class="lead">Filter by status, category or search term. Every card is loaded from MongoDB.</p>
+			<p class="lead">Filter by status, category or search term. Events can happen in San Diego or anywhere your journey goes.</p>
 		</div>
 		<a class="button" href="/events/new">Create event</a>
 	</header>

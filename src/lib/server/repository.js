@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { resolveEventMedia, resolveLocationMedia } from "$lib/media.js";
 import { getCollections } from "./db.js";
 
 const fallbackCoordinates = {
@@ -8,7 +9,21 @@ const fallbackCoordinates = {
 	"coronado island": { lat: 32.6859, lng: -117.1831 },
 	"gaslamp quarter": { lat: 32.7115, lng: -117.1604 },
 	"sunset cliffs": { lat: 32.7353, lng: -117.2558 },
-	"los angeles": { lat: 34.0522, lng: -118.2437 }
+	"los angeles": { lat: 34.0522, lng: -118.2437 },
+	"new york": { lat: 40.7128, lng: -74.006 },
+	"new york city": { lat: 40.7128, lng: -74.006 },
+	nyc: { lat: 40.7128, lng: -74.006 },
+	tijuana: { lat: 32.5149, lng: -117.0382 },
+	denver: { lat: 39.7392, lng: -104.9903 },
+	"san francisco": { lat: 37.7749, lng: -122.4194 },
+	"tokyo": { lat: 35.6762, lng: 139.6503 },
+	"zurich": { lat: 47.3769, lng: 8.5417 },
+	"zürich": { lat: 47.3769, lng: 8.5417 },
+	"london": { lat: 51.5072, lng: -0.1276 },
+	"paris": { lat: 48.8566, lng: 2.3522 },
+	"barcelona": { lat: 41.3874, lng: 2.1686 },
+	"mexico city": { lat: 19.4326, lng: -99.1332 },
+	"vancouver": { lat: 49.2827, lng: -123.1207 }
 };
 
 function oid(id) {
@@ -44,7 +59,9 @@ function defaultCoordinates(name, lat, lng) {
 	const parsedLat = Number(lat);
 	const parsedLng = Number(lng);
 	if (Number.isFinite(parsedLat) && Number.isFinite(parsedLng)) return { lat: parsedLat, lng: parsedLng };
-	return fallbackCoordinates[name.toLowerCase()] || { lat: 32.7157, lng: -117.1611 };
+	const normalizedName = name.toLowerCase();
+	const partialMatch = Object.entries(fallbackCoordinates).find(([place]) => normalizedName.includes(place));
+	return fallbackCoordinates[normalizedName] || partialMatch?.[1] || { lat: 20, lng: 0 };
 }
 
 async function ensureIndexes(collections) {
@@ -67,14 +84,19 @@ export async function seedIfEmpty() {
 		["La Jolla Cove", "1100 Coast Blvd", "San Diego", "ocean", fallbackCoordinates["la jolla cove"]],
 		["Balboa Park", "1549 El Prado", "San Diego", "culture", fallbackCoordinates["balboa park"]],
 		["Pacific Beach", "Garnet Ave", "San Diego", "beach", fallbackCoordinates["pacific beach"]],
-		["Gaslamp Quarter", "Fifth Ave", "San Diego", "nightlife", fallbackCoordinates["gaslamp quarter"]]
-	].map(([name, address, city, backgroundType, coordinates]) => ({
+		["Gaslamp Quarter", "Fifth Ave", "San Diego", "nightlife", fallbackCoordinates["gaslamp quarter"]],
+		["Tijuana", "Zona Centro", "Tijuana", "culture", fallbackCoordinates.tijuana, "Mexico"],
+		["Denver", "Downtown Denver", "Denver", "outdoor", fallbackCoordinates.denver, "USA"],
+		["San Francisco", "Golden Gate Bridge", "San Francisco", "sightseeing", fallbackCoordinates["san francisco"], "USA"],
+		["New York City", "Manhattan", "New York City", "weekend trip", fallbackCoordinates["new york city"], "USA"]
+	].map(([name, address, city, backgroundType, coordinates, country = "USA"]) => ({
 		name,
 		address,
 		city,
-		country: "USA",
+		country,
 		coordinates,
 		backgroundType,
+		...resolveLocationMedia({ name, city, backgroundType }),
 		createdAt: now,
 		updatedAt: now
 	}));
@@ -143,6 +165,54 @@ export async function seedIfEmpty() {
 					friendIds: [friendIds[1], friendIds[2], friendIds[4]],
 					createdAt: now,
 					updatedAt: now
+				},
+				{
+					title: "Day Trip to Tijuana",
+					date: "2026-06-01",
+					time: "10:00",
+					locationId: locationIds[4],
+					category: "Culture",
+					description: "Cross-border day trip for street food, markets and Avenida Revolucion.",
+					status: "planned",
+					friendIds: [friendIds[0], friendIds[3]],
+					createdAt: now,
+					updatedAt: now
+				},
+				{
+					title: "Denver Mountain Weekend",
+					date: "2026-06-14",
+					time: "08:00",
+					locationId: locationIds[5],
+					category: "Weekend Trip",
+					description: "Weekend escape to Denver with skyline views and a possible mountain day.",
+					status: "planned",
+					friendIds: [friendIds[1], friendIds[4]],
+					createdAt: now,
+					updatedAt: now
+				},
+				{
+					title: "Golden Gate Photo Walk",
+					date: "2026-04-28",
+					time: "16:30",
+					locationId: locationIds[6],
+					category: "Sightseeing",
+					description: "Photo walk around the Golden Gate Bridge during golden hour.",
+					status: "completed",
+					friendIds: [friendIds[2], friendIds[3]],
+					createdAt: now,
+					updatedAt: now
+				},
+				{
+					title: "Weekend Trip to NYC",
+					date: "2026-07-03",
+					time: "07:00",
+					locationId: locationIds[7],
+					category: "Weekend Trip",
+					description: "Long weekend in New York City with skyline views, food stops and museum time.",
+					status: "planned",
+					friendIds: [friendIds[0], friendIds[1], friendIds[4]],
+					createdAt: now,
+					updatedAt: now
 				}
 			])
 		).insertedIds
@@ -161,6 +231,14 @@ export async function seedIfEmpty() {
 			eventId: eventIds[3],
 			rating: 4,
 			memoryText: "Great skyline view, lots of new people, and one of the first nights where San Diego felt familiar.",
+			imageUrl: "",
+			createdAt: now,
+			updatedAt: now
+		},
+		{
+			eventId: eventIds[6],
+			rating: 5,
+			memoryText: "The Golden Gate walk made the journey feel bigger than San Diego. Fog, wind and a lot of photos.",
 			imageUrl: "",
 			createdAt: now,
 			updatedAt: now
@@ -205,12 +283,17 @@ async function hydrateEvents(events) {
 	const friendMap = new Map(friends.map((friend) => [friend._id.toString(), serialize(friend)]));
 	const journeyMap = new Map(journeyEntries.map((entry) => [entry.eventId.toString(), serialize(entry)]));
 
-	return events.map((event) => ({
-		...serialize(event),
-		location: locationMap.get(event.locationId?.toString()) || null,
-		friends: (event.friendIds || []).map((id) => friendMap.get(id.toString())).filter(Boolean),
-		journeyEntry: journeyMap.get(event._id.toString()) || null
-	}));
+	return events.map((event) => {
+		const serialized = serialize(event);
+		const location = locationMap.get(event.locationId?.toString()) || null;
+		return {
+			...serialized,
+			location: location ? { ...location, media: resolveLocationMedia(location) } : null,
+			media: resolveEventMedia(serialized, location),
+			friends: (event.friendIds || []).map((id) => friendMap.get(id.toString())).filter(Boolean),
+			journeyEntry: journeyMap.get(event._id.toString()) || null
+		};
+	});
 }
 
 export async function listEvents(filters = {}) {
@@ -289,6 +372,11 @@ async function saveLocationFromForm(form, existingId = null) {
 		country: clean(form.get("country")) || "USA",
 		coordinates: defaultCoordinates(name, form.get("lat"), form.get("lng")),
 		backgroundType: clean(form.get("backgroundType")) || clean(form.get("category")).toLowerCase(),
+		imageUrl: clean(form.get("locationImageUrl")),
+		imageAlt: clean(form.get("locationImageAlt")),
+		imageCredit: clean(form.get("locationImageCredit")),
+		imageLicense: clean(form.get("locationImageLicense")),
+		imageSourceUrl: clean(form.get("locationImageSourceUrl")),
 		updatedAt: now
 	};
 	if (existingId && oid(existingId)) {
@@ -308,6 +396,11 @@ function eventPayloadFromForm(form, locationId, friendIds) {
 		description: clean(form.get("description")),
 		status: clean(form.get("status")) === "completed" ? "completed" : "planned",
 		friendIds,
+		imageUrl: clean(form.get("imageUrl")),
+		imageAlt: clean(form.get("imageAlt")),
+		imageCredit: clean(form.get("imageCredit")),
+		imageLicense: clean(form.get("imageLicense")),
+		imageSourceUrl: clean(form.get("imageSourceUrl")),
 		updatedAt: new Date()
 	};
 }
@@ -376,7 +469,11 @@ export async function listLocations() {
 	]);
 	return locations.map((location) => {
 		const serialized = serialize(location);
-		return { ...serialized, events: events.filter((event) => event.locationId === serialized.id) };
+		return {
+			...serialized,
+			media: resolveLocationMedia(serialized),
+			events: events.filter((event) => event.locationId === serialized.id)
+		};
 	});
 }
 

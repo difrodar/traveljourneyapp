@@ -8,8 +8,8 @@
 	<header class="page-header">
 		<div>
 			<p class="eyebrow">Journey</p>
-			<h1>Your San Diego timeline</h1>
-			<p class="lead">Completed events become memories with rating, location and personal notes.</p>
+			<h1>Your world timeline</h1>
+			<p class="lead">Completed events become memories with rating, location and personal notes, from San Diego to every next stop.</p>
 		</div>
 	</header>
 
@@ -33,7 +33,7 @@
 		<button class="button" type="submit">Filter</button>
 	</form>
 
-	<section class="timeline">
+	<section class="timeline world-trail">
 		{#each data.entries as event}
 			<JourneyCard {event} />
 		{:else}
@@ -52,6 +52,22 @@
 	.timeline {
 		display: grid;
 		gap: 16px;
+		position: relative;
+	}
+
+	.world-trail::before {
+		content: "";
+		position: absolute;
+		top: 8px;
+		bottom: 8px;
+		left: 22px;
+		width: 2px;
+		background: linear-gradient(180deg, var(--coral), var(--sky), var(--brand));
+		opacity: 0.36;
+	}
+
+	.world-trail :global(.journey-card) {
+		margin-left: 24px;
 	}
 
 	@media (max-width: 720px) {

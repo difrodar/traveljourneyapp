@@ -30,6 +30,20 @@
 		<div class="message">{form.message}</div>
 	{/if}
 
+	<section class="event-cover">
+		{#if event.media?.imageUrl}
+			<img src={event.media.imageUrl} alt={event.media.imageAlt || event.title} />
+		{:else}
+			<div class="cover-fallback">{event.category}</div>
+		{/if}
+		<div class="cover-caption">
+			<strong>{event.location?.name}</strong>
+			{#if event.media?.imageCredit}
+				<span>{event.media.imageCredit} · {event.media.imageLicense}</span>
+			{/if}
+		</div>
+	</section>
+
 	<section class="grid two">
 		<div>
 			<h2>Edit plan</h2>
@@ -47,8 +61,8 @@
 					<textarea id="memoryText" name="memoryText" required>{event.journeyEntry?.memoryText || ""}</textarea>
 				</div>
 				<div class="field">
-					<label for="imageUrl">Image URL optional</label>
-					<input id="imageUrl" name="imageUrl" value={event.journeyEntry?.imageUrl || ""} />
+					<label for="memoryImageUrl">Memory image URL optional</label>
+					<input id="memoryImageUrl" name="imageUrl" value={event.journeyEntry?.imageUrl || ""} />
 				</div>
 				<button class="button" type="submit">Save memory</button>
 			</form>
@@ -74,5 +88,47 @@
 	.field-label {
 		font-weight: 800;
 		color: #253044;
+	}
+
+	.event-cover {
+		position: relative;
+		min-height: 340px;
+		margin-bottom: 24px;
+		border-radius: 8px;
+		overflow: hidden;
+		box-shadow: var(--shadow);
+		background: linear-gradient(135deg, var(--accent), var(--brand));
+	}
+
+	.event-cover img,
+	.cover-fallback {
+		width: 100%;
+		height: 100%;
+		min-height: 340px;
+		object-fit: cover;
+		display: grid;
+		place-items: center;
+		color: white;
+		font-weight: 900;
+	}
+
+	.cover-caption {
+		position: absolute;
+		left: 18px;
+		right: 18px;
+		bottom: 18px;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 10px;
+		border-radius: 8px;
+		padding: 12px 14px;
+		background: rgba(56, 34, 22, 0.72);
+		color: white;
+		backdrop-filter: blur(8px);
+	}
+
+	.cover-caption span {
+		font-size: 0.85rem;
 	}
 </style>

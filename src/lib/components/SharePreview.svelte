@@ -4,6 +4,9 @@
 </script>
 
 <aside class="preview">
+	{#if event.media?.imageUrl}
+		<img src={event.media.imageUrl} alt="" />
+	{/if}
 	<div class="preview-head">
 		<strong>TripTales</strong>
 		<span>{event.category}</span>
@@ -26,8 +29,42 @@
 		display: grid;
 		align-content: space-between;
 		color: white;
-		background: linear-gradient(145deg, #0f766e, #1d74b7 55%, #d97706);
+		background:
+			linear-gradient(140deg, rgba(255, 255, 255, 0.18) 0 18%, transparent 18% 100%),
+			linear-gradient(145deg, #e75f43, #ef8f38 38%, #0f766e 100%);
 		box-shadow: var(--shadow);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.preview img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		z-index: 0;
+		filter: saturate(1.05);
+	}
+
+	.preview::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, rgba(56, 34, 22, 0.18), rgba(56, 34, 22, 0.72));
+		z-index: 1;
+	}
+
+	.preview::after {
+		content: "";
+		position: absolute;
+		right: 18px;
+		bottom: 18px;
+		width: 72px;
+		height: 72px;
+		border: 2px solid rgba(255, 255, 255, 0.62);
+		border-radius: 999px;
+		z-index: 2;
 	}
 
 	.preview-head,
@@ -36,10 +73,18 @@
 		justify-content: space-between;
 		gap: 10px;
 		font-weight: 900;
+		position: relative;
+		z-index: 2;
+	}
+
+	.preview-body {
+		position: relative;
+		z-index: 2;
 	}
 
 	.preview-body h3 {
 		color: white;
 		font-size: 1.8rem;
+		text-shadow: 0 2px 16px rgba(56, 34, 22, 0.24);
 	}
 </style>

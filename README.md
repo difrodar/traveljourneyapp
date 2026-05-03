@@ -57,17 +57,17 @@ Die Durchführung erfolgt phasenbasiert; dokumentieren Sie die wichtigsten Ergeb
 Beschreibt die Gestaltung und Interaktion.
 > **Hinweis:** Hier wird der **Prototyp** beschrieben, nicht das **Mockup**.
 - **Informationsarchitektur:** `/` Dashboard, `/events` Listen- und Filteransicht, `/events/new` Erstellung, `/events/[id]` Detail/Bearbeitung/Memory, `/journey` Timeline, `/map` Orte, `/ideas` Reiseideen.
-- **User Interface Design:** Das UI nutzt kompakte Cards, klare Formulare, Status-Badges, Kategorie-Badges, Filterleisten und leere Zustände. Platzhalter für finale Screenshots werden nach lokalem Test oder Deployment-Screenshot ergänzt.
-- **Designentscheidungen:** Die Gestaltung ist ruhig und nutzungsorientiert, mit San-Diego-inspirierten Farben für Strand, Stadt, Food und Journey. Karten werden nur für einzelne Event-, Location- und Journey-Elemente verwendet; die Seiten bleiben übersichtlich und scanbar.
+- **User Interface Design:** Das UI nutzt kompakte Cards, klare Formulare, Status-Badges, Kategorie-Badges, Filterleisten, leere Zustände und passende Event-/Location-Bilder. Die Bildwelt basiert bewusst nur auf echten, lizenzierten Wikimedia-Commons-Fotos, damit Orte und Events visuell glaubwürdig wirken.
+- **Designentscheidungen:** Nach einem ersten Review wurde der zunächst eher kühle und funktionale Look in Richtung **Warm Travel** weiterentwickelt. Die Gestaltung nutzt San-Diego-inspirierte Sunset-, Sand-, Ocean- und Palm-Farben, wärmere Flächen, Kategorie-Akzente sowie Postcard-/Ticket-Anmutungen für Journey, Events und Reiseideen. In einer weiteren Designiteration wurde das Dashboard bildreicher gestaltet: Hero-Collage, visueller Journey-Streifen und ein dezenter statischer Map-/Postcard-Hintergrund machen die App emotionaler. San Diego bleibt der konkrete Semester-Kontext, die Sprache und Timeline sind aber bewusst globaler formuliert, damit Events weltweit möglich sind.
 
 #### 3.4.2. Umsetzung (Technik)
 Fasst die technische Realisierung zusammen.
 - **Technologie-Stack:** SvelteKit mit Svelte 5, JavaScript/TypeScript-nahe Modulstruktur, MongoDB Atlas mit offiziellem Node.js Driver, Netlify Adapter, Google Maps JavaScript API optional.
 - **Tooling:** Visual Studio Code, Git/GitHub, Netlify, MongoDB Atlas, Codex/ChatGPT als Planungs- und Entwicklungsassistenz.
 - **Struktur & Komponenten:** Zentrale Komponenten sind `Navigation`, `DashboardStats`, `EventCard`, `EventForm`, `FriendPicker`, `RatingInput`, `JourneyCard`, `GoogleMapView`, `LocationPinGrid`, `TravelIdeaCard` und `SharePreview`.
-- **Daten & Schnittstellen:** MongoDB Collections: `events`, `locations`, `friends`, `journeyEntries`, `travelIdeas`. Datenzugriff erfolgt serverseitig in `src/lib/server`. SvelteKit Server Loads und Form Actions übernehmen Lesen, Erstellen, Aktualisieren, Löschen und Umwandeln.
+- **Daten & Schnittstellen:** MongoDB Collections: `events`, `locations`, `friends`, `journeyEntries`, `travelIdeas`. Datenzugriff erfolgt serverseitig in `src/lib/server`. SvelteKit Server Loads und Form Actions übernehmen Lesen, Erstellen, Aktualisieren, Löschen und Umwandeln. Bilddaten werden optional als `imageUrl`, `imageAlt`, `imageCredit`, `imageLicense` und `imageSourceUrl` an Events/Locations gespeichert; zusätzlich sorgt ein Media-Katalog für automatische Fallback-Bilder.
 - **Deployment:** Netlify URL: https://triptales-difrodar.netlify.app/. Benötigte Netlify Environment Variables: `MONGODB_URI`, `MONGODB_DB=triptales`, optional `PUBLIC_GOOGLE_MAPS_API_KEY`, optional `PUBLIC_GOOGLE_MAP_ID`.
-- **Besondere Entscheidungen:** Der MongoDB Connection String wird nicht im Repository gespeichert. Google Maps ist vorbereitet; ohne API-Key zeigt die App eine stabile Pinpoint-Fallback-Ansicht. Seed-Daten werden automatisch beim ersten Datenzugriff erzeugt, wenn die Datenbank leer ist.
+- **Besondere Entscheidungen:** Der MongoDB Connection String wird nicht im Repository gespeichert. Google Maps ist vorbereitet; ohne API-Key zeigt die App eine stabile Pinpoint-Fallback-Ansicht. Seed-Daten werden automatisch beim ersten Datenzugriff erzeugt, wenn die Datenbank leer ist. Für Bilder wird ausschliesslich mit echten, lizenzierten Wikimedia-Commons-Fotos gearbeitet; generierte Bildassets wurden bewusst entfernt.
 
 ### 3.5 Validate
 - **URL der getesteten Version** (separat deployt): https://triptales-difrodar.netlify.app/
@@ -101,6 +101,12 @@ Dokumentiert Erweiterungen über den Mindestumfang hinaus.
 - **Referenz:** Siehe `/events/[id]`.
 - **Aus Evaluation abgeleitet?:** Nein, Erweiterung mit erkennbarem Storytelling-Mehrwert.
 
+### 4.4 Bildwelt für Events und Orte
+- **Beschreibung & Nutzen:** Event-, Journey- und Location-Cards zeigen passende Bilder, damit Aktivitäten wie “Balboa Park Museum Day” sofort visuell erkennbar sind.
+- **Wo umgesetzt:** Media-Katalog in `src/lib/media.js`, Bildanzeige in Event-, Journey-, Detail-, Share- und Map-/Pinpoint-Komponenten; optionale Bildfelder im Event-Formular.
+- **Referenz:** Siehe `/`, `/events`, `/events/[id]`, `/journey` und `/map`.
+- **Aus Evaluation abgeleitet?:** Nein, aus Design-Review abgeleitet.
+
 ## 5. Projektorganisation [Optional]
 Beispiele:
 - **Repository & Struktur:** GitHub Repository mit SvelteKit-Standardstruktur. Wichtige Bereiche: `src/routes` für Pages, `src/lib/components` für UI, `src/lib/server` für MongoDB-Zugriff, `scripts/seed.js` für Seed-Daten.
@@ -123,6 +129,8 @@ KI beschleunigt Strukturierung, Boilerplate, Dokumentation und das Finden techni
 
 ## 7. Anhang [Optional]
 Beispiele:
-- **Quellen:** SvelteKit Dokumentation, Netlify SvelteKit Deployment Docs, MongoDB Node.js Driver Docs, Google Maps JavaScript API Docs. Externe Bildassets werden aktuell nicht als feste Projektdateien verwendet.
+- **Quellen:** SvelteKit Dokumentation, Netlify SvelteKit Deployment Docs, MongoDB Node.js Driver Docs, Google Maps JavaScript API Docs.
+- **Bildquellen:** Balboa Park: Hosiyar singh bhambhu / Wikimedia Commons, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Balboa_Park_San_Diego.jpg. La Jolla Cove: Stephen Bay / Wikimedia Commons, CC BY, https://commons.wikimedia.org/wiki/File:La_Jolla_Cove,_San_Diego.jpg. Pacific Beach: Krithika03 / Wikimedia Commons, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Pacific_Beach,_San_Diego.jpg. Gaslamp Quarter: Ekrem Canli / Wikimedia Commons, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:San_Diego_Gaslamp_Quarter.jpg.
+- **Weitere Bildquellen:** Tijuana: Urbaner44 / Wikimedia Commons, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Tijuana_skyline.jpg. Denver: USFWS Mountain-Prairie / Wikimedia Commons, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Denver_Skyline_(15242286069).jpg. San Francisco: Rhasan / Wikimedia Commons, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/File:San_Francisco_golden_gate_bridge.JPG. New York City: Farida Belal / Wikimedia Commons, CC0 1.0, https://commons.wikimedia.org/wiki/File:Iconic_Skyline_of_New_York_City.jpg. Food/Taco: Miles Gehm / Wikimedia Commons, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Rosarito_Beach_taco_(5768489467).jpg. Rooftop/Party: Alex Proimos / Wikimedia Commons, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Rooftop_Bar,_Metropolitan_Museum_Of_Art_(5894065780).jpg. Roadtrip: moonjazz / Wikimedia Commons, CC BY-SA 2.0, https://commons.wikimedia.org/wiki/File:California_Road_Trip_(16570143476).jpg. Study: Tulane public relations / Wikimedia Commons, CC BY 2.5, https://commons.wikimedia.org/wiki/File:Tulane_Students_Studying.jpg. Outdoor/Bike: Channel City Camera Club / Wikimedia Commons, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Bicycle_on_the_Beach_(49877305071).jpg. Coronado Beach: Ashley / Wikimedia Commons, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Coronado_beach.jpg.
 - **Testskript & Materialien:** Platzhalter: `docs/testskript.md`.
 - **Rohdaten/Auswertung:** Platzhalter: `docs/evaluation-results.md`.

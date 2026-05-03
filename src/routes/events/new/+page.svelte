@@ -9,7 +9,7 @@
 		<div>
 			<p class="eyebrow">Create event</p>
 			<h1>Plan something worth remembering</h1>
-			<p class="lead">Add the plan, location and friends in one workflow.</p>
+			<p class="lead">Add the plan, location and friends in one workflow. Use any city or country for global journeys.</p>
 		</div>
 	</header>
 

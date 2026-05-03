@@ -8,6 +8,7 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"seed": "node scripts/seed.js",
+		"upsert:samples": "node scripts/upsert-sample-events.js",
 		"prepare": "svelte-kit sync || echo ''"
 	},
 	"devDependencies": {

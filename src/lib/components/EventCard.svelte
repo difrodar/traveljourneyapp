@@ -5,6 +5,13 @@
 </script>
 
 <article class="card event-card {event.category?.toLowerCase().replaceAll(' ', '-') || 'default'}">
+	<a class="cover" href="/events/{event.id}" aria-label="Open {event.title}">
+		{#if event.media?.imageUrl}
+			<img src={event.media.imageUrl} alt={event.media.imageAlt || event.title} />
+		{:else}
+			<span>{event.category}</span>
+		{/if}
+	</a>
 	<div class="topline">
 		<span class="category">{event.category}</span>
 		<span class="status {event.status}">{statusLabels[event.status]}</span>
@@ -28,14 +35,16 @@
 	.event-card {
 		position: relative;
 		overflow: hidden;
+		min-height: 210px;
+		padding-top: 0;
 	}
 
 	.event-card::before {
 		content: "";
 		position: absolute;
 		inset: 0 auto 0 0;
-		width: 5px;
-		background: var(--brand);
+		width: 7px;
+		background: var(--palm);
 	}
 
 	.event-card.beach::before {
@@ -48,6 +57,42 @@
 
 	.event-card.party::before {
 		background: var(--rose);
+	}
+
+	.event-card.weekend-trip::before {
+		background: var(--coral);
+	}
+
+	.event-card.culture::before {
+		background: #8b5cf6;
+	}
+
+	.event-card.outdoor::before {
+		background: var(--palm);
+	}
+
+	.cover {
+		display: grid;
+		place-items: center;
+		height: 150px;
+		margin: -18px -18px 16px;
+		background:
+			linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 18%, transparent 18% 100%),
+			linear-gradient(135deg, var(--accent), var(--brand));
+		color: white;
+		font-weight: 900;
+		overflow: hidden;
+	}
+
+	.cover img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.22s ease;
+	}
+
+	.event-card:hover .cover img {
+		transform: scale(1.04);
 	}
 
 	.topline {
@@ -71,7 +116,8 @@
 	.friends span {
 		border-radius: 999px;
 		padding: 5px 9px;
-		background: #f1f5f9;
+		background: #fff1dc;
+		color: #7a3f1d;
 		font-weight: 800;
 		font-size: 0.8rem;
 	}

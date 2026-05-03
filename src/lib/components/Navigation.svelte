@@ -12,8 +12,8 @@
 
 <nav class="nav">
 	<a class="brand" href="/">
-		<span>TripTales</span>
-		<small>San Diego semester planner</small>
+		<span><b>Trip</b>Tales</span>
+		<small>travel planner & world memory map</small>
 	</a>
 	<div class="links">
 		{#each links as link}
@@ -34,16 +34,21 @@
 		justify-content: space-between;
 		gap: 18px;
 		padding: 13px max(16px, calc((100vw - 1180px) / 2));
-		background: rgba(255, 250, 242, 0.9);
+		background: rgba(255, 247, 236, 0.92);
 		backdrop-filter: blur(16px);
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid #edcfaa;
+		box-shadow: 0 8px 24px rgba(126, 75, 38, 0.08);
 	}
 
 	.brand {
 		display: grid;
 		gap: 1px;
 		font-weight: 900;
-		color: #102a2d;
+		color: #43291a;
+	}
+
+	.brand b {
+		color: var(--coral);
 	}
 
 	.brand small {
@@ -60,15 +65,17 @@
 
 	.links a {
 		border-radius: 999px;
-		padding: 8px 12px;
+		padding: 8px 13px;
 		color: var(--muted);
 		font-weight: 800;
+		border: 1px solid transparent;
 	}
 
 	.links a.active,
 	.links a:hover {
-		background: #0f766e;
+		background: linear-gradient(135deg, var(--coral), var(--accent));
 		color: white;
+		box-shadow: 0 8px 20px rgba(231, 95, 67, 0.22);
 	}
 
 	@media (max-width: 760px) {
