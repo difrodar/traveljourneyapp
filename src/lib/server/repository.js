@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { resolveEventMedia, resolveLocationMedia } from "$lib/media.js";
+import { locationMedia, resolveEventMedia, resolveLocationMedia } from "$lib/media.js";
 import { getCollections } from "./db.js";
 
 const fallbackCoordinates = {
@@ -288,6 +288,8 @@ export async function seedIfEmpty() {
 		{
 			title: "Weekend Trip to Los Angeles",
 			location: "Los Angeles",
+			city: "Los Angeles",
+			country: "USA",
 			category: "Weekend Trip",
 			priority: "High",
 			notes: "Plan car rental, Griffith Observatory and Venice Beach.",
@@ -298,6 +300,8 @@ export async function seedIfEmpty() {
 		{
 			title: "Coronado Beach Bike Ride",
 			location: "Coronado Island",
+			city: "Coronado",
+			country: "USA",
 			category: "Outdoor",
 			priority: "Medium",
 			notes: "Go before sunset and bring a camera.",
@@ -541,6 +545,8 @@ export async function createIdeaFromForm(form) {
 	await collections.travelIdeas.insertOne({
 		title: clean(form.get("title")),
 		location: clean(form.get("location")),
+		city: clean(form.get("city")),
+		country: clean(form.get("country")) || "USA",
 		category: clean(form.get("category")),
 		priority: clean(form.get("priority")) || "Medium",
 		notes: clean(form.get("notes")),
@@ -559,17 +565,28 @@ export async function convertIdeaToEvent(id) {
 	const collections = await getCollections();
 	const idea = await collections.travelIdeas.findOne({ _id: oid(id) });
 	if (!idea) throw new Error("Idea not found.");
+	const knownLocationMedia = resolveLocationMedia({
+		name: clean(idea.location),
+		city: clean(idea.city)
+	});
 	const form = new FormData();
 	form.set("title", idea.title);
 	form.set("date", new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
 	form.set("time", "18:00");
 	form.set("locationName", idea.location);
 	form.set("address", "");
-	form.set("city", idea.location === "Los Angeles" ? "Los Angeles" : "San Diego");
-	form.set("country", "USA");
+	form.set("city", clean(idea.city) || clean(idea.location));
+	form.set("country", clean(idea.country) || "USA");
 	form.set("category", idea.category);
 	form.set("description", idea.notes);
 	form.set("friendNames", "");
+	if (!knownLocationMedia) {
+		form.set("imageUrl", locationMedia.travel.imageUrl);
+		form.set("imageAlt", locationMedia.travel.imageAlt);
+		form.set("imageCredit", locationMedia.travel.imageCredit);
+		form.set("imageLicense", locationMedia.travel.imageLicense);
+		form.set("imageSourceUrl", locationMedia.travel.imageSourceUrl);
+	}
 	const eventId = await createEventFromForm(form);
 	await collections.travelIdeas.updateOne(
 		{ _id: oid(id) },

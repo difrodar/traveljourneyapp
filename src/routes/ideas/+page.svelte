@@ -33,6 +33,14 @@
 					<input id="location" name="location" required />
 				</div>
 				<div class="field">
+					<label for="city">City</label>
+					<input id="city" name="city" placeholder="e.g. Tokyo" />
+				</div>
+				<div class="field">
+					<label for="country">Country</label>
+					<input id="country" name="country" value="USA" />
+				</div>
+				<div class="field">
 					<label for="category">Category</label>
 					<select id="category" name="category">
 						{#each data.categories as category}

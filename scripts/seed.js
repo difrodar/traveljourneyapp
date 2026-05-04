@@ -228,6 +228,8 @@ try {
 		{
 			title: "Weekend Trip to Los Angeles",
 			location: "Los Angeles",
+			city: "Los Angeles",
+			country: "USA",
 			category: "Weekend Trip",
 			priority: "High",
 			notes: "Plan transport, Griffith Observatory and Venice Beach.",
@@ -238,6 +240,8 @@ try {
 		{
 			title: "Coronado Beach Bike Ride",
 			location: "Coronado Island",
+			city: "Coronado",
+			country: "USA",
 			category: "Outdoor",
 			priority: "Medium",
 			notes: "Go before sunset and bring a camera.",

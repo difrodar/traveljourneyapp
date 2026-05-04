@@ -9,6 +9,7 @@
 		"preview": "vite preview",
 		"seed": "node scripts/seed.js",
 		"upsert:samples": "node scripts/upsert-sample-events.js",
+		"normalize:idea-media": "node scripts/normalize-converted-idea-media.js",
 		"prepare": "svelte-kit sync || echo ''"
 	},
 	"devDependencies": {

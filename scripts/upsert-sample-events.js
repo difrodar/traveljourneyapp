@@ -152,6 +152,7 @@ try {
 	const events = db.collection("events");
 	const friends = db.collection("friends");
 	const journeyEntries = db.collection("journeyEntries");
+	const travelIdeas = db.collection("travelIdeas");
 
 	const locationIds = new Map();
 
@@ -218,6 +219,15 @@ try {
 			);
 		}
 	}
+
+	await travelIdeas.updateOne(
+		{ title: "Weekend Trip to Los Angeles" },
+		{ $set: { city: "Los Angeles", country: "USA", updatedAt: now } }
+	);
+	await travelIdeas.updateOne(
+		{ title: "Coronado Beach Bike Ride" },
+		{ $set: { city: "Coronado", country: "USA", updatedAt: now } }
+	);
 
 	console.log("Sample events upserted without deleting existing data.");
 } finally {

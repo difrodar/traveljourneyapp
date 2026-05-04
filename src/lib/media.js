@@ -58,6 +58,13 @@ export const locationMedia = {
 		imageLicense: "CC BY-SA 2.0",
 		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:California_Road_Trip_(16570143476).jpg"
 	},
+	travel: {
+		imageUrl: wikimedia("California Road Trip (16570143476).jpg"),
+		imageAlt: "Open road travel scene in California",
+		imageCredit: "moonjazz / Wikimedia Commons",
+		imageLicense: "CC BY-SA 2.0",
+		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:California_Road_Trip_(16570143476).jpg"
+	},
 	"griffith observatory": {
 		imageUrl: wikimedia("Griffith Observatory, Los Angeles 2015-07-19.jpg"),
 		imageAlt: "Griffith Observatory in Los Angeles",
@@ -182,11 +189,11 @@ export const categoryMedia = {
 		imageSourceUrl:
 			"https://commons.wikimedia.org/wiki/File:Rooftop_Bar,_Metropolitan_Museum_Of_Art_(5894065780).jpg"
 	},
-	"weekend trip": locationMedia["los angeles"],
+	"weekend trip": locationMedia.travel,
 	study: locationMedia.london,
 	culture: locationMedia["balboa park"],
 	outdoor: locationMedia.zurich,
-	sightseeing: locationMedia["san francisco"]
+	sightseeing: locationMedia.travel
 };
 
 export const eventMedia = {
@@ -232,6 +239,6 @@ export function resolveEventMedia(event = {}, location = {}) {
 		eventMedia[normalize(event.title)] ||
 		resolveLocationMedia(location) ||
 		categoryMedia[normalize(event.category)] ||
-		categoryMedia.sightseeing
+		locationMedia.travel
 	);
 }

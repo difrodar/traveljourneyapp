@@ -9,7 +9,7 @@
 		<strong>{idea.priority}</strong>
 	</div>
 	<h3>{idea.title}</h3>
-	<p class="muted">{idea.location}</p>
+	<p class="muted">{idea.location} · {idea.city || idea.location}, {idea.country || "USA"}</p>
 	<p>{idea.notes}</p>
 	{#if idea.convertedToEvent}
 		<a class="ghost-button" href="/events/{idea.convertedToEvent}">Open converted event</a>
