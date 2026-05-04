@@ -1,5 +1,6 @@
 <script>
 	import { categories } from "$lib/constants.js";
+	import CityCombobox from "./CityCombobox.svelte";
 	import FriendPicker from "./FriendPicker.svelte";
 
 	let { event = null, action = "?/create", submitLabel = "Save event" } = $props();
@@ -44,22 +45,13 @@
 			<label for="address">Address</label>
 			<input id="address" name="address" value={location.address || ""} />
 		</div>
-		<div class="field">
-			<label for="city">City</label>
-			<input id="city" name="city" value={location.city || "San Diego"} />
-		</div>
-		<div class="field">
-			<label for="country">Country</label>
-			<input id="country" name="country" value={location.country || "USA"} />
-		</div>
-		<div class="field">
-			<label for="lat">Latitude</label>
-			<input id="lat" name="lat" inputmode="decimal" value={location.coordinates?.lat || ""} />
-		</div>
-		<div class="field">
-			<label for="lng">Longitude</label>
-			<input id="lng" name="lng" inputmode="decimal" value={location.coordinates?.lng || ""} />
-		</div>
+		<CityCombobox
+			cityValue={location.city || ""}
+			countryValue={location.country || "USA"}
+			latValue={location.coordinates?.lat || ""}
+			lngValue={location.coordinates?.lng || ""}
+			help="Pick the nearest city so the event appears at the right place on the map."
+		/>
 		<div class="field">
 			<label for="backgroundType">Visual type</label>
 			<input id="backgroundType" name="backgroundType" value={location.backgroundType || ""} placeholder="beach, culture, nightlife" />

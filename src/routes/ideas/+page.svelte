@@ -1,4 +1,5 @@
 <script>
+	import CityCombobox from "$lib/components/CityCombobox.svelte";
 	import TravelIdeaCard from "$lib/components/TravelIdeaCard.svelte";
 
 	let { data, form } = $props();
@@ -32,14 +33,7 @@
 					<label for="location">Location</label>
 					<input id="location" name="location" required />
 				</div>
-				<div class="field">
-					<label for="city">City</label>
-					<input id="city" name="city" placeholder="e.g. Tokyo" />
-				</div>
-				<div class="field">
-					<label for="country">Country</label>
-					<input id="country" name="country" value="USA" />
-				</div>
+				<CityCombobox help="Choose the city for this idea now, so converted events keep the correct map position." />
 				<div class="field">
 					<label for="category">Category</label>
 					<select id="category" name="category">

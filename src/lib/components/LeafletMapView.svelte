@@ -58,8 +58,13 @@
 		let map;
 		import("leaflet")
 			.then(({ default: L }) => {
-				const highlightedLocation = locations.find((location) => location.id === highlightedLocationId);
-				const first = highlightedLocation?.coordinates || locations[0].coordinates || { lat: 32.7157, lng: -117.1611 };
+				const highlightedLocation = locations.find((location) => location.id === highlightedLocationId && location.coordinates);
+				const firstMappedLocation = locations.find((location) => location.coordinates);
+				if (!firstMappedLocation) {
+					failed = true;
+					return;
+				}
+				const first = highlightedLocation?.coordinates || firstMappedLocation.coordinates;
 
 				map = L.map(mapEl, {
 					scrollWheelZoom: false,

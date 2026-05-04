@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { findCityCoordinates } from "$lib/cities.js";
 import { locationMedia, resolveEventMedia, resolveLocationMedia } from "$lib/media.js";
 import { getCollections } from "./db.js";
 
@@ -39,6 +40,13 @@ function clean(value) {
 	return String(value || "").trim();
 }
 
+function parseCoordinate(value) {
+	const text = clean(value);
+	if (!text) return null;
+	const number = Number(text);
+	return Number.isFinite(number) ? number : null;
+}
+
 function serialize(doc) {
 	if (!doc) return null;
 	const copy = { ...doc, id: doc._id.toString() };
@@ -60,13 +68,17 @@ function parseFriendNames(value) {
 		.filter(Boolean);
 }
 
-function defaultCoordinates(name, lat, lng) {
-	const parsedLat = Number(lat);
-	const parsedLng = Number(lng);
-	if (Number.isFinite(parsedLat) && Number.isFinite(parsedLng)) return { lat: parsedLat, lng: parsedLng };
+function defaultCoordinates(name, city, country, lat, lng) {
+	const parsedLat = parseCoordinate(lat);
+	const parsedLng = parseCoordinate(lng);
+	if (parsedLat !== null && parsedLng !== null) return { lat: parsedLat, lng: parsedLng };
+
 	const normalizedName = name.toLowerCase();
 	const partialMatch = Object.entries(fallbackCoordinates).find(([place]) => normalizedName.includes(place));
-	return fallbackCoordinates[normalizedName] || partialMatch?.[1] || { lat: 20, lng: 0 };
+	const locationCoordinates = fallbackCoordinates[normalizedName] || partialMatch?.[1];
+	if (locationCoordinates) return locationCoordinates;
+
+	return findCityCoordinates({ city: city || name, country }) || null;
 }
 
 async function ensureIndexes(collections) {
@@ -408,12 +420,14 @@ async function saveLocationFromForm(form, existingId = null) {
 	const collections = await getCollections();
 	const now = new Date();
 	const name = clean(form.get("locationName"));
+	const city = clean(form.get("city")) || name;
+	const country = clean(form.get("country")) || "USA";
 	const location = {
 		name,
 		address: clean(form.get("address")),
-		city: clean(form.get("city")) || "San Diego",
-		country: clean(form.get("country")) || "USA",
-		coordinates: defaultCoordinates(name, form.get("lat"), form.get("lng")),
+		city,
+		country,
+		coordinates: defaultCoordinates(name, city, country, form.get("lat"), form.get("lng")),
 		backgroundType: clean(form.get("backgroundType")) || clean(form.get("category")).toLowerCase(),
 		imageUrl: clean(form.get("locationImageUrl")),
 		imageAlt: clean(form.get("locationImageAlt")),
@@ -547,6 +561,8 @@ export async function createIdeaFromForm(form) {
 		location: clean(form.get("location")),
 		city: clean(form.get("city")),
 		country: clean(form.get("country")) || "USA",
+		lat: parseCoordinate(form.get("lat")),
+		lng: parseCoordinate(form.get("lng")),
 		category: clean(form.get("category")),
 		priority: clean(form.get("priority")) || "Medium",
 		notes: clean(form.get("notes")),
@@ -577,6 +593,14 @@ export async function convertIdeaToEvent(id) {
 	form.set("address", "");
 	form.set("city", clean(idea.city) || clean(idea.location));
 	form.set("country", clean(idea.country) || "USA");
+	const ideaCoordinates =
+		idea.lat !== null && idea.lat !== undefined && idea.lng !== null && idea.lng !== undefined
+			? { lat: idea.lat, lng: idea.lng }
+			: findCityCoordinates({ city: clean(idea.city) || clean(idea.location), country: clean(idea.country) || "USA" });
+	if (ideaCoordinates) {
+		form.set("lat", String(ideaCoordinates.lat));
+		form.set("lng", String(ideaCoordinates.lng));
+	}
 	form.set("category", idea.category);
 	form.set("description", idea.notes);
 	form.set("friendNames", "");
