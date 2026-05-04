@@ -168,11 +168,11 @@ export const locationMedia = {
 export const categoryMedia = {
 	beach: locationMedia["pacific beach"],
 	food: {
-		imageUrl: wikimedia("Rosarito Beach taco (5768489467).jpg"),
-		imageAlt: "A taco photographed at Rosarito Beach",
-		imageCredit: "Miles Gehm / Wikimedia Commons",
-		imageLicense: "CC BY 2.0",
-		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Rosarito_Beach_taco_(5768489467).jpg"
+		imageUrl: wikimedia("Fish taco-1.jpg"),
+		imageAlt: "Fresh fish tacos with lime and salsa in San Diego",
+		imageCredit: "Leo Chiou / Wikimedia Commons",
+		imageLicense: "CC BY-SA 4.0",
+		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Fish_taco-1.jpg"
 	},
 	party: {
 		imageUrl: wikimedia("Rooftop Bar, Metropolitan Museum Of Art (5894065780).jpg"),
