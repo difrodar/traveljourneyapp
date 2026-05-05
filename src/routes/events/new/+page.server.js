@@ -6,7 +6,12 @@ export const actions = {
 		const form = await request.formData();
 		const errors = validateEventForm(form);
 		if (errors.length) return fail(400, { error: errors.join(" ") });
-		const id = await createEventFromForm(locals.user.id, form);
+		let id;
+		try {
+			id = await createEventFromForm(locals.user.id, form);
+		} catch (error) {
+			return fail(400, { error: error.message });
+		}
 		throw redirect(303, `/events/${id}`);
 	}
 };

@@ -3,6 +3,9 @@ import { findCityCoordinates } from "$lib/cities.js";
 import { locationMedia, resolveEventMedia, resolveLocationMedia } from "$lib/media.js";
 import { getCollections } from "./db.js";
 
+const maxUploadBytes = 2 * 1024 * 1024;
+const allowedUploadTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+
 const fallbackCoordinates = {
 	"la jolla cove": { lat: 32.8507, lng: -117.2729 },
 	"balboa park": { lat: 32.7341, lng: -117.1446 },
@@ -74,6 +77,48 @@ function parseFriendNames(value) {
 		.split(",")
 		.map((name) => name.trim())
 		.filter(Boolean);
+}
+
+function hasUploadedFile(value) {
+	return value && typeof value === "object" && typeof value.arrayBuffer === "function" && value.size > 0;
+}
+
+async function uploadedImageFields(form, fieldName, clearFieldName, existing = {}, altFallback = "Uploaded image") {
+	const file = form.get(fieldName);
+	if (hasUploadedFile(file)) {
+		if (!allowedUploadTypes.has(file.type)) {
+			throw new Error("Please upload a JPG, PNG, WebP or GIF image.");
+		}
+		if (file.size > maxUploadBytes) {
+			throw new Error("Image uploads must be 2 MB or smaller.");
+		}
+		const buffer = Buffer.from(await file.arrayBuffer());
+		return {
+			imageUrl: `data:${file.type};base64,${buffer.toString("base64")}`,
+			imageAlt: altFallback,
+			imageCredit: "",
+			imageLicense: "",
+			imageSourceUrl: ""
+		};
+	}
+
+	if (form.get(clearFieldName)) {
+		return {
+			imageUrl: "",
+			imageAlt: "",
+			imageCredit: "",
+			imageLicense: "",
+			imageSourceUrl: ""
+		};
+	}
+
+	return {
+		imageUrl: existing.imageUrl || clean(form.get("imageUrl")),
+		imageAlt: existing.imageAlt || clean(form.get("imageAlt")),
+		imageCredit: existing.imageCredit || clean(form.get("imageCredit")),
+		imageLicense: existing.imageLicense || clean(form.get("imageLicense")),
+		imageSourceUrl: existing.imageSourceUrl || clean(form.get("imageSourceUrl"))
+	};
 }
 
 function defaultCoordinates(name, city, country, lat, lng) {
@@ -495,9 +540,11 @@ async function saveLocationFromForm(userId, form, existingId = null) {
 	return (await collections.locations.insertOne({ ...location, createdAt: now })).insertedId;
 }
 
-function eventPayloadFromForm(userId, form, locationId, friendIds) {
+async function eventPayloadFromForm(userId, form, locationId, friendIds, existing = {}) {
+	const title = clean(form.get("title"));
+	const imageFields = await uploadedImageFields(form, "eventImageFile", "clearEventImage", existing, title);
 	return {
-		title: clean(form.get("title")),
+		title,
 		userId: userOid(userId),
 		date: clean(form.get("date")),
 		time: clean(form.get("time")),
@@ -506,11 +553,7 @@ function eventPayloadFromForm(userId, form, locationId, friendIds) {
 		description: clean(form.get("description")),
 		status: clean(form.get("status")) === "completed" ? "completed" : "planned",
 		friendIds,
-		imageUrl: clean(form.get("imageUrl")),
-		imageAlt: clean(form.get("imageAlt")),
-		imageCredit: clean(form.get("imageCredit")),
-		imageLicense: clean(form.get("imageLicense")),
-		imageSourceUrl: clean(form.get("imageSourceUrl")),
+		...imageFields,
 		updatedAt: new Date()
 	};
 }
@@ -520,7 +563,7 @@ export async function createEventFromForm(userId, form) {
 	const friendIds = await ensureFriends(userId, parseFriendNames(form.get("friendNames")));
 	const locationId = await saveLocationFromForm(userId, form);
 	const result = await collections.events.insertOne({
-		...eventPayloadFromForm(userId, form, locationId, friendIds),
+		...(await eventPayloadFromForm(userId, form, locationId, friendIds)),
 		createdAt: new Date()
 	});
 	return result.insertedId.toString();
@@ -535,7 +578,7 @@ export async function updateEventFromForm(userId, id, form) {
 	const locationId = await saveLocationFromForm(ownerId, form, event.locationId?.toString());
 	await collections.events.updateOne(
 		{ userId: ownerId, _id: oid(id) },
-		{ $set: eventPayloadFromForm(ownerId, form, locationId, friendIds) }
+		{ $set: await eventPayloadFromForm(ownerId, form, locationId, friendIds, event) }
 	);
 }
 
@@ -554,6 +597,14 @@ export async function completeEventFromForm(userId, id, form) {
 	const ownerId = userOid(userId);
 	const eventId = oid(id);
 	const now = new Date();
+	const existingEntry = await collections.journeyEntries.findOne({ userId: ownerId, eventId });
+	const memoryImageFields = await uploadedImageFields(
+		form,
+		"memoryImageFile",
+		"clearMemoryImage",
+		existingEntry || {},
+		"Journey memory photo"
+	);
 	await collections.events.updateOne({ userId: ownerId, _id: eventId }, { $set: { status: "completed", updatedAt: now } });
 	await collections.journeyEntries.findOneAndUpdate(
 		{ userId: ownerId, eventId },
@@ -561,7 +612,7 @@ export async function completeEventFromForm(userId, id, form) {
 			$set: {
 				rating: Number(form.get("rating") || 0),
 				memoryText: clean(form.get("memoryText")),
-				imageUrl: clean(form.get("imageUrl")),
+				imageUrl: memoryImageFields.imageUrl,
 				updatedAt: now
 			},
 			$setOnInsert: { userId: ownerId, eventId, createdAt: now }

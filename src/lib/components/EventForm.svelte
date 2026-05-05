@@ -7,7 +7,7 @@
 	const location = $derived(event?.location || {});
 </script>
 
-<form class="panel" method="POST" action={action}>
+<form class="panel" method="POST" action={action} enctype="multipart/form-data">
 	<div class="form-grid">
 		<div class="field">
 			<label for="title">Title</label>
@@ -62,27 +62,17 @@
 		</div>
 		<div class="field full media-fields">
 			<h3>Event image optional</h3>
-			<p class="muted">Leave empty to use the automatic TripTales image for this location or category.</p>
-		</div>
-		<div class="field">
-			<label for="imageUrl">Event image URL</label>
-			<input id="imageUrl" name="imageUrl" value={event?.imageUrl || ""} />
-		</div>
-		<div class="field">
-			<label for="imageAlt">Event image alt text</label>
-			<input id="imageAlt" name="imageAlt" value={event?.imageAlt || ""} />
-		</div>
-		<div class="field">
-			<label for="imageCredit">Image credit</label>
-			<input id="imageCredit" name="imageCredit" value={event?.imageCredit || ""} />
-		</div>
-		<div class="field">
-			<label for="imageLicense">Image license</label>
-			<input id="imageLicense" name="imageLicense" value={event?.imageLicense || ""} />
+			<p class="muted">Upload a JPG, PNG, WebP or GIF up to 2 MB.</p>
 		</div>
 		<div class="field full">
-			<label for="imageSourceUrl">Image source URL</label>
-			<input id="imageSourceUrl" name="imageSourceUrl" value={event?.imageSourceUrl || ""} />
+			<label for="eventImageFile">Event image</label>
+			<input id="eventImageFile" name="eventImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+			{#if event?.imageUrl}
+				<label class="checkbox-field">
+					<input name="clearEventImage" type="checkbox" value="true" />
+					<span>Remove current event image</span>
+				</label>
+			{/if}
 		</div>
 		<input type="hidden" name="locationImageUrl" value={location.imageUrl || ""} />
 		<input type="hidden" name="locationImageAlt" value={location.imageAlt || ""} />
@@ -121,5 +111,18 @@
 
 	.media-fields h3 {
 		margin-bottom: 4px;
+	}
+
+	.checkbox-field {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 8px;
+		color: var(--muted);
+		font-weight: 800;
+	}
+
+	.checkbox-field input {
+		width: auto;
 	}
 </style>

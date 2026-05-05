@@ -18,7 +18,11 @@ export const actions = {
 		const form = await request.formData();
 		const errors = validateEventForm(form);
 		if (errors.length) return fail(400, { error: errors.join(" ") });
-		await updateEventFromForm(locals.user.id, params.id, form);
+		try {
+			await updateEventFromForm(locals.user.id, params.id, form);
+		} catch (error) {
+			return fail(400, { error: error.message });
+		}
 		return { message: "Event updated." };
 	},
 	complete: async ({ locals, params, request }) => {
@@ -26,7 +30,11 @@ export const actions = {
 		if (!String(form.get("memoryText") || "").trim()) {
 			return fail(400, { error: "Memory text is required when completing an event." });
 		}
-		await completeEventFromForm(locals.user.id, params.id, form);
+		try {
+			await completeEventFromForm(locals.user.id, params.id, form);
+		} catch (error) {
+			return fail(400, { error: error.message });
+		}
 		return { message: "Journey memory saved." };
 	},
 	delete: async ({ locals, params }) => {

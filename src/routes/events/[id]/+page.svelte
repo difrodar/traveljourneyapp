@@ -137,7 +137,7 @@
 					<div>
 						<p class="eyebrow">Photos</p>
 						<h2>Event image collection</h2>
-						<p class="muted">Prepared for future uploads. For now TripTales shows the available event, location and memory images.</p>
+						<p class="muted">Uploaded event and memory images appear here together with automatic location images.</p>
 					</div>
 					<div class="photo-grid">
 						{#each gallery as photo}
@@ -174,7 +174,7 @@
 					<p class="eyebrow">After the event</p>
 					<h2>Journey memory</h2>
 					<p class="muted">Add a personal rating and memory once the event has happened.</p>
-					<form class="memory-form" method="POST" action="?/complete">
+					<form class="memory-form" method="POST" action="?/complete" enctype="multipart/form-data">
 						<div class="field">
 							<span class="field-label">Your rating</span>
 							<RatingInput value={event.journeyEntry?.rating || 4} />
@@ -184,8 +184,14 @@
 							<textarea id="memoryText" name="memoryText" required>{event.journeyEntry?.memoryText || ""}</textarea>
 						</div>
 						<div class="field">
-							<label for="memoryImageUrl">Memory image URL optional</label>
-							<input id="memoryImageUrl" name="imageUrl" value={event.journeyEntry?.imageUrl || ""} />
+							<label for="memoryImageFile">Memory image optional</label>
+							<input id="memoryImageFile" name="memoryImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+							{#if event.journeyEntry?.imageUrl}
+								<label class="checkbox-field">
+									<input name="clearMemoryImage" type="checkbox" value="true" />
+									<span>Remove current memory image</span>
+								</label>
+							{/if}
 						</div>
 						<button class="button" type="submit">Save memory</button>
 					</form>
@@ -558,6 +564,19 @@
 		margin: 8px 0 0;
 		color: #51453d;
 		line-height: 1.55;
+	}
+
+	.checkbox-field {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 8px;
+		color: var(--muted);
+		font-weight: 800;
+	}
+
+	.checkbox-field input {
+		width: auto;
 	}
 
 	.section-heading h2,
