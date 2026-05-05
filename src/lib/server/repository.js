@@ -36,6 +36,14 @@ function oid(id) {
 	return id && ObjectId.isValid(id) ? new ObjectId(id) : null;
 }
 
+function userOid(userId) {
+	if (userId instanceof ObjectId) return userId;
+	const id = typeof userId === "object" ? userId?.id || userId?._id : userId;
+	const objectId = oid(id);
+	if (!objectId) throw new Error("Authenticated user is missing.");
+	return objectId;
+}
+
 function clean(value) {
 	return String(value || "").trim();
 }
@@ -82,19 +90,24 @@ function defaultCoordinates(name, city, country, lat, lng) {
 }
 
 async function ensureIndexes(collections) {
+	const friendIndexes = await collections.friends.indexes();
+	const globalFriendIndex = friendIndexes.find(
+		(index) => index.name === "name_1" && index.unique && index.key?.name === 1 && !index.key?.userId
+	);
+	if (globalFriendIndex) await collections.friends.dropIndex(globalFriendIndex.name);
+
 	await Promise.all([
-		collections.events.createIndex({ date: 1 }),
-		collections.locations.createIndex({ name: 1, city: 1 }),
-		collections.friends.createIndex({ name: 1 }, { unique: true }),
-		collections.journeyEntries.createIndex({ eventId: 1 }, { unique: true }),
-		collections.travelIdeas.createIndex({ priority: 1 })
+		collections.events.createIndex({ userId: 1, date: 1 }),
+		collections.locations.createIndex({ userId: 1, name: 1, city: 1 }),
+		collections.friends.createIndex({ userId: 1, name: 1 }, { unique: true }),
+		collections.journeyEntries.createIndex({ userId: 1, eventId: 1 }, { unique: true }),
+		collections.travelIdeas.createIndex({ userId: 1, priority: 1 })
 	]);
 }
 
-export async function seedIfEmpty() {
+async function seedDemoData(userId) {
 	const collections = await getCollections();
-	await ensureIndexes(collections);
-	if ((await collections.events.countDocuments()) > 0) return;
+	const ownerId = userOid(userId);
 
 	const now = new Date();
 	const locations = [
@@ -130,6 +143,7 @@ export async function seedIfEmpty() {
 		["Central Park", "Central Park", "New York City", "weekend trip", fallbackCoordinates["central park"], "USA"]
 	].map(([name, address, city, backgroundType, coordinates, country = "USA"]) => ({
 		name,
+		userId: ownerId,
 		address,
 		city,
 		country,
@@ -146,6 +160,7 @@ export async function seedIfEmpty() {
 			await collections.friends.insertMany(
 				["Mia", "Noah", "Ava", "Luca", "Sofia"].map((name) => ({
 					name,
+					userId: ownerId,
 					invitationStatus: "invited",
 					createdAt: now,
 					updatedAt: now
@@ -159,6 +174,7 @@ export async function seedIfEmpty() {
 			await collections.events.insertMany([
 				{
 					title: "Sunset Picnic at La Jolla",
+					userId: ownerId,
 					date: "2026-05-18",
 					time: "18:30",
 					locationId: locationIds[0],
@@ -171,6 +187,7 @@ export async function seedIfEmpty() {
 				},
 				{
 					title: "Balboa Park Museum Day",
+					userId: ownerId,
 					date: "2026-04-21",
 					time: "11:00",
 					locationId: locationIds[1],
@@ -183,6 +200,7 @@ export async function seedIfEmpty() {
 				},
 				{
 					title: "Taco Tuesday in Pacific Beach",
+					userId: ownerId,
 					date: "2026-05-07",
 					time: "19:00",
 					locationId: locationIds[2],
@@ -195,6 +213,7 @@ export async function seedIfEmpty() {
 				},
 				{
 					title: "Gaslamp Rooftop Night",
+					userId: ownerId,
 					date: "2026-04-12",
 					time: "21:30",
 					locationId: locationIds[3],
@@ -207,6 +226,7 @@ export async function seedIfEmpty() {
 				},
 				{
 					title: "Weekend Trip to Los Angeles",
+					userId: ownerId,
 					date: "2026-06-07",
 					time: "07:30",
 					locationId: locationIds[4],
@@ -219,6 +239,7 @@ export async function seedIfEmpty() {
 				},
 				{
 					title: "Day Trip to Tijuana",
+					userId: ownerId,
 					date: "2026-06-01",
 					time: "10:00",
 					locationId: locationIds[5],
@@ -231,6 +252,7 @@ export async function seedIfEmpty() {
 				},
 				{
 					title: "Denver Mountain Weekend",
+					userId: ownerId,
 					date: "2026-06-14",
 					time: "08:00",
 					locationId: locationIds[6],
@@ -243,6 +265,7 @@ export async function seedIfEmpty() {
 				},
 				{
 					title: "Golden Gate Photo Walk",
+					userId: ownerId,
 					date: "2026-04-28",
 					time: "16:30",
 					locationId: locationIds[7],
@@ -255,6 +278,7 @@ export async function seedIfEmpty() {
 				},
 				{
 					title: "Weekend Trip to NYC",
+					userId: ownerId,
 					date: "2026-07-03",
 					time: "07:00",
 					locationId: locationIds[8],
@@ -271,6 +295,7 @@ export async function seedIfEmpty() {
 
 	await collections.journeyEntries.insertMany([
 		{
+			userId: ownerId,
 			eventId: eventIds[1],
 			rating: 5,
 			memoryText: "Balboa Park felt like a whole day of tiny discoveries. The botanical building was the highlight.",
@@ -279,6 +304,7 @@ export async function seedIfEmpty() {
 			updatedAt: now
 		},
 		{
+			userId: ownerId,
 			eventId: eventIds[3],
 			rating: 4,
 			memoryText: "Great skyline view, lots of new people, and one of the first nights where San Diego felt familiar.",
@@ -287,6 +313,7 @@ export async function seedIfEmpty() {
 			updatedAt: now
 		},
 		{
+			userId: ownerId,
 			eventId: eventIds[7],
 			rating: 5,
 			memoryText: "The Golden Gate walk made the journey feel bigger than San Diego. Fog, wind and a lot of photos.",
@@ -299,6 +326,7 @@ export async function seedIfEmpty() {
 	await collections.travelIdeas.insertMany([
 		{
 			title: "Weekend Trip to Los Angeles",
+			userId: ownerId,
 			location: "Los Angeles",
 			city: "Los Angeles",
 			country: "USA",
@@ -311,6 +339,7 @@ export async function seedIfEmpty() {
 		},
 		{
 			title: "Coronado Beach Bike Ride",
+			userId: ownerId,
 			location: "Coronado Island",
 			city: "Coronado",
 			country: "USA",
@@ -324,15 +353,32 @@ export async function seedIfEmpty() {
 	]);
 }
 
-async function hydrateEvents(events) {
+export async function initializeUserData(defaultUserId) {
 	const collections = await getCollections();
+	const ownerId = userOid(defaultUserId);
+	await ensureIndexes(collections);
+	await Promise.all([
+		collections.events.updateMany({ userId: { $exists: false } }, { $set: { userId: ownerId } }),
+		collections.locations.updateMany({ userId: { $exists: false } }, { $set: { userId: ownerId } }),
+		collections.friends.updateMany({ userId: { $exists: false } }, { $set: { userId: ownerId } }),
+		collections.journeyEntries.updateMany({ userId: { $exists: false } }, { $set: { userId: ownerId } }),
+		collections.travelIdeas.updateMany({ userId: { $exists: false } }, { $set: { userId: ownerId } })
+	]);
+	if ((await collections.events.countDocuments({})) === 0) {
+		await seedDemoData(ownerId);
+	}
+}
+
+async function hydrateEvents(events, userId) {
+	const collections = await getCollections();
+	const ownerId = userOid(userId);
 	const locationIds = events.map((event) => event.locationId).filter(Boolean);
 	const friendIds = events.flatMap((event) => event.friendIds || []).filter(Boolean);
 	const eventIds = events.map((event) => event._id);
 	const [locations, friends, journeyEntries] = await Promise.all([
-		collections.locations.find({ _id: { $in: locationIds } }).toArray(),
-		collections.friends.find({ _id: { $in: friendIds } }).toArray(),
-		collections.journeyEntries.find({ eventId: { $in: eventIds } }).toArray()
+		collections.locations.find({ userId: ownerId, _id: { $in: locationIds } }).toArray(),
+		collections.friends.find({ userId: ownerId, _id: { $in: friendIds } }).toArray(),
+		collections.journeyEntries.find({ userId: ownerId, eventId: { $in: eventIds } }).toArray()
 	]);
 	const locationMap = new Map(locations.map((location) => [location._id.toString(), serialize(location)]));
 	const friendMap = new Map(friends.map((friend) => [friend._id.toString(), serialize(friend)]));
@@ -351,19 +397,19 @@ async function hydrateEvents(events) {
 	});
 }
 
-export async function listEvents(filters = {}) {
-	await seedIfEmpty();
+export async function listEvents(userId, filters = {}) {
 	const collections = await getCollections();
-	const query = {};
+	const ownerId = userOid(userId);
+	const query = { userId: ownerId };
 	if (filters.status && filters.status !== "all") query.status = filters.status;
 	if (filters.category && filters.category !== "all") query.category = filters.category;
 	if (filters.search) query.title = { $regex: filters.search, $options: "i" };
 	const direction = filters.sort === "desc" ? -1 : 1;
-	return hydrateEvents(await collections.events.find(query).sort({ date: direction, time: direction }).toArray());
+	return hydrateEvents(await collections.events.find(query).sort({ date: direction, time: direction }).toArray(), ownerId);
 }
 
-export async function getDashboardData() {
-	const events = await listEvents({ sort: "asc" });
+export async function getDashboardData(userId) {
+	const events = await listEvents(userId, { sort: "asc" });
 	const completed = events.filter((event) => event.status === "completed");
 	const planned = events.filter((event) => event.status === "planned");
 	const ratings = completed.map((event) => event.journeyEntry?.rating).filter(Boolean);
@@ -375,21 +421,21 @@ export async function getDashboardData() {
 		journeyHighlights: completed.slice(0, 3),
 		stats: {
 			events: events.length,
-			locations: (await listLocations()).length,
+			locations: (await listLocations(userId)).length,
 			averageRating,
-			ideas: (await listIdeas()).length
+			ideas: (await listIdeas(userId)).length
 		}
 	};
 }
 
-export async function getEvent(id) {
-	await seedIfEmpty();
+export async function getEvent(userId, id) {
 	const eventId = oid(id);
 	if (!eventId) return null;
 	const collections = await getCollections();
-	const event = await collections.events.findOne({ _id: eventId });
+	const ownerId = userOid(userId);
+	const event = await collections.events.findOne({ userId: ownerId, _id: eventId });
 	if (!event) return null;
-	const [hydrated] = await hydrateEvents([event]);
+	const [hydrated] = await hydrateEvents([event], ownerId);
 	return hydrated;
 }
 
@@ -401,14 +447,18 @@ export function validateEventForm(form) {
 	return errors;
 }
 
-async function ensureFriends(names) {
+async function ensureFriends(userId, names) {
 	const collections = await getCollections();
+	const ownerId = userOid(userId);
 	const ids = [];
 	for (const name of names) {
 		const now = new Date();
 		const result = await collections.friends.findOneAndUpdate(
-			{ name },
-			{ $setOnInsert: { name, invitationStatus: "invited", createdAt: now }, $set: { updatedAt: now } },
+			{ userId: ownerId, name },
+			{
+				$setOnInsert: { userId: ownerId, name, invitationStatus: "invited", createdAt: now },
+				$set: { updatedAt: now }
+			},
 			{ upsert: true, returnDocument: "after" }
 		);
 		ids.push(result._id);
@@ -416,14 +466,16 @@ async function ensureFriends(names) {
 	return ids;
 }
 
-async function saveLocationFromForm(form, existingId = null) {
+async function saveLocationFromForm(userId, form, existingId = null) {
 	const collections = await getCollections();
+	const ownerId = userOid(userId);
 	const now = new Date();
 	const name = clean(form.get("locationName"));
 	const city = clean(form.get("city")) || name;
 	const country = clean(form.get("country")) || "USA";
 	const location = {
 		name,
+		userId: ownerId,
 		address: clean(form.get("address")),
 		city,
 		country,
@@ -437,15 +489,16 @@ async function saveLocationFromForm(form, existingId = null) {
 		updatedAt: now
 	};
 	if (existingId && oid(existingId)) {
-		await collections.locations.updateOne({ _id: oid(existingId) }, { $set: location });
+		await collections.locations.updateOne({ userId: ownerId, _id: oid(existingId) }, { $set: location });
 		return oid(existingId);
 	}
 	return (await collections.locations.insertOne({ ...location, createdAt: now })).insertedId;
 }
 
-function eventPayloadFromForm(form, locationId, friendIds) {
+function eventPayloadFromForm(userId, form, locationId, friendIds) {
 	return {
 		title: clean(form.get("title")),
+		userId: userOid(userId),
 		date: clean(form.get("date")),
 		time: clean(form.get("time")),
 		locationId,
@@ -462,42 +515,48 @@ function eventPayloadFromForm(form, locationId, friendIds) {
 	};
 }
 
-export async function createEventFromForm(form) {
+export async function createEventFromForm(userId, form) {
 	const collections = await getCollections();
-	const friendIds = await ensureFriends(parseFriendNames(form.get("friendNames")));
-	const locationId = await saveLocationFromForm(form);
+	const friendIds = await ensureFriends(userId, parseFriendNames(form.get("friendNames")));
+	const locationId = await saveLocationFromForm(userId, form);
 	const result = await collections.events.insertOne({
-		...eventPayloadFromForm(form, locationId, friendIds),
+		...eventPayloadFromForm(userId, form, locationId, friendIds),
 		createdAt: new Date()
 	});
 	return result.insertedId.toString();
 }
 
-export async function updateEventFromForm(id, form) {
+export async function updateEventFromForm(userId, id, form) {
 	const collections = await getCollections();
-	const event = await collections.events.findOne({ _id: oid(id) });
+	const ownerId = userOid(userId);
+	const event = await collections.events.findOne({ userId: ownerId, _id: oid(id) });
 	if (!event) throw new Error("Event not found.");
-	const friendIds = await ensureFriends(parseFriendNames(form.get("friendNames")));
-	const locationId = await saveLocationFromForm(form, event.locationId?.toString());
-	await collections.events.updateOne({ _id: oid(id) }, { $set: eventPayloadFromForm(form, locationId, friendIds) });
+	const friendIds = await ensureFriends(ownerId, parseFriendNames(form.get("friendNames")));
+	const locationId = await saveLocationFromForm(ownerId, form, event.locationId?.toString());
+	await collections.events.updateOne(
+		{ userId: ownerId, _id: oid(id) },
+		{ $set: eventPayloadFromForm(ownerId, form, locationId, friendIds) }
+	);
 }
 
-export async function deleteEvent(id) {
+export async function deleteEvent(userId, id) {
 	const collections = await getCollections();
+	const ownerId = userOid(userId);
 	const eventId = oid(id);
 	await Promise.all([
-		collections.events.deleteOne({ _id: eventId }),
-		collections.journeyEntries.deleteOne({ eventId })
+		collections.events.deleteOne({ userId: ownerId, _id: eventId }),
+		collections.journeyEntries.deleteOne({ userId: ownerId, eventId })
 	]);
 }
 
-export async function completeEventFromForm(id, form) {
+export async function completeEventFromForm(userId, id, form) {
 	const collections = await getCollections();
+	const ownerId = userOid(userId);
 	const eventId = oid(id);
 	const now = new Date();
-	await collections.events.updateOne({ _id: eventId }, { $set: { status: "completed", updatedAt: now } });
+	await collections.events.updateOne({ userId: ownerId, _id: eventId }, { $set: { status: "completed", updatedAt: now } });
 	await collections.journeyEntries.findOneAndUpdate(
-		{ eventId },
+		{ userId: ownerId, eventId },
 		{
 			$set: {
 				rating: Number(form.get("rating") || 0),
@@ -505,24 +564,24 @@ export async function completeEventFromForm(id, form) {
 				imageUrl: clean(form.get("imageUrl")),
 				updatedAt: now
 			},
-			$setOnInsert: { eventId, createdAt: now }
+			$setOnInsert: { userId: ownerId, eventId, createdAt: now }
 		},
 		{ upsert: true }
 	);
 }
 
-export async function listJourneyEntries(filters = {}) {
-	const events = await listEvents({ status: "completed", sort: "desc", category: filters.category });
+export async function listJourneyEntries(userId, filters = {}) {
+	const events = await listEvents(userId, { status: "completed", sort: "desc", category: filters.category });
 	const minRating = Number(filters.minRating || 0);
 	return events.filter((event) => event.journeyEntry && Number(event.journeyEntry.rating || 0) >= minRating);
 }
 
-export async function listLocations() {
-	await seedIfEmpty();
+export async function listLocations(userId) {
 	const collections = await getCollections();
+	const ownerId = userOid(userId);
 	const [locations, events] = await Promise.all([
-		collections.locations.find({}).sort({ name: 1 }).toArray(),
-		listEvents({})
+		collections.locations.find({ userId: ownerId }).sort({ name: 1 }).toArray(),
+		listEvents(ownerId, {})
 	]);
 	return locations.map((location) => {
 		const serialized = serialize(location);
@@ -534,8 +593,8 @@ export async function listLocations() {
 	});
 }
 
-export async function listMapLocations() {
-	const locations = await listLocations();
+export async function listMapLocations(userId) {
+	const locations = await listLocations(userId);
 	return locations
 		.filter((location) => location.events.length > 0)
 		.sort((a, b) => {
@@ -547,17 +606,18 @@ export async function listMapLocations() {
 		});
 }
 
-export async function listIdeas() {
-	await seedIfEmpty();
+export async function listIdeas(userId) {
 	const collections = await getCollections();
-	return (await collections.travelIdeas.find({}).sort({ createdAt: -1 }).toArray()).map(serialize);
+	return (await collections.travelIdeas.find({ userId: userOid(userId) }).sort({ createdAt: -1 }).toArray()).map(serialize);
 }
 
-export async function createIdeaFromForm(form) {
+export async function createIdeaFromForm(userId, form) {
 	const collections = await getCollections();
+	const ownerId = userOid(userId);
 	const now = new Date();
 	await collections.travelIdeas.insertOne({
 		title: clean(form.get("title")),
+		userId: ownerId,
 		location: clean(form.get("location")),
 		city: clean(form.get("city")),
 		country: clean(form.get("country")) || "USA",
@@ -572,14 +632,15 @@ export async function createIdeaFromForm(form) {
 	});
 }
 
-export async function deleteIdea(id) {
+export async function deleteIdea(userId, id) {
 	const collections = await getCollections();
-	await collections.travelIdeas.deleteOne({ _id: oid(id) });
+	await collections.travelIdeas.deleteOne({ userId: userOid(userId), _id: oid(id) });
 }
 
-export async function convertIdeaToEvent(id) {
+export async function convertIdeaToEvent(userId, id) {
 	const collections = await getCollections();
-	const idea = await collections.travelIdeas.findOne({ _id: oid(id) });
+	const ownerId = userOid(userId);
+	const idea = await collections.travelIdeas.findOne({ userId: ownerId, _id: oid(id) });
 	if (!idea) throw new Error("Idea not found.");
 	const knownLocationMedia = resolveLocationMedia({
 		name: clean(idea.location),
@@ -611,9 +672,9 @@ export async function convertIdeaToEvent(id) {
 		form.set("imageLicense", locationMedia.travel.imageLicense);
 		form.set("imageSourceUrl", locationMedia.travel.imageSourceUrl);
 	}
-	const eventId = await createEventFromForm(form);
+	const eventId = await createEventFromForm(ownerId, form);
 	await collections.travelIdeas.updateOne(
-		{ _id: oid(id) },
+		{ userId: ownerId, _id: oid(id) },
 		{ $set: { convertedToEvent: eventId, updatedAt: new Date() } }
 	);
 	return eventId;

@@ -1,9 +1,9 @@
 import { listMapLocations } from "$lib/server/repository.js";
 
-export async function load({ url }) {
+export async function load({ locals, url }) {
 	try {
 		return {
-			locations: await listMapLocations(),
+			locations: await listMapLocations(locals.user.id),
 			highlightedEventId: url.searchParams.get("event") || "",
 			setupError: ""
 		};

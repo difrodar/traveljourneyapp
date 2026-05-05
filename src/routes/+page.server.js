@@ -1,8 +1,8 @@
 import { getDashboardData } from "$lib/server/repository.js";
 
-export async function load() {
+export async function load({ locals }) {
 	try {
-		return { ...(await getDashboardData()), setupError: "" };
+		return { ...(await getDashboardData(locals.user.id)), setupError: "" };
 	} catch (error) {
 		return {
 			setupError: error.message,

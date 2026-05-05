@@ -4,8 +4,8 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	import { page } from '$app/state';
 
-	let { children } = $props();
-	const hideNavigation = $derived(/^\/events\/(?!new(?:\/|$))[^/]+$/.test(page.url.pathname));
+	let { children, data } = $props();
+	const hideNavigation = $derived(page.url.pathname === "/login" || /^\/events\/(?!new(?:\/|$))[^/]+$/.test(page.url.pathname));
 </script>
 
 <svelte:head>
@@ -13,6 +13,6 @@
 </svelte:head>
 
 {#if !hideNavigation}
-	<Navigation />
+	<Navigation user={data.user} />
 {/if}
 {@render children()}

@@ -1,6 +1,8 @@
 <script>
 	import { page } from "$app/state";
 
+	let { user } = $props();
+
 	const links = [
 		{ href: "/", label: "Dashboard" },
 		{ href: "/events", label: "Events" },
@@ -21,6 +23,12 @@
 				{link.label}
 			</a>
 		{/each}
+		{#if user}
+			<span class="user-pill">{user.username}</span>
+			<form method="POST" action="/logout">
+				<button class="logout-button" type="submit">Logout</button>
+			</form>
+		{/if}
 	</div>
 </nav>
 
@@ -60,10 +68,13 @@
 	.links {
 		display: flex;
 		flex-wrap: wrap;
+		align-items: center;
 		gap: 7px;
 	}
 
-	.links a {
+	.links a,
+	.logout-button,
+	.user-pill {
 		border-radius: 999px;
 		padding: 8px 13px;
 		color: var(--muted);
@@ -71,8 +82,24 @@
 		border: 1px solid transparent;
 	}
 
+	.links form {
+		margin: 0;
+	}
+
+	.logout-button {
+		background: #fff7ec;
+		border-color: var(--line);
+	}
+
+	.user-pill {
+		background: #edf8e9;
+		border-color: #b8dfad;
+		color: #2f6f35;
+	}
+
 	.links a.active,
-	.links a:hover {
+	.links a:hover,
+	.logout-button:hover {
 		background: linear-gradient(135deg, var(--coral), var(--accent));
 		color: white;
 		box-shadow: 0 8px 20px rgba(231, 95, 67, 0.22);
