@@ -2,6 +2,11 @@
 	import JourneyCard from "$lib/components/JourneyCard.svelte";
 
 	let { data } = $props();
+	let filterForm;
+
+	function submitFilters() {
+		filterForm?.requestSubmit();
+	}
 </script>
 
 <main class="page-shell">
@@ -17,14 +22,14 @@
 		<div class="message error">{data.setupError}</div>
 	{/if}
 
-	<form class="panel filters" method="GET">
-		<select name="category">
+	<form class="panel filters" method="GET" bind:this={filterForm}>
+		<select name="category" onchange={submitFilters}>
 			<option value="all" selected={data.filters.category === "all"}>All categories</option>
 			{#each data.categories as category}
 				<option value={category} selected={data.filters.category === category}>{category}</option>
 			{/each}
 		</select>
-		<select name="minRating">
+		<select name="minRating" onchange={submitFilters}>
 			<option value="0" selected={data.filters.minRating === "0"}>Any rating</option>
 			<option value="3" selected={data.filters.minRating === "3"}>3+ stars</option>
 			<option value="4" selected={data.filters.minRating === "4"}>4+ stars</option>
@@ -32,24 +37,23 @@
 		</select>
 		<label class="filter-field">
 			<span>From</span>
-			<input type="date" name="from" value={data.filters.from} />
+			<input type="date" name="from" value={data.filters.from} onchange={submitFilters} />
 		</label>
 		<label class="filter-field">
 			<span>To</span>
-			<input type="date" name="to" value={data.filters.to} />
+			<input type="date" name="to" value={data.filters.to} onchange={submitFilters} />
 		</label>
-		<select name="sort">
+		<select name="sort" onchange={submitFilters}>
 			<option value="dateDesc" selected={data.filters.sort === "dateDesc" || data.filters.sort === "desc"}>Newest memories first</option>
 			<option value="dateAsc" selected={data.filters.sort === "dateAsc" || data.filters.sort === "asc"}>Oldest first</option>
 			<option value="ratingDesc" selected={data.filters.sort === "ratingDesc"}>Highest rated</option>
 			<option value="ratingAsc" selected={data.filters.sort === "ratingAsc"}>Lowest rated</option>
 		</select>
-		<div class="filter-actions">
-			<button class="button" type="submit">Filter</button>
-			{#if data.hasActiveFilters}
+		{#if data.hasActiveFilters}
+			<div class="filter-actions">
 				<a class="ghost-button" href="/journey">Clear filters</a>
-			{/if}
-		</div>
+			</div>
+		{/if}
 	</form>
 
 	<section class="timeline world-trail">
