@@ -51,6 +51,36 @@ Die Durchführung erfolgt phasenbasiert; dokumentieren Sie die wichtigsten Ergeb
 - **End-to-End-Ablauf:** Neues Event erstellen, Freunde hinzufügen, Location speichern, Event später bearbeiten, als completed markieren, Rating und Erinnerung ergänzen, Journey ansehen, Ort auf Map prüfen. Reiseideen können separat gesammelt und in Events umgewandelt werden.
 - **Mockup:** Platzhalter Figma-Link: `[Figma-Link ergänzen]`. Platzhalter Screenshots: `docs/screenshot-dashboard.png`, `docs/screenshot-event-detail.png`, `docs/screenshot-journey.png`, `docs/screenshot-map.png`.
 
+- **Navigationsdiagramm:** Das folgende Mermaid-Diagramm beschreibt die zentrale Navigation und die wichtigsten Page-Wechsel.
+
+```mermaid
+flowchart LR
+    Login["/login<br/>Login / Signup"] --> Dashboard["/<br/>Dashboard<br/>Stats, upcoming events, highlights"]
+    Dashboard --> Events["/events<br/>Event list<br/>Search, filters, status overview"]
+    Dashboard --> Map["/map<br/>World map<br/>Country, city, location, events"]
+    Dashboard --> Ideas["/ideas<br/>Travel ideas<br/>Collect, prioritize, convert"]
+    Events --> NewEvent["/events/new<br/>Create event<br/>Location, friends, image"]
+    Events --> Detail["/events/[id]<br/>Event detail<br/>Photo hero, edit, map, share, memory"]
+    NewEvent --> Detail
+    Detail --> Map
+    Map --> Detail
+    Detail --> AfterEvent["After event<br/>Personal rating + memory"]
+    AfterEvent --> Journey["/journey<br/>Journey timeline<br/>Completed events and memories"]
+    Ideas --> NewEvent
+
+    classDef auth fill:#fff0dc,stroke:#e75f43,color:#33251d
+    classDef main fill:#eaf6fb,stroke:#2385b8,color:#33251d
+    classDef event fill:#fffaf2,stroke:#ef8f38,color:#33251d
+    classDef memory fill:#eadcf8,stroke:#8b5cf6,color:#33251d
+    classDef idea fill:#edf8e9,stroke:#4f8f57,color:#33251d
+
+    class Login auth
+    class Dashboard,Map main
+    class Events,NewEvent event
+    class Detail,AfterEvent,Journey memory
+    class Ideas idea
+```
+
 ### 3.4 Prototype
 
 #### 3.4.1. Entwurf (Design)
