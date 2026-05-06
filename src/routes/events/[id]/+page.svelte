@@ -96,6 +96,9 @@
 						<span class="status {event.status}">{event.status}</span>
 					{/if}
 					<span class="category">{event.category}</span>
+					{#if event.upcoming?.active}
+						<span class="reminder-badge">{event.upcoming.badge}: {event.upcoming.label}</span>
+					{/if}
 				</div>
 				<h1>{event.title}</h1>
 				<p>{displayDate}</p>
@@ -607,6 +610,18 @@
 		background: #fff0dc;
 		border-color: #f4c28e;
 		color: #a94724;
+	}
+
+	.reminder-badge {
+		display: inline-flex;
+		align-items: center;
+		border: 1px solid #b7dff0;
+		border-radius: 999px;
+		background: #eaf6fb;
+		color: #176b91;
+		font-size: 0.8rem;
+		font-weight: 900;
+		padding: 5px 10px;
 	}
 
 	.invitation-panel {

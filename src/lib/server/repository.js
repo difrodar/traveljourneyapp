@@ -5,6 +5,8 @@ import { getCollections } from "./db.js";
 
 const maxUploadBytes = 2 * 1024 * 1024;
 const allowedUploadTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const oneDayMs = 24 * 60 * 60 * 1000;
+const reminderWindowDays = 7;
 
 const fallbackCoordinates = {
 	"la jolla cove": { lat: 32.8507, lng: -117.2729 },
@@ -77,6 +79,12 @@ function dateKey(date) {
 	return `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}-${padDatePart(date.getDate())}`;
 }
 
+function dateOnly(value) {
+	if (!isDateFilter(value)) return null;
+	const [year, month, day] = value.split("-").map(Number);
+	return new Date(year, month - 1, day);
+}
+
 function monthParamFromDate(date) {
 	return `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}`;
 }
@@ -91,6 +99,28 @@ function parseMonthParam(value) {
 
 function addMonths(date, amount) {
 	return new Date(date.getFullYear(), date.getMonth() + amount, 1);
+}
+
+function upcomingForEvent(event) {
+	const eventDate = dateOnly(event.date);
+	if (!eventDate || event.status !== "planned") {
+		return { active: false, label: "", badge: "" };
+	}
+	const today = dateOnly(dateKey(new Date()));
+	const daysUntil = Math.round((eventDate.getTime() - today.getTime()) / oneDayMs);
+	if (daysUntil < 0) {
+		return { active: false, label: "", badge: "" };
+	}
+	const label = daysUntil === 0 ? "Today" : daysUntil === 1 ? "Tomorrow" : `In ${daysUntil} days`;
+	return { active: true, label, badge: "Upcoming", daysUntil };
+}
+
+function reminderForEvent(event) {
+	const upcoming = upcomingForEvent(event);
+	if (!upcoming.active || upcoming.daysUntil > reminderWindowDays) {
+		return { active: false, label: "", badge: "" };
+	}
+	return { ...upcoming, badge: "Upcoming soon" };
 }
 
 function buildCalendarMonth(events, month) {
@@ -554,6 +584,8 @@ async function hydrateEvents(events, userId) {
 			friends: (event.invitedUserIds || []).map((id) => invitedUserMap.get(id.toString())).filter(Boolean),
 			isOwner: event.userId?.toString() === ownerId.toString(),
 			invitationStatus,
+			upcoming: upcomingForEvent(serialized),
+			reminder: reminderForEvent(serialized),
 			journeyEntry: journeyMap.get(event._id.toString()) || null
 		};
 	});
@@ -616,10 +648,9 @@ export async function listInvitedEvents(userId) {
 export async function getDashboardData(userId, options = {}) {
 	const events = await listEvents(userId, { sort: "asc", includeInvitations: true });
 	const completed = events.filter((event) => event.status === "completed");
-	const planned = events.filter((event) => event.status === "planned");
 	return {
 		calendar: buildCalendarMonth(events, options.month),
-		upcomingEvents: planned.slice(0, 4),
+		upcomingSoonEvents: events.filter((event) => event.reminder?.active).slice(0, 4),
 		journeyHighlights: completed.filter((event) => event.journeyEntry).slice(0, 3)
 	};
 }

@@ -1,5 +1,4 @@
 <script>
-	import EventCard from "$lib/components/EventCard.svelte";
 	import JourneyCard from "$lib/components/JourneyCard.svelte";
 
 	let { data } = $props();
@@ -84,16 +83,28 @@
 		<div>
 			<div class="page-header slim">
 				<div>
-					<p class="eyebrow">Next up</p>
-					<h2>Upcoming events</h2>
+					<p class="eyebrow">Reminder</p>
+					<h2>Upcoming soon</h2>
 				</div>
 				<a class="ghost-button" href="/events">View all</a>
 			</div>
-			<div class="grid">
-				{#each data.upcomingEvents as event}
-					<EventCard {event} compact />
+			<div class="reminder-list">
+				{#each data.upcomingSoonEvents as event}
+					<a class="reminder-row" href="/events/{event.id}">
+						<span class="reminder-date">{event.reminder.label}</span>
+						<span class="reminder-content">
+							<strong>{event.title}</strong>
+							<small>
+								{event.date} at {event.time}
+								{#if event.location?.name}
+									- {event.location.name}
+								{/if}
+							</small>
+						</span>
+						<span class="reminder-badge">{event.reminder.badge}</span>
+					</a>
 				{:else}
-					<div class="empty-state">No upcoming events yet. Create the first plan for San Diego or anywhere your journey goes.</div>
+					<div class="empty-state">No planned events need attention in the next 7 days.</div>
 				{/each}
 			</div>
 		</div>
@@ -332,6 +343,68 @@
 		margin-bottom: 12px;
 	}
 
+	.reminder-list {
+		display: grid;
+		gap: 10px;
+	}
+
+	.reminder-row {
+		display: grid;
+		grid-template-columns: minmax(88px, auto) minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 12px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #fff7ec;
+		padding: 13px;
+		transition:
+			transform 0.15s ease,
+			border-color 0.15s ease,
+			background 0.15s ease;
+	}
+
+	.reminder-row:hover {
+		transform: translateY(-1px);
+		border-color: #e9b77e;
+		background: #fff1dc;
+	}
+
+	.reminder-date,
+	.reminder-badge {
+		border-radius: 8px;
+		background: #eaf6fb;
+		color: #176b91;
+		font-size: 0.82rem;
+		font-weight: 900;
+		padding: 8px 10px;
+		text-align: center;
+	}
+
+	.reminder-content {
+		display: grid;
+		gap: 3px;
+		min-width: 0;
+	}
+
+	.reminder-content strong,
+	.reminder-content small {
+		overflow-wrap: anywhere;
+	}
+
+	.reminder-content strong {
+		font-weight: 900;
+	}
+
+	.reminder-content small {
+		color: var(--muted);
+		font-weight: 700;
+	}
+
+	.reminder-badge {
+		background: #fff0dc;
+		color: #a94724;
+	}
+
 	@media (max-width: 900px) {
 		.planner-header {
 			align-items: flex-start;
@@ -360,6 +433,17 @@
 
 		.weekday-name {
 			display: inline;
+		}
+
+		.reminder-row {
+			grid-template-columns: 1fr;
+			align-items: start;
+		}
+
+		.reminder-date,
+		.reminder-badge {
+			width: fit-content;
+			text-align: left;
 		}
 	}
 

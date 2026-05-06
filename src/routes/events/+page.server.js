@@ -3,9 +3,10 @@ import { categories } from "$lib/constants.js";
 
 export async function load({ locals, url }) {
 	const sortParam = url.searchParams.get("sort") || "dateAsc";
+	const defaultStatus = "planned";
 	const filters = {
 		search: url.searchParams.get("search") || "",
-		status: url.searchParams.get("status") || "all",
+		status: url.searchParams.get("status") || defaultStatus,
 		category: url.searchParams.get("category") || "all",
 		from: url.searchParams.get("from") || "",
 		to: url.searchParams.get("to") || "",
@@ -13,10 +14,10 @@ export async function load({ locals, url }) {
 		includeInvitations: true
 	};
 	const hasActiveFilters = Boolean(
-		filters.search ||
+			filters.search ||
 			filters.from ||
 			filters.to ||
-			filters.status !== "all" ||
+			filters.status !== defaultStatus ||
 			filters.category !== "all" ||
 			filters.sort !== "dateAsc"
 	);

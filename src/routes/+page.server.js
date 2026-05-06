@@ -18,7 +18,7 @@ export async function load({ locals, url }) {
 				hasMonthEvents: false,
 				weeks: []
 			},
-			upcomingEvents: [],
+			upcomingSoonEvents: [],
 			journeyHighlights: []
 		};
 	}
