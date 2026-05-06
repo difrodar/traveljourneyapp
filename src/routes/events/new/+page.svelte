@@ -17,5 +17,5 @@
 		<div class="message error">{form.error}</div>
 	{/if}
 
-	<EventForm action="?/create" submitLabel="Create event" />
+	<EventForm action="?/create" submitLabel="Create event" {form} />
 </main>

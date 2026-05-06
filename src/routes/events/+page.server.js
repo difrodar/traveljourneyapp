@@ -2,15 +2,26 @@ import { listEvents } from "$lib/server/repository.js";
 import { categories } from "$lib/constants.js";
 
 export async function load({ locals, url }) {
+	const sortParam = url.searchParams.get("sort") || "dateAsc";
 	const filters = {
 		search: url.searchParams.get("search") || "",
 		status: url.searchParams.get("status") || "all",
 		category: url.searchParams.get("category") || "all",
-		sort: url.searchParams.get("sort") || "asc"
+		from: url.searchParams.get("from") || "",
+		to: url.searchParams.get("to") || "",
+		sort: sortParam === "asc" ? "dateAsc" : sortParam === "desc" ? "dateDesc" : sortParam
 	};
+	const hasActiveFilters = Boolean(
+		filters.search ||
+			filters.from ||
+			filters.to ||
+			filters.status !== "all" ||
+			filters.category !== "all" ||
+			filters.sort !== "dateAsc"
+	);
 	try {
-		return { events: await listEvents(locals.user.id, filters), filters, categories, setupError: "" };
+		return { events: await listEvents(locals.user.id, filters), filters, hasActiveFilters, categories, setupError: "" };
 	} catch (error) {
-		return { events: [], filters, categories, setupError: error.message };
+		return { events: [], filters, hasActiveFilters, categories, setupError: error.message };
 	}
 }

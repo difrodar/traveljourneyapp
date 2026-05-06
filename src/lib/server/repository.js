@@ -51,6 +51,24 @@ function clean(value) {
 	return String(value || "").trim();
 }
 
+function isDateFilter(value) {
+	return /^\d{4}-\d{2}-\d{2}$/.test(clean(value));
+}
+
+function normalizeEventSort(value) {
+	const sort = clean(value);
+	if (sort === "desc") return "dateDesc";
+	if (sort === "asc") return "dateAsc";
+	return ["dateAsc", "dateDesc", "updatedDesc", "ratingDesc"].includes(sort) ? sort : "dateAsc";
+}
+
+function normalizeJourneySort(value) {
+	const sort = clean(value);
+	if (sort === "desc") return "dateDesc";
+	if (sort === "asc") return "dateAsc";
+	return ["dateDesc", "dateAsc", "ratingDesc", "ratingAsc"].includes(sort) ? sort : "dateDesc";
+}
+
 function parseCoordinate(value) {
 	const text = clean(value);
 	if (!text) return null;
@@ -83,14 +101,21 @@ function hasUploadedFile(value) {
 	return value && typeof value === "object" && typeof value.arrayBuffer === "function" && value.size > 0;
 }
 
-async function uploadedImageFields(form, fieldName, clearFieldName, existing = {}, altFallback = "Uploaded image") {
+async function uploadedImageFields(
+	form,
+	fieldName,
+	clearFieldName,
+	existing = {},
+	altFallback = "Uploaded image",
+	uploadLabel = "Image upload"
+) {
 	const file = form.get(fieldName);
 	if (hasUploadedFile(file)) {
 		if (!allowedUploadTypes.has(file.type)) {
-			throw new Error("Please upload a JPG, PNG, WebP or GIF image.");
+			throw new Error(`${uploadLabel}: Please upload a JPG, PNG, WebP or GIF image.`);
 		}
 		if (file.size > maxUploadBytes) {
-			throw new Error("Image uploads must be 2 MB or smaller.");
+			throw new Error(`${uploadLabel}: The selected file is too large. Please upload an image up to 2 MB.`);
 		}
 		const buffer = Buffer.from(await file.arrayBuffer());
 		return {
@@ -143,6 +168,7 @@ async function ensureIndexes(collections) {
 
 	await Promise.all([
 		collections.events.createIndex({ userId: 1, date: 1 }),
+		collections.events.createIndex({ userId: 1, updatedAt: -1 }),
 		collections.locations.createIndex({ userId: 1, name: 1, city: 1 }),
 		collections.friends.createIndex({ userId: 1, name: 1 }, { unique: true }),
 		collections.journeyEntries.createIndex({ userId: 1, eventId: 1 }, { unique: true }),
@@ -449,8 +475,24 @@ export async function listEvents(userId, filters = {}) {
 	if (filters.status && filters.status !== "all") query.status = filters.status;
 	if (filters.category && filters.category !== "all") query.category = filters.category;
 	if (filters.search) query.title = { $regex: filters.search, $options: "i" };
-	const direction = filters.sort === "desc" ? -1 : 1;
-	return hydrateEvents(await collections.events.find(query).sort({ date: direction, time: direction }).toArray(), ownerId);
+	if (filters.from || filters.to) {
+		query.date = {};
+		if (isDateFilter(filters.from)) query.date.$gte = filters.from;
+		if (isDateFilter(filters.to)) query.date.$lte = filters.to;
+		if (!Object.keys(query.date).length) delete query.date;
+	}
+	const sort = normalizeEventSort(filters.sort);
+	const dbSort = sort === "updatedDesc" ? { updatedAt: -1 } : { date: sort === "dateDesc" ? -1 : 1, time: sort === "dateDesc" ? -1 : 1 };
+	const events = await hydrateEvents(await collections.events.find(query).sort(dbSort).toArray(), ownerId);
+	if (sort === "ratingDesc") {
+		return events.sort(
+			(a, b) =>
+				Number(b.journeyEntry?.rating || 0) - Number(a.journeyEntry?.rating || 0) ||
+				(b.date || "").localeCompare(a.date || "") ||
+				(b.time || "").localeCompare(a.time || "")
+		);
+	}
+	return events;
 }
 
 export async function getDashboardData(userId) {
@@ -485,11 +527,26 @@ export async function getEvent(userId, id) {
 }
 
 export function validateEventForm(form) {
-	const errors = [];
-	for (const field of ["title", "date", "time", "locationName", "category"]) {
-		if (!clean(form.get(field))) errors.push(`${field} is required.`);
+	const fieldErrors = {};
+	const requiredFields = {
+		title: "Please add an event title.",
+		date: "Please choose a date.",
+		time: "Please choose a time.",
+		locationName: "Please add a concrete location.",
+		category: "Please choose a category."
+	};
+
+	for (const [field, message] of Object.entries(requiredFields)) {
+		if (!clean(form.get(field))) fieldErrors[field] = message;
 	}
-	return errors;
+
+	const errors = Object.values(fieldErrors);
+	return {
+		valid: errors.length === 0,
+		error: errors.length ? "Please check the highlighted fields." : "",
+		errors,
+		fieldErrors
+	};
 }
 
 async function ensureFriends(userId, names) {
@@ -542,7 +599,7 @@ async function saveLocationFromForm(userId, form, existingId = null) {
 
 async function eventPayloadFromForm(userId, form, locationId, friendIds, existing = {}) {
 	const title = clean(form.get("title"));
-	const imageFields = await uploadedImageFields(form, "eventImageFile", "clearEventImage", existing, title);
+	const imageFields = await uploadedImageFields(form, "eventImageFile", "clearEventImage", existing, title, "Event image");
 	return {
 		title,
 		userId: userOid(userId),
@@ -603,7 +660,8 @@ export async function completeEventFromForm(userId, id, form) {
 		"memoryImageFile",
 		"clearMemoryImage",
 		existingEntry || {},
-		"Journey memory photo"
+		"Journey memory photo",
+		"Memory image"
 	);
 	await collections.events.updateOne({ userId: ownerId, _id: eventId }, { $set: { status: "completed", updatedAt: now } });
 	await collections.journeyEntries.findOneAndUpdate(
@@ -622,9 +680,25 @@ export async function completeEventFromForm(userId, id, form) {
 }
 
 export async function listJourneyEntries(userId, filters = {}) {
-	const events = await listEvents(userId, { status: "completed", sort: "desc", category: filters.category });
+	const events = await listEvents(userId, {
+		status: "completed",
+		sort: normalizeJourneySort(filters.sort) === "dateAsc" ? "dateAsc" : "dateDesc",
+		category: filters.category,
+		from: filters.from,
+		to: filters.to
+	});
 	const minRating = Number(filters.minRating || 0);
-	return events.filter((event) => event.journeyEntry && Number(event.journeyEntry.rating || 0) >= minRating);
+	const entries = events.filter((event) => event.journeyEntry && Number(event.journeyEntry.rating || 0) >= minRating);
+	const sort = normalizeJourneySort(filters.sort);
+	if (sort === "ratingDesc" || sort === "ratingAsc") {
+		const direction = sort === "ratingDesc" ? -1 : 1;
+		return entries.sort(
+			(a, b) =>
+				(Number(a.journeyEntry?.rating || 0) - Number(b.journeyEntry?.rating || 0)) * direction ||
+				(b.date || "").localeCompare(a.date || "")
+		);
+	}
+	return entries;
 }
 
 export async function listLocations(userId) {

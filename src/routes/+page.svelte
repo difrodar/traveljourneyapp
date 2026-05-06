@@ -67,7 +67,7 @@
 					<strong>{item.title}</strong>
 				</a>
 			{:else}
-				<div class="empty-state">Create events and memories to fill the visual journey strip.</div>
+				<div class="empty-state">Create an event or save a journey memory to fill the visual journey strip.</div>
 			{/each}
 		</div>
 	</section>
@@ -85,7 +85,7 @@
 				{#each data.upcomingEvents as event}
 					<EventCard {event} compact />
 				{:else}
-					<div class="empty-state">No upcoming events yet. Create the first plan for San Diego.</div>
+					<div class="empty-state">No upcoming events yet. Create the first plan for San Diego or anywhere your journey goes.</div>
 				{/each}
 			</div>
 		</div>
@@ -101,7 +101,7 @@
 				{#each data.journeyHighlights as event}
 					<JourneyCard {event} />
 				{:else}
-					<div class="empty-state">Completed events with memories will appear here.</div>
+					<div class="empty-state">Completed events with saved memories will appear here after your first adventure.</div>
 				{/each}
 			</div>
 		</div>

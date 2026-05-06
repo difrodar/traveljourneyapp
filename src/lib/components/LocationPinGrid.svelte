@@ -93,7 +93,7 @@
 			{/each}
 		</section>
 	{:else}
-		<div class="empty-state">No mapped events yet. Add an event with a location to build your world map.</div>
+		<div class="empty-state">No mapped events yet. Add an event with a city and concrete location to create your first pin.</div>
 	{/each}
 </div>
 

@@ -31,18 +31,33 @@
 				<option value={category} selected={data.filters.category === category}>{category}</option>
 			{/each}
 		</select>
+		<label class="filter-field">
+			<span>From</span>
+			<input type="date" name="from" value={data.filters.from} />
+		</label>
+		<label class="filter-field">
+			<span>To</span>
+			<input type="date" name="to" value={data.filters.to} />
+		</label>
 		<select name="sort">
-			<option value="asc" selected={data.filters.sort === "asc"}>Soonest first</option>
-			<option value="desc" selected={data.filters.sort === "desc"}>Newest first</option>
+			<option value="dateAsc" selected={data.filters.sort === "dateAsc" || data.filters.sort === "asc"}>Soonest first</option>
+			<option value="dateDesc" selected={data.filters.sort === "dateDesc" || data.filters.sort === "desc"}>Latest date first</option>
+			<option value="updatedDesc" selected={data.filters.sort === "updatedDesc"}>Recently edited</option>
+			<option value="ratingDesc" selected={data.filters.sort === "ratingDesc"}>Highest rated</option>
 		</select>
-		<button class="button" type="submit">Apply</button>
+		<div class="filter-actions">
+			<button class="button" type="submit">Apply</button>
+			{#if data.hasActiveFilters}
+				<a class="ghost-button" href="/events">Clear filters</a>
+			{/if}
+		</div>
 	</form>
 
 	<section class="grid three">
 		{#each data.events as event}
 			<EventCard {event} />
 		{:else}
-			<div class="empty-state">No events match the selected filters.</div>
+			<div class="empty-state">No events match these filters. Clear the filters or create a new event to continue planning.</div>
 		{/each}
 	</section>
 </main>
@@ -50,9 +65,28 @@
 <style>
 	.filters {
 		display: grid;
-		grid-template-columns: 1.4fr repeat(3, minmax(130px, 1fr)) auto;
+		grid-template-columns: 1.4fr repeat(5, minmax(130px, 1fr)) auto;
 		gap: 10px;
 		margin-bottom: 20px;
+		align-items: end;
+	}
+
+	.filter-field {
+		display: grid;
+		gap: 4px;
+	}
+
+	.filter-field span {
+		color: var(--muted);
+		font-size: 0.78rem;
+		font-weight: 800;
+		text-transform: uppercase;
+	}
+
+	.filter-actions {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
 	}
 
 	@media (max-width: 900px) {

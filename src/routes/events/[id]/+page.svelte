@@ -165,7 +165,7 @@
 						<p class="eyebrow">Organize</p>
 						<h2>Edit plan</h2>
 					</div>
-					<EventForm event={event} action="?/update" submitLabel="Save changes" />
+					<EventForm event={event} action="?/update" submitLabel="Save changes" {form} />
 				</section>
 			</div>
 
@@ -181,11 +181,23 @@
 						</div>
 						<div class="field">
 							<label for="memoryText">Memory text</label>
-							<textarea id="memoryText" name="memoryText" required>{event.journeyEntry?.memoryText || ""}</textarea>
+							<textarea id="memoryText" name="memoryText" aria-invalid={Boolean(form?.memoryFieldErrors?.memoryText)} required>{form?.memoryValues?.memoryText ?? event.journeyEntry?.memoryText ?? ""}</textarea>
+							{#if form?.memoryFieldErrors?.memoryText}
+								<p class="field-error">{form.memoryFieldErrors.memoryText}</p>
+							{/if}
 						</div>
 						<div class="field">
 							<label for="memoryImageFile">Memory image optional</label>
-							<input id="memoryImageFile" name="memoryImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+							<input
+								id="memoryImageFile"
+								name="memoryImageFile"
+								type="file"
+								accept="image/jpeg,image/png,image/webp,image/gif"
+								aria-invalid={Boolean(form?.memoryFieldErrors?.memoryImageFile)}
+							/>
+							{#if form?.memoryFieldErrors?.memoryImageFile}
+								<p class="field-error">{form.memoryFieldErrors.memoryImageFile}</p>
+							{/if}
 							{#if event.journeyEntry?.imageUrl}
 								<label class="checkbox-field">
 									<input name="clearMemoryImage" type="checkbox" value="true" />
@@ -545,6 +557,19 @@
 	.field-label {
 		font-weight: 800;
 		color: #253044;
+	}
+
+	.field-error {
+		margin: 0;
+		color: #b42318;
+		font-size: 0.88rem;
+		font-weight: 800;
+	}
+
+	input[aria-invalid="true"],
+	textarea[aria-invalid="true"] {
+		border-color: #ef4444;
+		background: #fff7f7;
 	}
 
 	.memory-card {

@@ -3,62 +3,97 @@
 	import CityCombobox from "./CityCombobox.svelte";
 	import FriendPicker from "./FriendPicker.svelte";
 
-	let { event = null, action = "?/create", submitLabel = "Save event" } = $props();
+	let { event = null, action = "?/create", submitLabel = "Save event", form = null } = $props();
 	const location = $derived(event?.location || {});
+	const values = $derived(form?.values || {});
+	const fieldErrors = $derived(form?.fieldErrors || {});
+	const friendInitial = $derived(
+		values.friendNames
+			? values.friendNames
+					.split(",")
+					.map((name) => ({ name: name.trim() }))
+					.filter((friend) => friend.name)
+			: event?.friends || []
+	);
+
+	function fieldValue(name, fallback = "") {
+		return Object.hasOwn(values, name) ? values[name] : fallback;
+	}
 </script>
 
 <form class="panel" method="POST" action={action} enctype="multipart/form-data">
 	<div class="form-grid">
 		<div class="field">
 			<label for="title">Title</label>
-			<input id="title" name="title" value={event?.title || ""} required />
+			<input id="title" name="title" value={fieldValue("title", event?.title || "")} aria-invalid={Boolean(fieldErrors.title)} required />
+			{#if fieldErrors.title}
+				<p class="field-error">{fieldErrors.title}</p>
+			{/if}
 		</div>
 		<div class="field">
 			<label for="category">Category</label>
-			<select id="category" name="category" required>
+			<select id="category" name="category" aria-invalid={Boolean(fieldErrors.category)} required>
 				<option value="">Choose category</option>
 				{#each categories as category}
-					<option value={category} selected={event?.category === category}>{category}</option>
+					<option value={category} selected={fieldValue("category", event?.category || "") === category}>{category}</option>
 				{/each}
 			</select>
+			{#if fieldErrors.category}
+				<p class="field-error">{fieldErrors.category}</p>
+			{/if}
 		</div>
 		<div class="field">
 			<label for="date">Date</label>
-			<input id="date" name="date" type="date" value={event?.date || ""} required />
+			<input id="date" name="date" type="date" value={fieldValue("date", event?.date || "")} aria-invalid={Boolean(fieldErrors.date)} required />
+			{#if fieldErrors.date}
+				<p class="field-error">{fieldErrors.date}</p>
+			{/if}
 		</div>
 		<div class="field">
 			<label for="time">Time</label>
-			<input id="time" name="time" type="time" value={event?.time || ""} required />
+			<input id="time" name="time" type="time" value={fieldValue("time", event?.time || "")} aria-invalid={Boolean(fieldErrors.time)} required />
+			{#if fieldErrors.time}
+				<p class="field-error">{fieldErrors.time}</p>
+			{/if}
 		</div>
 		<div class="field">
 			<label for="status">Status</label>
 			<select id="status" name="status">
-				<option value="planned" selected={!event || event.status === "planned"}>Planned</option>
-				<option value="completed" selected={event?.status === "completed"}>Completed</option>
+				<option value="planned" selected={fieldValue("status", event?.status || "planned") === "planned"}>Planned</option>
+				<option value="completed" selected={fieldValue("status", event?.status || "planned") === "completed"}>Completed</option>
 			</select>
 		</div>
 		<div class="field">
 			<label for="locationName">Location</label>
-			<input id="locationName" name="locationName" value={location.name || ""} required />
+			<input
+				id="locationName"
+				name="locationName"
+				value={fieldValue("locationName", location.name || "")}
+				aria-invalid={Boolean(fieldErrors.locationName)}
+				required
+			/>
+			{#if fieldErrors.locationName}
+				<p class="field-error">{fieldErrors.locationName}</p>
+			{/if}
 		</div>
 		<div class="field">
 			<label for="address">Address</label>
-			<input id="address" name="address" value={location.address || ""} />
+			<input id="address" name="address" value={fieldValue("address", location.address || "")} />
 		</div>
 		<CityCombobox
-			cityValue={location.city || ""}
-			countryValue={location.country || "USA"}
-			latValue={location.coordinates?.lat || ""}
-			lngValue={location.coordinates?.lng || ""}
+			cityValue={fieldValue("city", location.city || "")}
+			countryValue={fieldValue("country", location.country || "USA")}
+			latValue={fieldValue("lat", location.coordinates?.lat || "")}
+			lngValue={fieldValue("lng", location.coordinates?.lng || "")}
 			help="Pick the nearest city so the event appears at the right place on the map."
 		/>
 		<div class="field">
 			<label for="backgroundType">Visual type</label>
-			<input id="backgroundType" name="backgroundType" value={location.backgroundType || ""} placeholder="beach, culture, nightlife" />
+			<input id="backgroundType" name="backgroundType" value={fieldValue("backgroundType", location.backgroundType || "")} placeholder="beach, culture, nightlife" />
 		</div>
 		<div class="field full">
 			<label for="description">Description</label>
-			<textarea id="description" name="description">{event?.description || ""}</textarea>
+			<textarea id="description" name="description">{fieldValue("description", event?.description || "")}</textarea>
 		</div>
 		<div class="field full media-fields">
 			<h3>Event image optional</h3>
@@ -66,7 +101,16 @@
 		</div>
 		<div class="field full">
 			<label for="eventImageFile">Event image</label>
-			<input id="eventImageFile" name="eventImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+			<input
+				id="eventImageFile"
+				name="eventImageFile"
+				type="file"
+				accept="image/jpeg,image/png,image/webp,image/gif"
+				aria-invalid={Boolean(fieldErrors.eventImageFile)}
+			/>
+			{#if fieldErrors.eventImageFile}
+				<p class="field-error">{fieldErrors.eventImageFile}</p>
+			{/if}
 			{#if event?.imageUrl}
 				<label class="checkbox-field">
 					<input name="clearEventImage" type="checkbox" value="true" />
@@ -81,7 +125,7 @@
 		<input type="hidden" name="locationImageSourceUrl" value={location.imageSourceUrl || ""} />
 		<div class="field full">
 			<span class="field-label">Invited friends</span>
-			<FriendPicker initial={event?.friends || []} />
+			<FriendPicker initial={friendInitial} />
 		</div>
 	</div>
 	<div class="actions">
@@ -124,5 +168,18 @@
 
 	.checkbox-field input {
 		width: auto;
+	}
+
+	.field-error {
+		margin: 0;
+		color: #b42318;
+		font-size: 0.88rem;
+		font-weight: 800;
+	}
+
+	input[aria-invalid="true"],
+	select[aria-invalid="true"] {
+		border-color: #ef4444;
+		background: #fff7f7;
 	}
 </style>

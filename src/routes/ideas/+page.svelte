@@ -63,7 +63,7 @@
 			{#each data.ideas as idea}
 				<TravelIdeaCard {idea} />
 			{:else}
-				<div class="empty-state">No travel ideas yet.</div>
+				<div class="empty-state">No travel ideas yet. Save a first destination, activity or weekend plan before it disappears.</div>
 			{/each}
 		</div>
 	</section>
