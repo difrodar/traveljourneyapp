@@ -2,6 +2,8 @@
 	import { statusLabels } from "$lib/constants.js";
 
 	let { event, compact = false } = $props();
+	const displayStatus = $derived(event.invitationStatus || event.status);
+	const displayStatusLabel = $derived(event.invitationStatus ? event.invitationStatus : statusLabels[event.status]);
 </script>
 
 <article class="card event-card {event.category?.toLowerCase().replaceAll(' ', '-') || 'default'}">
@@ -14,7 +16,7 @@
 	</a>
 	<div class="topline">
 		<span class="category">{event.category}</span>
-		<span class="status {event.status}">{statusLabels[event.status]}</span>
+		<span class="status {displayStatus}">{displayStatusLabel}</span>
 	</div>
 	<h3><a href="/events/{event.id}">{event.title}</a></h3>
 	<p class="muted">{event.description}</p>
@@ -64,6 +66,18 @@
 
 	.event-card.weekend-trip::before {
 		background: var(--coral);
+	}
+
+	.status.invited {
+		background: #fff0dc;
+		border-color: #f4c28e;
+		color: #a94724;
+	}
+
+	.status.accepted {
+		background: #edf8e9;
+		border-color: #b8dfad;
+		color: #2f6f35;
 	}
 
 	.event-card.culture::before {

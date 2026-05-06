@@ -83,18 +83,6 @@ try {
 	await db.collection("travelIdeas").deleteMany({});
 
 	const locationIds = Object.values((await db.collection("locations").insertMany(locations)).insertedIds);
-	const friendIds = Object.values(
-		(
-			await db.collection("friends").insertMany(
-				["Mia", "Noah", "Ava", "Luca", "Sofia"].map((name) => ({
-					name,
-					invitationStatus: "invited",
-					createdAt: now,
-					updatedAt: now
-				}))
-			)
-		).insertedIds
-	);
 
 	const eventIds = Object.values(
 		(
@@ -107,7 +95,7 @@ try {
 					category: "Beach",
 					description: "Watch the sunset after class and take photos near the cliffs.",
 					status: "planned",
-					friendIds: [friendIds[0], friendIds[1]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -119,7 +107,7 @@ try {
 					category: "Culture",
 					description: "Explore the gardens and museums with the exchange group.",
 					status: "completed",
-					friendIds: [friendIds[2], friendIds[3]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -131,7 +119,7 @@ try {
 					category: "Food",
 					description: "Dinner after beach volleyball.",
 					status: "planned",
-					friendIds: [friendIds[0], friendIds[4]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -143,7 +131,7 @@ try {
 					category: "Party",
 					description: "Rooftop evening downtown after finals week.",
 					status: "completed",
-					friendIds: [friendIds[1], friendIds[2], friendIds[4]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -155,7 +143,7 @@ try {
 					category: "Weekend Trip",
 					description: "Roadtrip weekend to Los Angeles with Griffith Observatory, Venice Beach and food stops.",
 					status: "planned",
-					friendIds: [friendIds[0], friendIds[1]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -167,7 +155,7 @@ try {
 					category: "Culture",
 					description: "Cross-border day trip for street food, markets and Avenida Revolucion.",
 					status: "planned",
-					friendIds: [friendIds[0], friendIds[3]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -179,7 +167,7 @@ try {
 					category: "Weekend Trip",
 					description: "Weekend escape to Denver with skyline views and a possible mountain day.",
 					status: "planned",
-					friendIds: [friendIds[1], friendIds[4]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -191,7 +179,7 @@ try {
 					category: "Sightseeing",
 					description: "Photo walk around the Golden Gate Bridge during golden hour.",
 					status: "completed",
-					friendIds: [friendIds[2], friendIds[3]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -203,7 +191,7 @@ try {
 					category: "Weekend Trip",
 					description: "Long weekend in New York City with skyline views, food stops and museum time.",
 					status: "planned",
-					friendIds: [friendIds[0], friendIds[1], friendIds[4]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				}

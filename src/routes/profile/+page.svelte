@@ -3,11 +3,11 @@
 
 	const statItems = $derived([
 		{ label: "Events", value: data.stats.events, hint: "all plans and memories" },
+		{ label: "Invites", value: data.stats.invitedEvents, hint: "events from other users" },
 		{ label: "Planned", value: data.stats.plannedEvents, hint: "upcoming events" },
 		{ label: "Memories", value: data.stats.completedMemories, hint: "completed journey entries" },
 		{ label: "Places", value: data.stats.locations, hint: "saved locations" },
-		{ label: "Ideas", value: data.stats.ideas, hint: "future trip sparks" },
-		{ label: "Avg. rating", value: data.stats.averageRating || "n/a", hint: "personal memory score" }
+		{ label: "Ideas", value: data.stats.ideas, hint: "future trip sparks" }
 	]);
 
 	const actions = [
@@ -98,6 +98,33 @@
 			</div>
 		</div>
 	</section>
+
+	<section class="panel invited-panel">
+		<div class="section-heading">
+			<div>
+				<p class="eyebrow">Invitations</p>
+				<h2>Events you are invited to</h2>
+			</div>
+		</div>
+		<div class="recent-list">
+			{#each data.invitedEvents as event}
+				<a class="recent-row invited-row" href="/events/{event.id}">
+					<div>
+						<strong>{event.title}</strong>
+						<span>
+							{event.location?.name || "No location yet"} · {event.date || "No date"}
+							{#if event.owner?.username}
+								· by {event.owner.username}
+							{/if}
+						</span>
+					</div>
+					<small class:completed={event.invitationStatus === "accepted"}>{event.invitationStatus || event.status}</small>
+				</a>
+			{:else}
+				<div class="empty-state">No invitations yet. When another TripTales user invites you to an event, it will appear here.</div>
+			{/each}
+		</div>
+	</section>
 </main>
 
 <style>
@@ -159,6 +186,10 @@
 	}
 
 	.profile-sections {
+		margin-top: 18px;
+	}
+
+	.invited-panel {
 		margin-top: 18px;
 	}
 

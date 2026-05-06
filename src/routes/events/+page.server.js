@@ -9,7 +9,8 @@ export async function load({ locals, url }) {
 		category: url.searchParams.get("category") || "all",
 		from: url.searchParams.get("from") || "",
 		to: url.searchParams.get("to") || "",
-		sort: sortParam === "asc" ? "dateAsc" : sortParam === "desc" ? "dateDesc" : sortParam
+		sort: sortParam === "asc" ? "dateAsc" : sortParam === "desc" ? "dateDesc" : sortParam,
+		includeInvitations: true
 	};
 	const hasActiveFilters = Boolean(
 		filters.search ||

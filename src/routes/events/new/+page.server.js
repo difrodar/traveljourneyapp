@@ -1,5 +1,5 @@
 import { fail, redirect } from "@sveltejs/kit";
-import { createEventFromForm, validateEventForm } from "$lib/server/repository.js";
+import { createEventFromForm, listInviteableUsers, validateEventForm } from "$lib/server/repository.js";
 
 const eventFormFields = [
 	"title",
@@ -15,11 +15,18 @@ const eventFormFields = [
 	"lng",
 	"backgroundType",
 	"description",
-	"friendNames"
+	"invitedUserIds"
 ];
 
 function eventValues(form) {
-	return Object.fromEntries(eventFormFields.map((field) => [field, String(form.get(field) || "")]));
+	return {
+		...Object.fromEntries(eventFormFields.map((field) => [field, String(form.get(field) || "")])),
+		invitedUserIds: form.getAll("invitedUserIds").map(String)
+	};
+}
+
+export async function load({ locals }) {
+	return { inviteableUsers: await listInviteableUsers(locals.user.id) };
 }
 
 export const actions = {
@@ -38,6 +45,13 @@ export const actions = {
 				return fail(400, {
 					error: "Please check the highlighted fields.",
 					fieldErrors: { eventImageFile: error.message },
+					values
+				});
+			}
+			if (String(error.message || "").startsWith("Invited users:")) {
+				return fail(400, {
+					error: "Please check the highlighted fields.",
+					fieldErrors: { invitedUserIds: error.message },
 					values
 				});
 			}

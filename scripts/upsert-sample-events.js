@@ -82,8 +82,7 @@ const eventSeeds = [
 		locationKey: "losAngeles",
 		category: "Weekend Trip",
 		description: "Roadtrip weekend to Los Angeles with Griffith Observatory, Venice Beach and food stops.",
-		status: "planned",
-		friendNames: ["Mia", "Noah"]
+		status: "planned"
 	},
 	{
 		title: "Day Trip to Tijuana",
@@ -92,8 +91,7 @@ const eventSeeds = [
 		locationKey: "tijuana",
 		category: "Culture",
 		description: "Cross-border day trip for street food, markets and Avenida Revolucion.",
-		status: "planned",
-		friendNames: ["Mia", "Luca"]
+		status: "planned"
 	},
 	{
 		title: "Denver Mountain Weekend",
@@ -102,8 +100,7 @@ const eventSeeds = [
 		locationKey: "denver",
 		category: "Weekend Trip",
 		description: "Weekend escape to Denver with skyline views and a possible mountain day.",
-		status: "planned",
-		friendNames: ["Noah", "Sofia"]
+		status: "planned"
 	},
 	{
 		title: "Golden Gate Photo Walk",
@@ -113,7 +110,6 @@ const eventSeeds = [
 		category: "Sightseeing",
 		description: "Photo walk around the Golden Gate Bridge during golden hour.",
 		status: "completed",
-		friendNames: ["Ava", "Luca"],
 		journey: {
 			rating: 5,
 			memoryText:
@@ -128,29 +124,15 @@ const eventSeeds = [
 		locationKey: "newYorkCity",
 		category: "Weekend Trip",
 		description: "Long weekend in New York City with skyline views, food stops and museum time.",
-		status: "planned",
-		friendNames: ["Mia", "Noah", "Sofia"]
+		status: "planned"
 	}
 ];
-
-async function upsertFriend(friends, name) {
-	const result = await friends.findOneAndUpdate(
-		{ name },
-		{
-			$setOnInsert: { name, invitationStatus: "invited", createdAt: now },
-			$set: { updatedAt: now }
-		},
-		{ upsert: true, returnDocument: "after" }
-	);
-	return result._id;
-}
 
 try {
 	await client.connect();
 	const db = client.db(dbName);
 	const locations = db.collection("locations");
 	const events = db.collection("events");
-	const friends = db.collection("friends");
 	const journeyEntries = db.collection("journeyEntries");
 	const travelIdeas = db.collection("travelIdeas");
 
@@ -179,11 +161,6 @@ try {
 	}
 
 	for (const seed of eventSeeds) {
-		const friendIds = [];
-		for (const name of seed.friendNames) {
-			friendIds.push(await upsertFriend(friends, name));
-		}
-
 		const result = await events.findOneAndUpdate(
 			{ title: seed.title },
 			{
@@ -195,10 +172,11 @@ try {
 					category: seed.category,
 					description: seed.description,
 					status: seed.status,
-					friendIds,
+					invitedUserIds: [],
 					updatedAt: now
 				},
-				$setOnInsert: { createdAt: now }
+				$setOnInsert: { createdAt: now },
+				$unset: { friendIds: "" }
 			},
 			{ upsert: true, returnDocument: "after" }
 		);

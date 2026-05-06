@@ -1,7 +1,7 @@
 <script>
 	import EventForm from "$lib/components/EventForm.svelte";
 
-	let { form } = $props();
+	let { data, form } = $props();
 </script>
 
 <main class="page-shell">
@@ -17,5 +17,5 @@
 		<div class="message error">{form.error}</div>
 	{/if}
 
-	<EventForm action="?/create" submitLabel="Create event" {form} />
+	<EventForm action="?/create" submitLabel="Create event" {form} inviteableUsers={data.inviteableUsers} />
 </main>

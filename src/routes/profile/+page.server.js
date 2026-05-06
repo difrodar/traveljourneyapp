@@ -1,9 +1,10 @@
-import { listEvents, listIdeas, listLocations } from "$lib/server/repository.js";
+import { listEvents, listIdeas, listInvitedEvents, listLocations } from "$lib/server/repository.js";
 
 export async function load({ locals }) {
 	try {
-		const [events, locations, ideas] = await Promise.all([
+		const [events, invitedEvents, locations, ideas] = await Promise.all([
 			listEvents(locals.user.id, { sort: "updatedDesc" }),
+			listInvitedEvents(locals.user.id),
 			listLocations(locals.user.id),
 			listIdeas(locals.user.id)
 		]);
@@ -18,6 +19,7 @@ export async function load({ locals }) {
 			user: locals.user,
 			stats: {
 				events: events.length,
+				invitedEvents: invitedEvents.length,
 				plannedEvents: plannedEvents.length,
 				completedMemories: completedMemories.length,
 				locations: locations.length,
@@ -25,6 +27,7 @@ export async function load({ locals }) {
 				averageRating
 			},
 			recentActivity: events.slice(0, 3),
+			invitedEvents,
 			setupError: ""
 		};
 	} catch (error) {
@@ -32,6 +35,7 @@ export async function load({ locals }) {
 			user: locals.user,
 			stats: {
 				events: 0,
+				invitedEvents: 0,
 				plannedEvents: 0,
 				completedMemories: 0,
 				locations: 0,
@@ -39,6 +43,7 @@ export async function load({ locals }) {
 				averageRating: 0
 			},
 			recentActivity: [],
+			invitedEvents: [],
 			setupError: error.message
 		};
 	}

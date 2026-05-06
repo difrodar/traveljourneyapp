@@ -35,6 +35,7 @@
 			<option value="all" selected={data.filters.status === "all"}>All status</option>
 			<option value="planned" selected={data.filters.status === "planned"}>Planned</option>
 			<option value="completed" selected={data.filters.status === "completed"}>Completed</option>
+			<option value="invited" selected={data.filters.status === "invited"}>Invited to me</option>
 		</select>
 		<select name="category" onchange={submitFilters}>
 			<option value="all" selected={data.filters.category === "all"}>All categories</option>

@@ -1,35 +1,24 @@
 <script>
-	let { initial = [] } = $props();
-	// svelte-ignore state_referenced_locally
-	let friends = $state(initial.map((friend) => friend.name || friend).filter(Boolean));
-	let draft = $state("");
-
-	function addFriend() {
-		const name = draft.trim();
-		if (!name || friends.includes(name)) return;
-		friends = [...friends, name];
-		draft = "";
-	}
-
-	function removeFriend(name) {
-		friends = friends.filter((friend) => friend !== name);
-	}
+	let { users = [], selectedIds = [], error = "" } = $props();
+	const selected = $derived(new Set((selectedIds || []).map(String)));
 </script>
 
 <div class="picker">
-	<input type="hidden" name="friendNames" value={friends.join(", ")} />
-	<div class="add-row">
-		<input bind:value={draft} placeholder="Add friend, e.g. Mia" onkeydown={(event) => event.key === "Enter" && (event.preventDefault(), addFriend())} />
-		<button class="ghost-button" type="button" onclick={addFriend}>Add</button>
-	</div>
-	<div class="chips">
-		{#each friends as friend}
-			<button type="button" onclick={() => removeFriend(friend)}>{friend} x</button>
-		{/each}
-		{#if friends.length === 0}
-			<span class="muted">No friends invited yet.</span>
-		{/if}
-	</div>
+	{#if users.length}
+		<div class="user-grid">
+			{#each users as user}
+				<label class="user-option">
+					<input type="checkbox" name="invitedUserIds" value={user.id} checked={selected.has(user.id)} />
+					<span>{user.username}</span>
+				</label>
+			{/each}
+		</div>
+	{:else}
+		<p class="muted">No other users available yet. Create another account to invite someone.</p>
+	{/if}
+	{#if error}
+		<p class="field-error">{error}</p>
+	{/if}
 </div>
 
 <style>
@@ -38,23 +27,38 @@
 		gap: 10px;
 	}
 
-	.add-row {
-		display: grid;
-		grid-template-columns: 1fr auto;
-		gap: 8px;
-	}
-
-	.chips {
+	.user-grid {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 8px;
 	}
 
-	.chips button {
-		border: 1px solid #cbd5e1;
-		background: #f8fafc;
+	.user-option {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		border: 1px solid #d8bfa4;
 		border-radius: 999px;
-		padding: 6px 10px;
+		background: #fff7ec;
+		padding: 7px 11px;
+		color: #7a3f1d;
+		font-weight: 900;
+	}
+
+	.user-option:has(input:checked) {
+		border-color: #b8dfad;
+		background: #edf8e9;
+		color: #2f6f35;
+	}
+
+	.user-option input {
+		width: auto;
+	}
+
+	.field-error {
+		margin: 0;
+		color: #b42318;
+		font-size: 0.88rem;
 		font-weight: 800;
 	}
 </style>

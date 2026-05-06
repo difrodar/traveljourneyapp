@@ -3,6 +3,8 @@ import {
 	completeEventFromForm,
 	deleteEvent,
 	getEvent,
+	listInviteableUsers,
+	respondToInvitation,
 	updateEventFromForm,
 	validateEventForm
 } from "$lib/server/repository.js";
@@ -21,17 +23,20 @@ const eventFormFields = [
 	"lng",
 	"backgroundType",
 	"description",
-	"friendNames"
+	"invitedUserIds"
 ];
 
 function eventValues(form) {
-	return Object.fromEntries(eventFormFields.map((field) => [field, String(form.get(field) || "")]));
+	return {
+		...Object.fromEntries(eventFormFields.map((field) => [field, String(form.get(field) || "")])),
+		invitedUserIds: form.getAll("invitedUserIds").map(String)
+	};
 }
 
 export async function load({ locals, params }) {
-	const event = await getEvent(locals.user.id, params.id);
+	const [event, inviteableUsers] = await Promise.all([getEvent(locals.user.id, params.id), listInviteableUsers(locals.user.id)]);
 	if (!event) throw error(404, "Event not found");
-	return { event };
+	return { event, inviteableUsers };
 }
 
 export const actions = {
@@ -49,6 +54,13 @@ export const actions = {
 				return fail(400, {
 					error: "Please check the highlighted fields.",
 					fieldErrors: { eventImageFile: error.message },
+					values
+				});
+			}
+			if (String(error.message || "").startsWith("Invited users:")) {
+				return fail(400, {
+					error: "Please check the highlighted fields.",
+					fieldErrors: { invitedUserIds: error.message },
 					values
 				});
 			}
@@ -82,6 +94,22 @@ export const actions = {
 	},
 	delete: async ({ locals, params }) => {
 		await deleteEvent(locals.user.id, params.id);
+		throw redirect(303, "/events");
+	},
+	accept: async ({ locals, params }) => {
+		try {
+			await respondToInvitation(locals.user.id, params.id, "accepted");
+		} catch (error) {
+			return fail(400, { error: error.message });
+		}
+		return { message: "Invitation accepted." };
+	},
+	decline: async ({ locals, params }) => {
+		try {
+			await respondToInvitation(locals.user.id, params.id, "declined");
+		} catch (error) {
+			return fail(400, { error: error.message });
+		}
 		throw redirect(303, "/events");
 	}
 };

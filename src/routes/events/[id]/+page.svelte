@@ -7,6 +7,9 @@
 	let { data, form } = $props();
 	const event = $derived(data.event);
 	const friends = $derived(event.friends || []);
+	const isOwner = $derived(Boolean(event.isOwner));
+	const isInvitedViewer = $derived(Boolean(event.invitationStatus) && !isOwner);
+	const canSaveMemory = $derived(isOwner || (event.invitationStatus === "accepted" && event.status === "completed"));
 	const hasMemory = $derived(Boolean(event.journeyEntry?.memoryText));
 	const displayDate = $derived(formatEventDate(event.date, event.time));
 	const gallery = $derived.by(() => buildGallery(event));
@@ -58,9 +61,11 @@
 			<a href="/map?event={event.id}">Map</a>
 			<a href="/events/new" class="muted-link">+ Create Event</a>
 		</nav>
-		<form method="POST" action="?/delete">
-			<button class="danger-link" type="submit">Delete event</button>
-		</form>
+		{#if isOwner}
+			<form method="POST" action="?/delete">
+				<button class="danger-link" type="submit">Delete event</button>
+			</form>
+		{/if}
 	</aside>
 
 	<section class="event-detail">
@@ -77,13 +82,19 @@
 				<div class="cover-fallback">{event.category}</div>
 			{/if}
 			<div class="hero-actions">
-				<a href="#edit-plan">Edit Event</a>
+				{#if isOwner}
+					<a href="#edit-plan">Edit Event</a>
+				{/if}
 				<a href="#share-preview">Share</a>
 			</div>
 			<a class="close-button" href="/events" aria-label="Back to events">X</a>
 			<div class="hero-copy">
 				<div class="hero-tags">
-					<span class="status {event.status}">{event.status}</span>
+					{#if isInvitedViewer}
+						<span class="status invited">{event.invitationStatus}</span>
+					{:else}
+						<span class="status {event.status}">{event.status}</span>
+					{/if}
 					<span class="category">{event.category}</span>
 				</div>
 				<h1>{event.title}</h1>
@@ -97,6 +108,26 @@
 
 		<section class="content-shell">
 			<div class="primary-column">
+				{#if isInvitedViewer}
+					<section class="info-panel invitation-panel">
+						<div>
+							<p class="eyebrow">Invitation</p>
+							<h2>You are invited by {event.owner?.username || "another TripTales user"}</h2>
+							<p class="lead-text">Accept the invitation to keep it in your profile, or decline to remove yourself from this event.</p>
+						</div>
+						<div class="invitation-actions">
+							{#if event.invitationStatus !== "accepted"}
+								<form method="POST" action="?/accept">
+									<button class="button" type="submit">Accept invitation</button>
+								</form>
+							{/if}
+							<form method="POST" action="?/decline">
+								<button class="ghost-button" type="submit">Decline</button>
+							</form>
+						</div>
+					</section>
+				{/if}
+
 				<section class="info-panel">
 					<div>
 						<p class="eyebrow">Plan</p>
@@ -118,16 +149,16 @@
 						</div>
 						<div>
 							<span>Status</span>
-							<strong>{event.status}</strong>
+							<strong>{isInvitedViewer ? event.invitationStatus : event.status}</strong>
 						</div>
 					</div>
 					<div class="friend-strip">
-						<span>Invited friends</span>
+						<span>Invited TripTales users</span>
 						<div>
 							{#each friends as friend}
 								<strong>{friend.name}</strong>
 							{:else}
-								<p class="muted">No friends invited yet.</p>
+								<p class="muted">No users invited yet.</p>
 							{/each}
 						</div>
 					</div>
@@ -160,61 +191,73 @@
 					<EventMapPanel event={event} />
 				</div>
 
-				<section id="edit-plan" class="edit-section">
-					<div class="section-heading">
-						<p class="eyebrow">Organize</p>
-						<h2>Edit plan</h2>
-					</div>
-					<EventForm event={event} action="?/update" submitLabel="Save changes" {form} />
-				</section>
+				{#if isOwner}
+					<section id="edit-plan" class="edit-section">
+						<div class="section-heading">
+							<p class="eyebrow">Organize</p>
+							<h2>Edit plan</h2>
+						</div>
+						<EventForm event={event} action="?/update" submitLabel="Save changes" {form} inviteableUsers={data.inviteableUsers} />
+					</section>
+				{/if}
 			</div>
 
 			<aside class="secondary-column">
-				<section class="after-panel">
-					<p class="eyebrow">After the event</p>
-					<h2>Journey memory</h2>
-					<p class="muted">Add a personal rating and memory once the event has happened.</p>
-					<form class="memory-form" method="POST" action="?/complete" enctype="multipart/form-data">
-						<div class="field">
-							<span class="field-label">Your rating</span>
-							<RatingInput value={event.journeyEntry?.rating || 4} />
-						</div>
-						<div class="field">
-							<label for="memoryText">Memory text</label>
-							<textarea id="memoryText" name="memoryText" aria-invalid={Boolean(form?.memoryFieldErrors?.memoryText)} required>{form?.memoryValues?.memoryText ?? event.journeyEntry?.memoryText ?? ""}</textarea>
-							{#if form?.memoryFieldErrors?.memoryText}
-								<p class="field-error">{form.memoryFieldErrors.memoryText}</p>
-							{/if}
-						</div>
-						<div class="field">
-							<label for="memoryImageFile">Memory image optional</label>
-							<input
-								id="memoryImageFile"
-								name="memoryImageFile"
-								type="file"
-								accept="image/jpeg,image/png,image/webp,image/gif"
-								aria-invalid={Boolean(form?.memoryFieldErrors?.memoryImageFile)}
-							/>
-							{#if form?.memoryFieldErrors?.memoryImageFile}
-								<p class="field-error">{form.memoryFieldErrors.memoryImageFile}</p>
-							{/if}
-							{#if event.journeyEntry?.imageUrl}
-								<label class="checkbox-field">
-									<input name="clearMemoryImage" type="checkbox" value="true" />
-									<span>Remove current memory image</span>
-								</label>
-							{/if}
-						</div>
-						<button class="button" type="submit">Save memory</button>
-					</form>
+				{#if canSaveMemory}
+					<section class="after-panel">
+						<p class="eyebrow">After the event</p>
+						<h2>Journey memory</h2>
+						<p class="muted">Add your personal rating and memory once the event has happened.</p>
+						<form class="memory-form" method="POST" action="?/complete" enctype="multipart/form-data">
+							<div class="field">
+								<span class="field-label">Your rating</span>
+								<RatingInput value={event.journeyEntry?.rating || 4} />
+							</div>
+							<div class="field">
+								<label for="memoryText">Memory text</label>
+								<textarea id="memoryText" name="memoryText" aria-invalid={Boolean(form?.memoryFieldErrors?.memoryText)} required>{form?.memoryValues?.memoryText ?? event.journeyEntry?.memoryText ?? ""}</textarea>
+								{#if form?.memoryFieldErrors?.memoryText}
+									<p class="field-error">{form.memoryFieldErrors.memoryText}</p>
+								{/if}
+							</div>
+							<div class="field">
+								<label for="memoryImageFile">Memory image optional</label>
+								<input
+									id="memoryImageFile"
+									name="memoryImageFile"
+									type="file"
+									accept="image/jpeg,image/png,image/webp,image/gif"
+									aria-invalid={Boolean(form?.memoryFieldErrors?.memoryImageFile)}
+								/>
+								{#if form?.memoryFieldErrors?.memoryImageFile}
+									<p class="field-error">{form.memoryFieldErrors.memoryImageFile}</p>
+								{/if}
+								{#if event.journeyEntry?.imageUrl}
+									<label class="checkbox-field">
+										<input name="clearMemoryImage" type="checkbox" value="true" />
+										<span>Remove current memory image</span>
+									</label>
+								{/if}
+							</div>
+							<button class="button" type="submit">Save memory</button>
+						</form>
 
-					{#if hasMemory}
-						<article class="memory-card">
-							<span>{event.journeyEntry.rating}/5 personal rating</span>
-							<p>{event.journeyEntry.memoryText}</p>
-						</article>
-					{/if}
-				</section>
+						{#if hasMemory}
+							<article class="memory-card">
+								<span>{event.journeyEntry.rating}/5 personal rating</span>
+								<p>{event.journeyEntry.memoryText}</p>
+							</article>
+						{/if}
+					</section>
+				{:else if isInvitedViewer}
+					<section class="after-panel">
+						<p class="eyebrow">After the event</p>
+						<h2>Journey memory</h2>
+						<p class="muted">
+							Accept the invitation and wait until the event is completed before adding your personal journey memory.
+						</p>
+					</section>
+				{/if}
 
 				<section id="share-preview" class="share-section">
 					<div class="section-heading">
@@ -429,6 +472,7 @@
 	}
 
 	.info-panel,
+	.invitation-panel,
 	.photo-panel,
 	.after-panel,
 	.share-section,
@@ -557,6 +601,27 @@
 	.field-label {
 		font-weight: 800;
 		color: #253044;
+	}
+
+	.status.invited {
+		background: #fff0dc;
+		border-color: #f4c28e;
+		color: #a94724;
+	}
+
+	.invitation-panel {
+		background: #fff7ec;
+	}
+
+	.invitation-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 14px;
+	}
+
+	.invitation-actions form {
+		margin: 0;
 	}
 
 	.field-error {

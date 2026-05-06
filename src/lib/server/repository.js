@@ -78,23 +78,35 @@ function parseCoordinate(value) {
 
 function serialize(doc) {
 	if (!doc) return null;
-	const copy = { ...doc, id: doc._id.toString() };
+	const copy = serializeValue({ ...doc, id: doc._id.toString() });
 	delete copy._id;
-	for (const key of Object.keys(copy)) {
-		if (copy[key] instanceof ObjectId) copy[key] = copy[key].toString();
-		if (copy[key] instanceof Date) copy[key] = copy[key].toISOString();
-		if (Array.isArray(copy[key])) {
-			copy[key] = copy[key].map((item) => (item instanceof ObjectId ? item.toString() : item));
-		}
-	}
 	return copy;
 }
 
-function parseFriendNames(value) {
-	return clean(value)
-		.split(",")
-		.map((name) => name.trim())
+function serializeValue(value) {
+	if (value instanceof ObjectId) return value.toString();
+	if (value instanceof Date) return value.toISOString();
+	if (Array.isArray(value)) return value.map(serializeValue);
+	if (value && typeof value === "object") {
+		return Object.fromEntries(Object.entries(value).map(([key, nested]) => [key, serializeValue(nested)]));
+	}
+	return value;
+}
+
+function parseInvitedUserIds(form) {
+	return [...new Set(form.getAll("invitedUserIds").flatMap((value) => clean(value).split(",")))]
+		.map((id) => clean(id))
 		.filter(Boolean);
+}
+
+function buildInvitations(existing = [], invitedUserIds = []) {
+	const existingMap = new Map((existing || []).map((invitation) => [invitation.userId?.toString(), invitation.status || "invited"]));
+	const now = new Date();
+	return invitedUserIds.map((userId) => ({
+		userId,
+		status: existingMap.get(userId.toString()) === "accepted" ? "accepted" : "invited",
+		updatedAt: now
+	}));
 }
 
 function hasUploadedFile(value) {
@@ -226,20 +238,6 @@ async function seedDemoData(userId) {
 	}));
 	const locationIds = Object.values((await collections.locations.insertMany(locations)).insertedIds);
 
-	const friendIds = Object.values(
-		(
-			await collections.friends.insertMany(
-				["Mia", "Noah", "Ava", "Luca", "Sofia"].map((name) => ({
-					name,
-					userId: ownerId,
-					invitationStatus: "invited",
-					createdAt: now,
-					updatedAt: now
-				}))
-			)
-		).insertedIds
-	);
-
 	const eventIds = Object.values(
 		(
 			await collections.events.insertMany([
@@ -252,7 +250,7 @@ async function seedDemoData(userId) {
 					category: "Beach",
 					description: "Watch the sunset after class and take photos near the cliffs.",
 					status: "planned",
-					friendIds: [friendIds[0], friendIds[1]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -265,7 +263,7 @@ async function seedDemoData(userId) {
 					category: "Culture",
 					description: "Explore the gardens and museums with the exchange group.",
 					status: "completed",
-					friendIds: [friendIds[2], friendIds[3]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -278,7 +276,7 @@ async function seedDemoData(userId) {
 					category: "Food",
 					description: "Dinner after beach volleyball.",
 					status: "planned",
-					friendIds: [friendIds[0], friendIds[4]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -291,7 +289,7 @@ async function seedDemoData(userId) {
 					category: "Party",
 					description: "Rooftop evening downtown after finals week.",
 					status: "completed",
-					friendIds: [friendIds[1], friendIds[2], friendIds[4]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -304,7 +302,7 @@ async function seedDemoData(userId) {
 					category: "Weekend Trip",
 					description: "Roadtrip weekend to Los Angeles with Griffith Observatory, Venice Beach and food stops.",
 					status: "planned",
-					friendIds: [friendIds[0], friendIds[1]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -317,7 +315,7 @@ async function seedDemoData(userId) {
 					category: "Culture",
 					description: "Cross-border day trip for street food, markets and Avenida Revolucion.",
 					status: "planned",
-					friendIds: [friendIds[0], friendIds[3]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -330,7 +328,7 @@ async function seedDemoData(userId) {
 					category: "Weekend Trip",
 					description: "Weekend escape to Denver with skyline views and a possible mountain day.",
 					status: "planned",
-					friendIds: [friendIds[1], friendIds[4]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -343,7 +341,7 @@ async function seedDemoData(userId) {
 					category: "Sightseeing",
 					description: "Photo walk around the Golden Gate Bridge during golden hour.",
 					status: "completed",
-					friendIds: [friendIds[2], friendIds[3]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				},
@@ -356,7 +354,7 @@ async function seedDemoData(userId) {
 					category: "Weekend Trip",
 					description: "Long weekend in New York City with skyline views, food stops and museum time.",
 					status: "planned",
-					friendIds: [friendIds[0], friendIds[1], friendIds[4]],
+					invitedUserIds: [],
 					createdAt: now,
 					updatedAt: now
 				}
@@ -444,35 +442,79 @@ async function hydrateEvents(events, userId) {
 	const collections = await getCollections();
 	const ownerId = userOid(userId);
 	const locationIds = events.map((event) => event.locationId).filter(Boolean);
-	const friendIds = events.flatMap((event) => event.friendIds || []).filter(Boolean);
+	const invitedUserIds = events
+		.flatMap((event) => [
+			...(event.invitedUserIds || []),
+			...(event.invitations || []).map((invitation) => invitation.userId).filter(Boolean)
+		])
+		.filter(Boolean);
 	const eventIds = events.map((event) => event._id);
-	const [locations, friends, journeyEntries] = await Promise.all([
-		collections.locations.find({ userId: ownerId, _id: { $in: locationIds } }).toArray(),
-		collections.friends.find({ userId: ownerId, _id: { $in: friendIds } }).toArray(),
+	const ownerIds = events.map((event) => event.userId).filter(Boolean);
+	const [locations, invitedUsers, owners, journeyEntries] = await Promise.all([
+		collections.locations.find({ _id: { $in: locationIds } }).toArray(),
+		collections.users.find({ _id: { $in: invitedUserIds } }).project({ username: 1 }).toArray(),
+		collections.users.find({ _id: { $in: ownerIds } }).project({ username: 1 }).toArray(),
 		collections.journeyEntries.find({ userId: ownerId, eventId: { $in: eventIds } }).toArray()
 	]);
 	const locationMap = new Map(locations.map((location) => [location._id.toString(), serialize(location)]));
-	const friendMap = new Map(friends.map((friend) => [friend._id.toString(), serialize(friend)]));
+	const invitedUserMap = new Map(
+		invitedUsers.map((user) => {
+			const serialized = serialize(user);
+			return [user._id.toString(), { ...serialized, name: serialized.username }];
+		})
+	);
+	const ownerMap = new Map(
+		owners.map((user) => {
+			const serialized = serialize(user);
+			return [user._id.toString(), { ...serialized, name: serialized.username }];
+		})
+	);
 	const journeyMap = new Map(journeyEntries.map((entry) => [entry.eventId.toString(), serialize(entry)]));
 
 	return events.map((event) => {
 		const serialized = serialize(event);
 		const location = locationMap.get(event.locationId?.toString()) || null;
+		const viewerInvitation = (event.invitations || []).find((invitation) => invitation.userId?.toString() === ownerId.toString());
+		const isInvited = (event.invitedUserIds || []).some((id) => id.toString() === ownerId.toString());
+		const invitationStatus = viewerInvitation?.status || (isInvited ? "invited" : "");
 		return {
 			...serialized,
 			location: location ? { ...location, media: resolveLocationMedia(location) } : null,
 			media: resolveEventMedia(serialized, location),
-			friends: (event.friendIds || []).map((id) => friendMap.get(id.toString())).filter(Boolean),
+			owner: ownerMap.get(event.userId?.toString()) || null,
+			friends: (event.invitedUserIds || []).map((id) => invitedUserMap.get(id.toString())).filter(Boolean),
+			isOwner: event.userId?.toString() === ownerId.toString(),
+			invitationStatus,
 			journeyEntry: journeyMap.get(event._id.toString()) || null
 		};
+	});
+}
+
+export async function listInviteableUsers(userId) {
+	const collections = await getCollections();
+	const ownerId = userOid(userId);
+	return (
+		await collections.users
+			.find({ _id: { $ne: ownerId } })
+			.project({ username: 1 })
+			.sort({ username: 1 })
+			.toArray()
+	).map((user) => {
+		const serialized = serialize(user);
+		return { ...serialized, name: serialized.username };
 	});
 }
 
 export async function listEvents(userId, filters = {}) {
 	const collections = await getCollections();
 	const ownerId = userOid(userId);
-	const query = { userId: ownerId };
-	if (filters.status && filters.status !== "all") query.status = filters.status;
+	const query =
+		filters.status === "invited"
+			? { invitedUserIds: ownerId }
+			: filters.includeInvitations
+				? { $or: [{ userId: ownerId }, { invitedUserIds: ownerId }] }
+				: { userId: ownerId };
+	if (filters.status && filters.status !== "all" && filters.status !== "invited") query.status = filters.status;
 	if (filters.category && filters.category !== "all") query.category = filters.category;
 	if (filters.search) query.title = { $regex: filters.search, $options: "i" };
 	if (filters.from || filters.to) {
@@ -495,8 +537,15 @@ export async function listEvents(userId, filters = {}) {
 	return events;
 }
 
+export async function listInvitedEvents(userId) {
+	const collections = await getCollections();
+	const ownerId = userOid(userId);
+	const events = await collections.events.find({ invitedUserIds: ownerId }).sort({ date: 1, time: 1 }).toArray();
+	return hydrateEvents(events, ownerId);
+}
+
 export async function getDashboardData(userId) {
-	const events = await listEvents(userId, { sort: "asc" });
+	const events = await listEvents(userId, { sort: "asc", includeInvitations: true });
 	const completed = events.filter((event) => event.status === "completed");
 	const planned = events.filter((event) => event.status === "planned");
 	const ratings = completed.map((event) => event.journeyEntry?.rating).filter(Boolean);
@@ -505,7 +554,7 @@ export async function getDashboardData(userId) {
 		: 0;
 	return {
 		upcomingEvents: planned.slice(0, 4),
-		journeyHighlights: completed.slice(0, 3),
+		journeyHighlights: completed.filter((event) => event.journeyEntry).slice(0, 3),
 		stats: {
 			events: events.length,
 			locations: (await listLocations(userId)).length,
@@ -520,7 +569,7 @@ export async function getEvent(userId, id) {
 	if (!eventId) return null;
 	const collections = await getCollections();
 	const ownerId = userOid(userId);
-	const event = await collections.events.findOne({ userId: ownerId, _id: eventId });
+	const event = await collections.events.findOne({ _id: eventId, $or: [{ userId: ownerId }, { invitedUserIds: ownerId }] });
 	if (!event) return null;
 	const [hydrated] = await hydrateEvents([event], ownerId);
 	return hydrated;
@@ -549,23 +598,23 @@ export function validateEventForm(form) {
 	};
 }
 
-async function ensureFriends(userId, names) {
+async function resolveInvitedUserIds(userId, form) {
 	const collections = await getCollections();
 	const ownerId = userOid(userId);
-	const ids = [];
-	for (const name of names) {
-		const now = new Date();
-		const result = await collections.friends.findOneAndUpdate(
-			{ userId: ownerId, name },
-			{
-				$setOnInsert: { userId: ownerId, name, invitationStatus: "invited", createdAt: now },
-				$set: { updatedAt: now }
-			},
-			{ upsert: true, returnDocument: "after" }
-		);
-		ids.push(result._id);
+	const ids = parseInvitedUserIds(form);
+	if (!ids.length) return [];
+	const objectIds = ids.map(oid);
+	if (objectIds.some((id) => !id)) {
+		throw new Error("Invited users: Please select existing TripTales accounts only.");
 	}
-	return ids;
+	const users = await collections.users
+		.find({ _id: { $in: objectIds, $ne: ownerId } })
+		.project({ _id: 1 })
+		.toArray();
+	if (users.length !== objectIds.length) {
+		throw new Error("Invited users: Please select existing TripTales accounts only.");
+	}
+	return objectIds;
 }
 
 async function saveLocationFromForm(userId, form, existingId = null) {
@@ -597,7 +646,7 @@ async function saveLocationFromForm(userId, form, existingId = null) {
 	return (await collections.locations.insertOne({ ...location, createdAt: now })).insertedId;
 }
 
-async function eventPayloadFromForm(userId, form, locationId, friendIds, existing = {}) {
+async function eventPayloadFromForm(userId, form, locationId, invitedUserIds, existing = {}) {
 	const title = clean(form.get("title"));
 	const imageFields = await uploadedImageFields(form, "eventImageFile", "clearEventImage", existing, title, "Event image");
 	return {
@@ -609,7 +658,8 @@ async function eventPayloadFromForm(userId, form, locationId, friendIds, existin
 		category: clean(form.get("category")),
 		description: clean(form.get("description")),
 		status: clean(form.get("status")) === "completed" ? "completed" : "planned",
-		friendIds,
+		invitedUserIds,
+		invitations: buildInvitations(existing.invitations, invitedUserIds),
 		...imageFields,
 		updatedAt: new Date()
 	};
@@ -617,10 +667,10 @@ async function eventPayloadFromForm(userId, form, locationId, friendIds, existin
 
 export async function createEventFromForm(userId, form) {
 	const collections = await getCollections();
-	const friendIds = await ensureFriends(userId, parseFriendNames(form.get("friendNames")));
+	const invitedUserIds = await resolveInvitedUserIds(userId, form);
 	const locationId = await saveLocationFromForm(userId, form);
 	const result = await collections.events.insertOne({
-		...(await eventPayloadFromForm(userId, form, locationId, friendIds)),
+		...(await eventPayloadFromForm(userId, form, locationId, invitedUserIds)),
 		createdAt: new Date()
 	});
 	return result.insertedId.toString();
@@ -631,11 +681,11 @@ export async function updateEventFromForm(userId, id, form) {
 	const ownerId = userOid(userId);
 	const event = await collections.events.findOne({ userId: ownerId, _id: oid(id) });
 	if (!event) throw new Error("Event not found.");
-	const friendIds = await ensureFriends(ownerId, parseFriendNames(form.get("friendNames")));
+	const invitedUserIds = await resolveInvitedUserIds(ownerId, form);
 	const locationId = await saveLocationFromForm(ownerId, form, event.locationId?.toString());
 	await collections.events.updateOne(
 		{ userId: ownerId, _id: oid(id) },
-		{ $set: await eventPayloadFromForm(ownerId, form, locationId, friendIds, event) }
+		{ $set: await eventPayloadFromForm(ownerId, form, locationId, invitedUserIds, event), $unset: { friendIds: "" } }
 	);
 }
 
@@ -654,6 +704,16 @@ export async function completeEventFromForm(userId, id, form) {
 	const ownerId = userOid(userId);
 	const eventId = oid(id);
 	const now = new Date();
+	const event = await collections.events.findOne({ _id: eventId, $or: [{ userId: ownerId }, { invitedUserIds: ownerId }] });
+	if (!event) throw new Error("Event not found.");
+	const isOwner = event.userId?.toString() === ownerId.toString();
+	const invitation = (event.invitations || []).find((entry) => entry.userId?.toString() === ownerId.toString());
+	if (!isOwner && invitation?.status !== "accepted") {
+		throw new Error("Please accept the invitation before saving a journey memory.");
+	}
+	if (!isOwner && event.status !== "completed") {
+		throw new Error("Journey memory can be saved after the event is completed.");
+	}
 	const existingEntry = await collections.journeyEntries.findOne({ userId: ownerId, eventId });
 	const memoryImageFields = await uploadedImageFields(
 		form,
@@ -663,7 +723,9 @@ export async function completeEventFromForm(userId, id, form) {
 		"Journey memory photo",
 		"Memory image"
 	);
-	await collections.events.updateOne({ userId: ownerId, _id: eventId }, { $set: { status: "completed", updatedAt: now } });
+	if (isOwner) {
+		await collections.events.updateOne({ userId: ownerId, _id: eventId }, { $set: { status: "completed", updatedAt: now } });
+	}
 	await collections.journeyEntries.findOneAndUpdate(
 		{ userId: ownerId, eventId },
 		{
@@ -685,10 +747,16 @@ export async function listJourneyEntries(userId, filters = {}) {
 		sort: normalizeJourneySort(filters.sort) === "dateAsc" ? "dateAsc" : "dateDesc",
 		category: filters.category,
 		from: filters.from,
-		to: filters.to
+		to: filters.to,
+		includeInvitations: true
 	});
 	const minRating = Number(filters.minRating || 0);
-	const entries = events.filter((event) => event.journeyEntry && Number(event.journeyEntry.rating || 0) >= minRating);
+	const entries = events.filter(
+		(event) =>
+			(event.isOwner || event.invitationStatus === "accepted") &&
+			event.journeyEntry &&
+			Number(event.journeyEntry.rating || 0) >= minRating
+	);
 	const sort = normalizeJourneySort(filters.sort);
 	if (sort === "ratingDesc" || sort === "ratingAsc") {
 		const direction = sort === "ratingDesc" ? -1 : 1;
@@ -699,6 +767,37 @@ export async function listJourneyEntries(userId, filters = {}) {
 		);
 	}
 	return entries;
+}
+
+export async function respondToInvitation(userId, id, status) {
+	const collections = await getCollections();
+	const ownerId = userOid(userId);
+	const eventId = oid(id);
+	if (!eventId) throw new Error("Event not found.");
+	const event = await collections.events.findOne({ _id: eventId, invitedUserIds: ownerId });
+	if (!event) throw new Error("Invitation not found.");
+	const now = new Date();
+	if (status === "accepted") {
+		const invitations = buildInvitations(event.invitations, event.invitedUserIds || []).map((invitation) =>
+			invitation.userId.toString() === ownerId.toString() ? { ...invitation, status: "accepted", updatedAt: now } : invitation
+		);
+		await collections.events.updateOne({ _id: eventId }, { $set: { invitations, updatedAt: now } });
+		return;
+	}
+	if (status === "declined") {
+		await collections.events.updateOne(
+			{ _id: eventId },
+			{
+				$pull: {
+					invitedUserIds: ownerId,
+					invitations: { userId: ownerId }
+				},
+				$set: { updatedAt: now }
+			}
+		);
+		return;
+	}
+	throw new Error("Unsupported invitation response.");
 }
 
 export async function listLocations(userId) {

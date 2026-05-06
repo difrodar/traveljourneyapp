@@ -3,17 +3,14 @@
 	import CityCombobox from "./CityCombobox.svelte";
 	import FriendPicker from "./FriendPicker.svelte";
 
-	let { event = null, action = "?/create", submitLabel = "Save event", form = null } = $props();
+	let { event = null, action = "?/create", submitLabel = "Save event", form = null, inviteableUsers = [] } = $props();
 	const location = $derived(event?.location || {});
 	const values = $derived(form?.values || {});
 	const fieldErrors = $derived(form?.fieldErrors || {});
-	const friendInitial = $derived(
-		values.friendNames
-			? values.friendNames
-					.split(",")
-					.map((name) => ({ name: name.trim() }))
-					.filter((friend) => friend.name)
-			: event?.friends || []
+	const selectedUserIds = $derived(
+		Array.isArray(values.invitedUserIds) && values.invitedUserIds.length
+			? values.invitedUserIds
+			: event?.friends?.map((friend) => friend.id) || []
 	);
 
 	function fieldValue(name, fallback = "") {
@@ -124,8 +121,8 @@
 		<input type="hidden" name="locationImageLicense" value={location.imageLicense || ""} />
 		<input type="hidden" name="locationImageSourceUrl" value={location.imageSourceUrl || ""} />
 		<div class="field full">
-			<span class="field-label">Invited friends</span>
-			<FriendPicker initial={friendInitial} />
+			<span class="field-label">Invited TripTales users</span>
+			<FriendPicker users={inviteableUsers} selectedIds={selectedUserIds} error={fieldErrors.invitedUserIds} />
 		</div>
 	</div>
 	<div class="actions">

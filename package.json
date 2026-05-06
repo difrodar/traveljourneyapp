@@ -11,6 +11,7 @@
 		"upsert:samples": "node scripts/upsert-sample-events.js",
 		"normalize:idea-media": "node scripts/normalize-converted-idea-media.js",
 		"normalize:city-coordinates": "node scripts/normalize-city-coordinates.js",
+		"cleanup:legacy-friends": "node scripts/cleanup-legacy-friends.js",
 		"prepare": "svelte-kit sync || echo ''"
 	},
 	"devDependencies": {
