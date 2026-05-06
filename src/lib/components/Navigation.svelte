@@ -24,7 +24,7 @@
 			</a>
 		{/each}
 		{#if user}
-			<span class="user-pill">{user.username}</span>
+			<a class="user-pill" class:active={page.url.pathname === "/profile"} href="/profile">{user.username}</a>
 			<form method="POST" action="/logout">
 				<button class="logout-button" type="submit">Logout</button>
 			</form>
