@@ -69,6 +69,75 @@ function normalizeJourneySort(value) {
 	return ["dateDesc", "dateAsc", "ratingDesc", "ratingAsc"].includes(sort) ? sort : "dateDesc";
 }
 
+function padDatePart(value) {
+	return String(value).padStart(2, "0");
+}
+
+function dateKey(date) {
+	return `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}-${padDatePart(date.getDate())}`;
+}
+
+function monthParamFromDate(date) {
+	return `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}`;
+}
+
+function parseMonthParam(value) {
+	const text = clean(value);
+	if (!/^\d{4}-\d{2}$/.test(text)) return new Date();
+	const [year, month] = text.split("-").map(Number);
+	if (month < 1 || month > 12) return new Date();
+	return new Date(year, month - 1, 1);
+}
+
+function addMonths(date, amount) {
+	return new Date(date.getFullYear(), date.getMonth() + amount, 1);
+}
+
+function buildCalendarMonth(events, month) {
+	const selected = parseMonthParam(month);
+	const monthParam = monthParamFromDate(selected);
+	const today = new Date();
+	const todayKey = dateKey(today);
+	const currentMonthParam = monthParamFromDate(today);
+	const firstOfMonth = new Date(selected.getFullYear(), selected.getMonth(), 1);
+	const firstCalendarDate = new Date(firstOfMonth);
+	firstCalendarDate.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
+	const eventsByDate = new Map();
+
+	for (const event of events) {
+		if (!isDateFilter(event.date)) continue;
+		if (!eventsByDate.has(event.date)) eventsByDate.set(event.date, []);
+		eventsByDate.get(event.date).push(event);
+	}
+
+	const days = [];
+	for (let index = 0; index < 42; index += 1) {
+		const current = new Date(firstCalendarDate);
+		current.setDate(firstCalendarDate.getDate() + index);
+		const currentDateKey = dateKey(current);
+		days.push({
+			date: currentDateKey,
+			dayNumber: current.getDate(),
+			weekdayLabel: new Intl.DateTimeFormat("en", { weekday: "short" }).format(current),
+			isToday: currentDateKey === todayKey,
+			isCurrentMonth: current.getMonth() === selected.getMonth(),
+			events: eventsByDate.get(currentDateKey) || []
+		});
+	}
+
+	return {
+		monthLabel: new Intl.DateTimeFormat("en", { month: "long", year: "numeric" }).format(selected),
+		monthParam,
+		currentMonthParam,
+		isSelectedCurrentMonth: monthParam === currentMonthParam,
+		previousMonthParam: monthParamFromDate(addMonths(selected, -1)),
+		nextMonthParam: monthParamFromDate(addMonths(selected, 1)),
+		weekdayLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+		hasMonthEvents: events.some((event) => event.date?.startsWith(monthParam)),
+		weeks: Array.from({ length: 6 }, (_, weekIndex) => days.slice(weekIndex * 7, weekIndex * 7 + 7))
+	};
+}
+
 function parseCoordinate(value) {
 	const text = clean(value);
 	if (!text) return null;
@@ -544,23 +613,14 @@ export async function listInvitedEvents(userId) {
 	return hydrateEvents(events, ownerId);
 }
 
-export async function getDashboardData(userId) {
+export async function getDashboardData(userId, options = {}) {
 	const events = await listEvents(userId, { sort: "asc", includeInvitations: true });
 	const completed = events.filter((event) => event.status === "completed");
 	const planned = events.filter((event) => event.status === "planned");
-	const ratings = completed.map((event) => event.journeyEntry?.rating).filter(Boolean);
-	const averageRating = ratings.length
-		? Math.round((ratings.reduce((sum, rating) => sum + Number(rating), 0) / ratings.length) * 10) / 10
-		: 0;
 	return {
+		calendar: buildCalendarMonth(events, options.month),
 		upcomingEvents: planned.slice(0, 4),
-		journeyHighlights: completed.filter((event) => event.journeyEntry).slice(0, 3),
-		stats: {
-			events: events.length,
-			locations: (await listLocations(userId)).length,
-			averageRating,
-			ideas: (await listIdeas(userId)).length
-		}
+		journeyHighlights: completed.filter((event) => event.journeyEntry).slice(0, 3)
 	};
 }
 

@@ -1,75 +1,83 @@
 <script>
-	import DashboardStats from "$lib/components/DashboardStats.svelte";
 	import EventCard from "$lib/components/EventCard.svelte";
 	import JourneyCard from "$lib/components/JourneyCard.svelte";
-	import { categoryMedia } from "$lib/media.js";
 
 	let { data } = $props();
-	const heroEvent = $derived(data.upcomingEvents[0] || data.journeyHighlights[0]);
-	const heroMedia = $derived(heroEvent?.media || categoryMedia.beach);
-	const galleryItems = $derived([...data.upcomingEvents, ...data.journeyHighlights].slice(0, 5));
+	const calendar = $derived(data.calendar);
 </script>
 
-<main class="page-shell">
-	<section class="hero">
-		<div class="panel">
-			<p class="eyebrow">TripTales</p>
-			<h1>Plan the semester. Keep the memories.</h1>
-			<p class="lead">
-				A travel event planner and journey memory app for exchange students and travelers.
-				Start in San Diego, then keep the timeline going wherever the semester takes you.
-			</p>
-			<div class="toolbar">
-				<a class="button" href="/events/new">Create event</a>
-				<a class="ghost-button" href="/journey">Open journey</a>
-			</div>
-			<div class="hero-tags" aria-label="TripTales themes">
-				<span>Sunset plans</span>
-				<span>Friend groups</span>
-				<span>Journey notes</span>
-			</div>
+<main class="page-shell dashboard-page">
+	<header class="planner-header">
+		<div>
+			<p class="eyebrow">Dashboard planner</p>
+			<h1>{calendar.monthLabel || "Your travel calendar"}</h1>
+			<p class="lead">Plan the month, spot busy days and jump straight into the event details that matter next.</p>
 		</div>
-		<div class="hero-visual">
-			{#if heroMedia?.imageUrl}
-				<img src={heroMedia.imageUrl} alt={heroMedia.imageAlt || "TripTales travel scene"} />
-			{/if}
-			<div class="hero-overlay">
-				<p class="eyebrow">From San Diego to the world</p>
-				<h2>{heroEvent?.title || "Beach days, tacos, road trips and the stories after."}</h2>
-				{#if heroEvent?.location}
-					<span>{heroEvent.location.name}, {heroEvent.location.country}</span>
-				{/if}
-			</div>
+		<div class="planner-actions">
+			<a class="ghost-button" href="/events">All events</a>
+			<a class="button" href="/events/new">Create event</a>
 		</div>
-	</section>
+	</header>
 
 	{#if data.setupError}
 		<div class="message error">{data.setupError}</div>
 	{/if}
 
-	<DashboardStats stats={data.stats} />
-
-	<section class="journey-strip">
-		<div class="strip-heading">
+	<section class="panel calendar-panel" aria-label="Monthly event calendar">
+		<div class="calendar-toolbar">
+			<a class="month-button" href="/?month={calendar.previousMonthParam}" aria-label="Previous month">Prev</a>
 			<div>
-				<p class="eyebrow">Around the journey</p>
-				<h2>Visual moments across places</h2>
+				<p class="eyebrow">Calendar</p>
+				<h2>{calendar.monthLabel}</h2>
+				{#if !calendar.isSelectedCurrentMonth}
+					<a class="current-month-button" href="/?month={calendar.currentMonthParam}">Current month</a>
+				{/if}
 			</div>
-			<a class="ghost-button" href="/map">Open world view</a>
+			<a class="month-button" href="/?month={calendar.nextMonthParam}" aria-label="Next month">Next</a>
 		</div>
-		<div class="strip-grid">
-			{#each galleryItems as item}
-				<a class="strip-card" href="/events/{item.id}">
-					{#if item.media?.imageUrl}
-						<img src={item.media.imageUrl} alt={item.media.imageAlt || item.title} />
-					{/if}
-					<span>{item.location?.city || item.location?.name}</span>
-					<strong>{item.title}</strong>
-				</a>
-			{:else}
-				<div class="empty-state">Create an event or save a journey memory to fill the visual journey strip.</div>
+
+		<div class="weekday-row" aria-hidden="true">
+			{#each calendar.weekdayLabels as weekday}
+				<span>{weekday}</span>
 			{/each}
 		</div>
+
+		<div class="month-grid">
+			{#each calendar.weeks as week}
+				{#each week as day}
+					<article class="calendar-day" class:outside={!day.isCurrentMonth} class:today={day.isToday}>
+						<div class="day-heading">
+							<span class="weekday-name">{day.weekdayLabel}</span>
+							<strong>{day.dayNumber}</strong>
+						</div>
+						<div class="day-events">
+							{#each day.events as event}
+								<a class="calendar-event {event.status}" href="/events/{event.id}">
+									<span class="event-time">{event.time || "All day"}</span>
+									<strong>{event.title}</strong>
+									<span class="event-meta">
+										{event.invitationStatus || event.status}
+										{#if event.location?.name}
+											- {event.location.name}
+										{/if}
+									</span>
+								</a>
+							{:else}
+								{#if day.isCurrentMonth}
+									<span class="quiet-slot">No events</span>
+								{/if}
+							{/each}
+						</div>
+					</article>
+				{/each}
+			{/each}
+		</div>
+
+		{#if !calendar.hasMonthEvents}
+			<div class="empty-state calendar-empty">
+				No events are scheduled for {calendar.monthLabel}. Create a plan or browse another month.
+			</div>
+		{/if}
 	</section>
 
 	<section class="grid two dashboard-sections">
@@ -109,136 +117,264 @@
 </main>
 
 <style>
+	.dashboard-page {
+		display: grid;
+		gap: 22px;
+	}
+
+	.planner-header {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 18px;
+		border-bottom: 1px solid var(--line);
+		padding-bottom: 18px;
+	}
+
+	.planner-header h1 {
+		margin-bottom: 10px;
+	}
+
+	.planner-actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 10px;
+	}
+
+	.calendar-panel {
+		display: grid;
+		gap: 14px;
+	}
+
+	.calendar-toolbar {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		gap: 14px;
+	}
+
+	.calendar-toolbar div {
+		text-align: center;
+	}
+
+	.calendar-toolbar h2,
+	.calendar-toolbar p {
+		margin-bottom: 0;
+	}
+
+	.current-month-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 34px;
+		margin-top: 10px;
+		border: 1px solid #b7dff0;
+		border-radius: 8px;
+		background: #eaf6fb;
+		color: #176b91;
+		font-size: 0.86rem;
+		font-weight: 900;
+		padding: 0 12px;
+	}
+
+	.current-month-button:hover {
+		border-color: #8ec8e0;
+		background: #dff1f8;
+	}
+
+	.month-button {
+		min-height: 42px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: #fff7ec;
+		color: var(--ink);
+		font-weight: 900;
+		padding: 0 14px;
+	}
+
+	.month-button:hover {
+		border-color: #e9b77e;
+		background: #fff1dc;
+	}
+
+	.weekday-row,
+	.month-grid {
+		display: grid;
+		grid-template-columns: repeat(7, minmax(0, 1fr));
+		gap: 8px;
+	}
+
+	.weekday-row span {
+		color: var(--muted);
+		font-size: 0.78rem;
+		font-weight: 900;
+		text-align: center;
+		text-transform: uppercase;
+	}
+
+	.month-grid {
+		align-items: stretch;
+	}
+
+	.calendar-day {
+		min-height: 154px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #fffdf8;
+		display: grid;
+		align-content: start;
+		gap: 8px;
+		padding: 10px;
+		overflow: hidden;
+	}
+
+	.calendar-day.outside {
+		background: rgba(255, 247, 236, 0.52);
+		color: #aa927e;
+	}
+
+	.calendar-day.today {
+		border-color: var(--coral);
+		box-shadow: inset 0 0 0 2px rgba(231, 95, 67, 0.16);
+	}
+
+	.day-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+	}
+
+	.weekday-name {
+		display: none;
+		color: var(--muted);
+		font-size: 0.82rem;
+		font-weight: 900;
+		text-transform: uppercase;
+	}
+
+	.day-heading strong {
+		display: grid;
+		place-items: center;
+		min-width: 30px;
+		height: 30px;
+		border-radius: 999px;
+		background: #fff0dc;
+		color: #8a4a12;
+	}
+
+	.today .day-heading strong {
+		background: var(--coral);
+		color: white;
+	}
+
+	.day-events {
+		display: grid;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	.calendar-event {
+		display: grid;
+		gap: 2px;
+		border-left: 4px solid var(--sky);
+		border-radius: 8px;
+		background: #eaf6fb;
+		padding: 7px;
+		min-width: 0;
+	}
+
+	.calendar-event.completed {
+		border-left-color: var(--palm);
+		background: #edf8e9;
+	}
+
+	.calendar-event strong,
+	.calendar-event span {
+		overflow-wrap: anywhere;
+	}
+
+	.calendar-event strong {
+		color: #253044;
+		font-size: 0.88rem;
+		line-height: 1.2;
+	}
+
+	.event-time,
+	.event-meta,
+	.quiet-slot {
+		color: var(--muted);
+		font-size: 0.75rem;
+		font-weight: 800;
+	}
+
+	.event-meta {
+		text-transform: capitalize;
+	}
+
+	.quiet-slot {
+		opacity: 0.68;
+	}
+
+	.calendar-empty {
+		margin-top: 2px;
+	}
+
 	.dashboard-sections {
-		margin-top: 22px;
+		margin-top: 0;
 	}
 
 	.slim {
 		margin-bottom: 12px;
 	}
 
-	.hero-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		margin-top: 18px;
-	}
-
-	.hero-tags span {
-		border: 1px solid #efc291;
-		border-radius: 999px;
-		padding: 7px 11px;
-		background: #fff1dc;
-		color: #7a3f1d;
-		font-weight: 800;
-		font-size: 0.86rem;
-	}
-
-	.hero-overlay {
-		max-width: 86%;
-	}
-
-	.hero-overlay span {
-		display: inline-flex;
-		margin-top: 12px;
-		border-radius: 999px;
-		padding: 7px 11px;
-		background: rgba(255, 247, 236, 0.92);
-		color: #43291a;
-		font-weight: 900;
-	}
-
-	.journey-strip {
-		margin-top: 22px;
-	}
-
-	.strip-heading {
-		display: flex;
-		align-items: flex-end;
-		justify-content: space-between;
-		gap: 16px;
-		margin-bottom: 12px;
-	}
-
-	.strip-grid {
-		display: grid;
-		grid-template-columns: 1.25fr repeat(4, minmax(0, 0.75fr));
-		gap: 12px;
-	}
-
-	.strip-card {
-		position: relative;
-		min-height: 190px;
-		border-radius: 8px;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-end;
-		padding: 14px;
-		background: linear-gradient(135deg, var(--accent), var(--brand));
-		color: white;
-		box-shadow: var(--shadow-soft);
-	}
-
-	.strip-card:first-child {
-		min-height: 230px;
-	}
-
-	.strip-card::after {
-		content: "";
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(180deg, rgba(56, 34, 22, 0.04), rgba(56, 34, 22, 0.72));
-		z-index: 1;
-	}
-
-	.strip-card img {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		transition: transform 0.22s ease;
-	}
-
-	.strip-card:hover img {
-		transform: scale(1.04);
-	}
-
-	.strip-card span,
-	.strip-card strong {
-		position: relative;
-		z-index: 2;
-	}
-
-	.strip-card span {
-		font-size: 0.78rem;
-		font-weight: 900;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		opacity: 0.9;
-	}
-
-	.strip-card strong {
-		margin-top: 4px;
-		font-size: 1rem;
-		line-height: 1.15;
-	}
-
 	@media (max-width: 900px) {
-		.strip-heading {
+		.planner-header {
 			align-items: flex-start;
 			flex-direction: column;
 		}
 
-		.strip-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+		.planner-actions {
+			justify-content: flex-start;
+		}
+
+		.weekday-row {
+			display: none;
+		}
+
+		.month-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.calendar-day {
+			min-height: auto;
+		}
+
+		.calendar-day.outside {
+			display: none;
+		}
+
+		.weekday-name {
+			display: inline;
 		}
 	}
 
 	@media (max-width: 560px) {
-		.strip-grid {
-			grid-template-columns: 1fr;
+		.calendar-toolbar {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.calendar-toolbar div {
+			grid-column: 1 / -1;
+			grid-row: 1;
+		}
+
+		.month-button {
+			grid-row: 2;
 		}
 	}
 </style>

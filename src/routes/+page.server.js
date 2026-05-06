@@ -1,14 +1,25 @@
 import { getDashboardData } from "$lib/server/repository.js";
 
-export async function load({ locals }) {
+export async function load({ locals, url }) {
+	const month = url.searchParams.get("month") || "";
 	try {
-		return { ...(await getDashboardData(locals.user.id)), setupError: "" };
+		return { ...(await getDashboardData(locals.user.id, { month })), setupError: "" };
 	} catch (error) {
 		return {
 			setupError: error.message,
+			calendar: {
+				monthLabel: "",
+				monthParam: "",
+				currentMonthParam: "",
+				isSelectedCurrentMonth: true,
+				previousMonthParam: "",
+				nextMonthParam: "",
+				weekdayLabels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+				hasMonthEvents: false,
+				weeks: []
+			},
 			upcomingEvents: [],
-			journeyHighlights: [],
-			stats: { events: 0, locations: 0, averageRating: 0, ideas: 0 }
+			journeyHighlights: []
 		};
 	}
 }
