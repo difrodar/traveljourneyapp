@@ -1001,7 +1001,19 @@ export async function listMapLocations(userId, filters = {}) {
 
 export async function listIdeas(userId) {
 	const collections = await getCollections();
-	return (await collections.travelIdeas.find({ userId: userOid(userId) }).sort({ createdAt: -1 }).toArray()).map(serialize);
+	return (
+		await collections.travelIdeas
+			.find({
+				userId: userOid(userId),
+				$or: [
+					{ convertedToEvent: false },
+					{ convertedToEvent: null },
+					{ convertedToEvent: { $exists: false } }
+				]
+			})
+			.sort({ createdAt: -1 })
+			.toArray()
+	).map(serialize);
 }
 
 export async function createIdeaFromForm(userId, form) {

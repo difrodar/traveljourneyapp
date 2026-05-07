@@ -30,6 +30,8 @@
 		position: relative;
 		display: grid;
 		gap: 10px;
+		align-content: start;
+		align-self: start;
 		overflow: hidden;
 		border-style: dashed;
 	}
@@ -43,6 +45,7 @@
 
 	.topline {
 		display: flex;
+		align-items: center;
 		justify-content: space-between;
 		gap: 10px;
 	}

@@ -22,7 +22,7 @@
 		<div class="message">{form.message}</div>
 	{/if}
 
-	<section class="grid two">
+	<section class="grid two ideas-layout">
 		<form class="panel" method="POST" action="?/create">
 			<div class="form-grid">
 				<div class="field">
@@ -59,7 +59,7 @@
 				<button class="button" type="submit">Save idea</button>
 			</div>
 		</form>
-		<div class="grid">
+		<div class="grid idea-list">
 			{#each data.ideas as idea}
 				<TravelIdeaCard {idea} />
 			{:else}
@@ -70,6 +70,14 @@
 </main>
 
 <style>
+	.ideas-layout {
+		align-items: start;
+	}
+
+	.idea-list {
+		align-items: start;
+	}
+
 	.actions {
 		margin-top: 18px;
 	}
