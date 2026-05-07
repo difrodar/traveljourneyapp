@@ -10,10 +10,6 @@ export async function load({ locals }) {
 		]);
 		const plannedEvents = events.filter((event) => event.status === "planned");
 		const completedMemories = events.filter((event) => event.status === "completed" && event.journeyEntry);
-		const ratings = completedMemories.map((event) => Number(event.journeyEntry?.rating || 0)).filter(Boolean);
-		const averageRating = ratings.length
-			? Math.round((ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length) * 10) / 10
-			: 0;
 
 		return {
 			user: locals.user,
@@ -23,8 +19,7 @@ export async function load({ locals }) {
 				plannedEvents: plannedEvents.length,
 				completedMemories: completedMemories.length,
 				locations: locations.length,
-				ideas: ideas.length,
-				averageRating
+				ideas: ideas.length
 			},
 			recentActivity: events.slice(0, 3),
 			invitedEvents,
@@ -39,8 +34,7 @@ export async function load({ locals }) {
 				plannedEvents: 0,
 				completedMemories: 0,
 				locations: 0,
-				ideas: 0,
-				averageRating: 0
+				ideas: 0
 			},
 			recentActivity: [],
 			invitedEvents: [],

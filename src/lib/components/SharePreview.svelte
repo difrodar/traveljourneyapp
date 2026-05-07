@@ -17,7 +17,7 @@
 	</div>
 	<div class="preview-foot">
 		<span>{event.location?.name}</span>
-		<span>{entry.rating ? `${entry.rating}/5` : "planned"}</span>
+		<span>{entry.memoryText ? "memory" : "planned"}</span>
 	</div>
 </aside>
 

@@ -21,7 +21,7 @@
 		<p class="trail">Journey stop · {event.location?.name}</p>
 		<h3><a href="/events/{event.id}">{event.title}</a></h3>
 		<p>{entry.memoryText}</p>
-		<strong class="rating">{"*".repeat(entry.rating || 0)}{"-".repeat(5 - (entry.rating || 0))}</strong>
+		<strong class="memory-date">{event.date || "Memory saved"}</strong>
 		{#if event.media?.imageCredit}
 			<p class="credit">{event.media.imageCredit} · {event.media.imageLicense}</p>
 		{/if}
@@ -92,9 +92,8 @@
 		object-fit: cover;
 	}
 
-	.rating {
-		color: var(--accent);
-		letter-spacing: 0.08em;
+	.memory-date {
+		color: var(--brand-dark);
 	}
 
 	.trail {

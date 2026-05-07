@@ -61,14 +61,14 @@ function normalizeEventSort(value) {
 	const sort = clean(value);
 	if (sort === "desc") return "dateDesc";
 	if (sort === "asc") return "dateAsc";
-	return ["dateAsc", "dateDesc", "updatedDesc", "ratingDesc"].includes(sort) ? sort : "dateAsc";
+	return ["dateAsc", "dateDesc", "updatedDesc"].includes(sort) ? sort : "dateAsc";
 }
 
 function normalizeJourneySort(value) {
 	const sort = clean(value);
 	if (sort === "desc") return "dateDesc";
 	if (sort === "asc") return "dateAsc";
-	return ["dateDesc", "dateAsc", "ratingDesc", "ratingAsc"].includes(sort) ? sort : "dateDesc";
+	return ["dateDesc", "dateAsc"].includes(sort) ? sort : "dateDesc";
 }
 
 function padDatePart(value) {
@@ -465,7 +465,6 @@ async function seedDemoData(userId) {
 		{
 			userId: ownerId,
 			eventId: eventIds[1],
-			rating: 5,
 			memoryText: "Balboa Park felt like a whole day of tiny discoveries. The botanical building was the highlight.",
 			imageUrl: "",
 			createdAt: now,
@@ -474,7 +473,6 @@ async function seedDemoData(userId) {
 		{
 			userId: ownerId,
 			eventId: eventIds[3],
-			rating: 4,
 			memoryText: "Great skyline view, lots of new people, and one of the first nights where San Diego felt familiar.",
 			imageUrl: "",
 			createdAt: now,
@@ -483,7 +481,6 @@ async function seedDemoData(userId) {
 		{
 			userId: ownerId,
 			eventId: eventIds[7],
-			rating: 5,
 			memoryText: "The Golden Gate walk made the journey feel bigger than San Diego. Fog, wind and a lot of photos.",
 			imageUrl: "",
 			createdAt: now,
@@ -626,16 +623,7 @@ export async function listEvents(userId, filters = {}) {
 	}
 	const sort = normalizeEventSort(filters.sort);
 	const dbSort = sort === "updatedDesc" ? { updatedAt: -1 } : { date: sort === "dateDesc" ? -1 : 1, time: sort === "dateDesc" ? -1 : 1 };
-	const events = await hydrateEvents(await collections.events.find(query).sort(dbSort).toArray(), ownerId);
-	if (sort === "ratingDesc") {
-		return events.sort(
-			(a, b) =>
-				Number(b.journeyEntry?.rating || 0) - Number(a.journeyEntry?.rating || 0) ||
-				(b.date || "").localeCompare(a.date || "") ||
-				(b.time || "").localeCompare(a.time || "")
-		);
-	}
-	return events;
+	return hydrateEvents(await collections.events.find(query).sort(dbSort).toArray(), ownerId);
 }
 
 export async function listInvitedEvents(userId) {
@@ -821,7 +809,6 @@ export async function completeEventFromForm(userId, id, form) {
 		{ userId: ownerId, eventId },
 		{
 			$set: {
-				rating: Number(form.get("rating") || 0),
 				memoryText: clean(form.get("memoryText")),
 				imageUrl: memoryImageFields.imageUrl,
 				updatedAt: now
@@ -841,23 +828,100 @@ export async function listJourneyEntries(userId, filters = {}) {
 		to: filters.to,
 		includeInvitations: true
 	});
-	const minRating = Number(filters.minRating || 0);
 	const entries = events.filter(
 		(event) =>
 			(event.isOwner || event.invitationStatus === "accepted") &&
 			event.journeyEntry &&
-			Number(event.journeyEntry.rating || 0) >= minRating
+			matchesJourneySearch(event, filters.search)
 	);
-	const sort = normalizeJourneySort(filters.sort);
-	if (sort === "ratingDesc" || sort === "ratingAsc") {
-		const direction = sort === "ratingDesc" ? -1 : 1;
-		return entries.sort(
-			(a, b) =>
-				(Number(a.journeyEntry?.rating || 0) - Number(b.journeyEntry?.rating || 0)) * direction ||
-				(b.date || "").localeCompare(a.date || "")
-		);
-	}
 	return entries;
+}
+
+function matchesJourneySearch(event, search) {
+	const query = clean(search).toLowerCase();
+	if (!query) return true;
+	const fields = [
+		event.title,
+		event.category,
+		event.journeyEntry?.memoryText,
+		event.location?.name,
+		event.location?.city,
+		event.location?.country
+	];
+	return fields.some((field) => String(field || "").toLowerCase().includes(query));
+}
+
+function monthLabel(monthKey) {
+	const [year, month] = monthKey.split("-").map(Number);
+	const date = new Date(year, month - 1, 1);
+	return new Intl.DateTimeFormat("en", { month: "long", year: "numeric" }).format(date);
+}
+
+function groupJourneyEntries(entries, sort) {
+	const groups = new Map();
+	for (const event of entries) {
+		const monthKey = isDateFilter(event.date) ? event.date.slice(0, 7) : "undated";
+		if (!groups.has(monthKey)) {
+			groups.set(monthKey, {
+				key: monthKey,
+				label: monthKey === "undated" ? "Undated memories" : monthLabel(monthKey),
+				entries: []
+			});
+		}
+		groups.get(monthKey).entries.push(event);
+	}
+	const direction = normalizeJourneySort(sort) === "dateAsc" ? 1 : -1;
+	return [...groups.values()].sort((a, b) => {
+		if (a.key === "undated") return 1;
+		if (b.key === "undated") return -1;
+		return a.key.localeCompare(b.key) * direction;
+	});
+}
+
+function journeyStats(entries) {
+	const totalMemories = entries.length;
+	const categories = new Map();
+	const cities = new Map();
+	const countries = new Set();
+
+	for (const event of entries) {
+		const category = event.category || "Uncategorized";
+		const categoryStats = categories.get(category) || { name: category, count: 0 };
+		categoryStats.count += 1;
+		categories.set(category, categoryStats);
+
+		const city = event.location?.city || event.location?.name || "World";
+		const cityStats = cities.get(city) || { name: city, count: 0 };
+		cityStats.count += 1;
+		cities.set(city, cityStats);
+		if (event.location?.country) countries.add(event.location.country);
+	}
+
+	const favoriteCategory = [...categories.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))[0];
+	const mostVisitedCity = [...cities.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))[0];
+
+	return {
+		totalMemories,
+		favoriteCategory: favoriteCategory?.name || "None yet",
+		mostVisitedCity: mostVisitedCity?.name || "None yet",
+		countriesVisited: countries.size
+	};
+}
+
+export async function getJourneyDiaryData(userId, filters = {}) {
+	const entries = await listJourneyEntries(userId, filters);
+	return {
+		entries,
+		groups: groupJourneyEntries(entries, filters.sort),
+		stats: journeyStats(entries),
+		recentHighlights: [...entries]
+			.sort(
+				(a, b) =>
+					(b.date || "").localeCompare(a.date || "") ||
+					(b.time || "").localeCompare(a.time || "")
+			)
+			.slice(0, 3)
+	};
 }
 
 export async function respondToInvitation(userId, id, status) {

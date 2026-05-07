@@ -3,9 +3,15 @@
 
 	let { data } = $props();
 	let filterForm;
+	let searchTimer;
 
 	function submitFilters() {
 		filterForm?.requestSubmit();
+	}
+
+	function submitSearch() {
+		clearTimeout(searchTimer);
+		searchTimer = setTimeout(submitFilters, 350);
 	}
 </script>
 
@@ -14,7 +20,7 @@
 		<div>
 			<p class="eyebrow">Journey</p>
 			<h1>Your world timeline</h1>
-			<p class="lead">Completed events become memories with rating, location and personal notes, from San Diego to every next stop.</p>
+			<p class="lead">Completed events become memories with locations, photos and personal notes, from San Diego to every next stop.</p>
 		</div>
 	</header>
 
@@ -23,17 +29,18 @@
 	{/if}
 
 	<form class="panel filters" method="GET" bind:this={filterForm}>
+		<input
+			class="search-field"
+			name="search"
+			placeholder="Search memories, places or categories"
+			value={data.filters.search}
+			oninput={submitSearch}
+		/>
 		<select name="category" onchange={submitFilters}>
 			<option value="all" selected={data.filters.category === "all"}>All categories</option>
 			{#each data.categories as category}
 				<option value={category} selected={data.filters.category === category}>{category}</option>
 			{/each}
-		</select>
-		<select name="minRating" onchange={submitFilters}>
-			<option value="0" selected={data.filters.minRating === "0"}>Any rating</option>
-			<option value="3" selected={data.filters.minRating === "3"}>3+ stars</option>
-			<option value="4" selected={data.filters.minRating === "4"}>4+ stars</option>
-			<option value="5" selected={data.filters.minRating === "5"}>5 stars</option>
 		</select>
 		<label class="filter-field">
 			<span>From</span>
@@ -46,8 +53,6 @@
 		<select name="sort" onchange={submitFilters}>
 			<option value="dateDesc" selected={data.filters.sort === "dateDesc" || data.filters.sort === "desc"}>Newest memories first</option>
 			<option value="dateAsc" selected={data.filters.sort === "dateAsc" || data.filters.sort === "asc"}>Oldest first</option>
-			<option value="ratingDesc" selected={data.filters.sort === "ratingDesc"}>Highest rated</option>
-			<option value="ratingAsc" selected={data.filters.sort === "ratingAsc"}>Lowest rated</option>
 		</select>
 		{#if data.hasActiveFilters}
 			<div class="filter-actions">
@@ -56,11 +61,65 @@
 		{/if}
 	</form>
 
+	<section class="diary-stats" aria-label="Journey statistics">
+		<div>
+			<span>Total memories</span>
+			<strong>{data.stats.totalMemories}</strong>
+		</div>
+		<div>
+			<span>Favorite category</span>
+			<strong>{data.stats.favoriteCategory}</strong>
+		</div>
+		<div>
+			<span>Most visited city</span>
+			<strong>{data.stats.mostVisitedCity}</strong>
+		</div>
+		<div>
+			<span>Countries visited</span>
+			<strong>{data.stats.countriesVisited}</strong>
+		</div>
+	</section>
+
+	{#if data.recentHighlights.length}
+		<section class="recent-highlights" aria-label="Recent highlights">
+			<div class="section-heading">
+				<div>
+					<p class="eyebrow">Recent Highlights</p>
+					<h2>Latest diary stops</h2>
+				</div>
+			</div>
+			<div class="highlight-grid">
+				{#each data.recentHighlights as event}
+					<a class="card diary-highlight" href="/events/{event.id}">
+						<span class="category">{event.category}</span>
+						<strong>{event.title}</strong>
+						<span>{event.location?.city || event.location?.name}, {event.location?.country || "World"}</span>
+						<small>{event.date || "No date yet"}</small>
+					</a>
+				{/each}
+			</div>
+		</section>
+	{/if}
+
 	<section class="timeline world-trail">
-		{#each data.entries as event}
-			<JourneyCard {event} />
+		{#each data.groups as group}
+			<section class="month-group">
+				<div class="month-heading">
+					<p>{group.label}</p>
+					<span>{group.entries.length} memor{group.entries.length === 1 ? "y" : "ies"}</span>
+				</div>
+				<div class="month-entries">
+					{#each group.entries as event}
+						<JourneyCard {event} />
+					{/each}
+				</div>
+			</section>
 		{:else}
-			<div class="empty-state">No journey memories yet. Mark an event as completed and add a memory to start your timeline.</div>
+			<div class="empty-state">
+				{data.hasActiveFilters
+					? "No journey memories match these filters. Clear the filters or adjust your search."
+					: "No journey memories yet. Mark an event as completed and add a memory to start your timeline."}
+			</div>
 		{/each}
 	</section>
 </main>
@@ -68,10 +127,14 @@
 <style>
 	.filters {
 		display: grid;
-		grid-template-columns: repeat(4, minmax(130px, 1fr)) auto;
+		grid-template-columns: 1.4fr repeat(4, minmax(130px, 1fr)) auto;
 		gap: 10px;
 		margin-bottom: 20px;
 		align-items: end;
+	}
+
+	.search-field {
+		min-width: 0;
 	}
 
 	.filter-field {
@@ -92,9 +155,81 @@
 		flex-wrap: wrap;
 	}
 
+	.diary-stats {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 12px;
+		margin-bottom: 22px;
+	}
+
+	.diary-stats div {
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 14px;
+		background: rgba(255, 250, 242, 0.82);
+		box-shadow: var(--shadow-soft);
+	}
+
+	.diary-stats span,
+	.diary-highlight span,
+	.diary-highlight small,
+	.month-heading span {
+		color: var(--muted);
+		font-size: 0.82rem;
+		font-weight: 800;
+	}
+
+	.diary-stats strong {
+		display: block;
+		margin-top: 6px;
+		color: var(--brand-dark);
+		font-size: 1.4rem;
+		line-height: 1.1;
+	}
+
+	.recent-highlights {
+		display: grid;
+		gap: 12px;
+		margin-bottom: 24px;
+	}
+
+	.section-heading {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 16px;
+	}
+
+	.section-heading h2,
+	.section-heading p {
+		margin: 0;
+	}
+
+	.highlight-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 14px;
+	}
+
+	.diary-highlight {
+		display: grid;
+		gap: 8px;
+		min-height: 150px;
+		align-content: start;
+	}
+
+	.diary-highlight strong {
+		color: #402a1e;
+		font-size: 1.08rem;
+	}
+
+	.diary-highlight small {
+		color: var(--brand-dark);
+	}
+
 	.timeline {
 		display: grid;
-		gap: 16px;
+		gap: 24px;
 		position: relative;
 	}
 
@@ -113,9 +248,50 @@
 		margin-left: 24px;
 	}
 
+	.month-group {
+		display: grid;
+		gap: 12px;
+	}
+
+	.month-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		margin-left: 24px;
+		border-bottom: 1px solid var(--line);
+		padding-bottom: 8px;
+	}
+
+	.month-heading p {
+		margin: 0;
+		color: var(--brand-dark);
+		font-size: 1.08rem;
+		font-weight: 900;
+	}
+
+	.month-entries {
+		display: grid;
+		gap: 16px;
+	}
+
+	@media (max-width: 980px) {
+		.diary-stats,
+		.highlight-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
 	@media (max-width: 720px) {
-		.filters {
+		.filters,
+		.diary-stats,
+		.highlight-grid {
 			grid-template-columns: 1fr;
+		}
+
+		.month-heading {
+			align-items: flex-start;
+			flex-direction: column;
 		}
 	}
 </style>

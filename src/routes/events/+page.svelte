@@ -55,7 +55,6 @@
 			<option value="dateAsc" selected={data.filters.sort === "dateAsc" || data.filters.sort === "asc"}>Soonest first</option>
 			<option value="dateDesc" selected={data.filters.sort === "dateDesc" || data.filters.sort === "desc"}>Latest date first</option>
 			<option value="updatedDesc" selected={data.filters.sort === "updatedDesc"}>Recently edited</option>
-			<option value="ratingDesc" selected={data.filters.sort === "ratingDesc"}>Highest rated</option>
 		</select>
 		{#if data.hasActiveFilters}
 			<div class="filter-actions">

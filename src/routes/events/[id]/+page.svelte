@@ -1,7 +1,6 @@
 <script>
 	import EventForm from "$lib/components/EventForm.svelte";
 	import EventMapPanel from "$lib/components/EventMapPanel.svelte";
-	import RatingInput from "$lib/components/RatingInput.svelte";
 	import SharePreview from "$lib/components/SharePreview.svelte";
 
 	let { data, form } = $props();
@@ -210,12 +209,8 @@
 					<section class="after-panel">
 						<p class="eyebrow">After the event</p>
 						<h2>Journey memory</h2>
-						<p class="muted">Add your personal rating and memory once the event has happened.</p>
+						<p class="muted">Add your personal memory once the event has happened.</p>
 						<form class="memory-form" method="POST" action="?/complete" enctype="multipart/form-data">
-							<div class="field">
-								<span class="field-label">Your rating</span>
-								<RatingInput value={event.journeyEntry?.rating || 4} />
-							</div>
 							<div class="field">
 								<label for="memoryText">Memory text</label>
 								<textarea id="memoryText" name="memoryText" aria-invalid={Boolean(form?.memoryFieldErrors?.memoryText)} required>{form?.memoryValues?.memoryText ?? event.journeyEntry?.memoryText ?? ""}</textarea>
@@ -247,7 +242,7 @@
 
 						{#if hasMemory}
 							<article class="memory-card">
-								<span>{event.journeyEntry.rating}/5 personal rating</span>
+								<span>Saved journey memory</span>
 								<p>{event.journeyEntry.memoryText}</p>
 							</article>
 						{/if}

@@ -1,8 +1,11 @@
 import { listEvents } from "$lib/server/repository.js";
 import { categories } from "$lib/constants.js";
 
+const eventSorts = new Set(["dateAsc", "dateDesc", "updatedDesc", "asc", "desc"]);
+
 export async function load({ locals, url }) {
-	const sortParam = url.searchParams.get("sort") || "dateAsc";
+	const requestedSort = url.searchParams.get("sort") || "dateAsc";
+	const sortParam = eventSorts.has(requestedSort) ? requestedSort : "dateAsc";
 	const defaultStatus = "planned";
 	const filters = {
 		search: url.searchParams.get("search") || "",

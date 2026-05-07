@@ -111,7 +111,6 @@ const eventSeeds = [
 		description: "Photo walk around the Golden Gate Bridge during golden hour.",
 		status: "completed",
 		journey: {
-			rating: 5,
 			memoryText:
 				"The Golden Gate walk made the journey feel bigger than San Diego. Fog, wind and a lot of photos.",
 			imageUrl: ""
@@ -186,7 +185,6 @@ try {
 				{ eventId: result._id },
 				{
 					$set: {
-						rating: seed.journey.rating,
 						memoryText: seed.journey.memoryText,
 						imageUrl: seed.journey.imageUrl,
 						updatedAt: now

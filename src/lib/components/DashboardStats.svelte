@@ -4,7 +4,7 @@
 	const items = $derived([
 		{ label: "Events", value: stats.events, hint: "planned and completed" },
 		{ label: "Places", value: stats.locations, hint: "saved locations" },
-		{ label: "Avg. rating", value: stats.averageRating || "n/a", hint: "journey memories" },
+		{ label: "Memories", value: stats.memories ?? stats.completedMemories ?? 0, hint: "journey entries" },
 		{ label: "Ideas", value: stats.ideas, hint: "future adventures" }
 	]);
 </script>

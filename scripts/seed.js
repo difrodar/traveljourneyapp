@@ -202,7 +202,6 @@ try {
 	await db.collection("journeyEntries").insertMany([
 		{
 			eventId: eventIds[1],
-			rating: 5,
 			memoryText: "Balboa Park felt like a whole day of tiny discoveries. The botanical building was the highlight.",
 			imageUrl: "",
 			createdAt: now,
@@ -210,7 +209,6 @@ try {
 		},
 		{
 			eventId: eventIds[3],
-			rating: 4,
 			memoryText: "Great skyline view, lots of new people, and one of the first nights where San Diego felt familiar.",
 			imageUrl: "",
 			createdAt: now,
@@ -218,7 +216,6 @@ try {
 		},
 		{
 			eventId: eventIds[7],
-			rating: 5,
 			memoryText: "The Golden Gate walk made the journey feel bigger than San Diego. Fog, wind and a lot of photos.",
 			imageUrl: "",
 			createdAt: now,
