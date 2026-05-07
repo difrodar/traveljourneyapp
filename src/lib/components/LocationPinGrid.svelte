@@ -93,7 +93,7 @@
 			{/each}
 		</section>
 	{:else}
-		<div class="empty-state">No mapped events yet. Add an event with a city and concrete location to create your first pin.</div>
+		<div class="empty-state">No mapped events match this view. Clear the map filters or add an event with a city and concrete location.</div>
 	{/each}
 </div>
 

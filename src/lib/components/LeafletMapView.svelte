@@ -37,16 +37,19 @@
 				(event) => `
 					<a href="/events/${event.id}">
 						<strong>${escapeHtml(event.title)}</strong>
+						<small>${escapeHtml(event.status)}</small>
 						<span>${escapeHtml(event.date)} · ${escapeHtml(event.category)}</span>
 					</a>
 				`
 			)
 			.join("");
+		const count = location.events?.length || 0;
 
 		return `
 			<div class="leaflet-popup-card">
 				<strong>${escapeHtml(location.name)}</strong>
 				<span>${escapeHtml(location.city)}, ${escapeHtml(location.country)}</span>
+				<em>${count} event${count === 1 ? "" : "s"} at this place</em>
 				<div>${events}</div>
 			</div>
 		`;
@@ -108,7 +111,7 @@
 
 {#if failed}
 	<div class="message">The interactive map could not load, so TripTales shows the stable pinpoint fallback.</div>
-{:else}
+{:else if locations.length > 0}
 	<div class="map" bind:this={mapEl}></div>
 {/if}
 
@@ -190,6 +193,13 @@
 		font-weight: 700;
 	}
 
+	:global(.leaflet-popup-card em) {
+		color: #a94724;
+		font-size: 0.8rem;
+		font-style: normal;
+		font-weight: 800;
+	}
+
 	:global(.leaflet-popup-card div) {
 		display: grid;
 		gap: 6px;
@@ -206,5 +216,12 @@
 	:global(.leaflet-popup-card a span) {
 		color: #7b6253;
 		font-size: 0.8rem;
+	}
+
+	:global(.leaflet-popup-card a small) {
+		color: var(--brand-dark);
+		font-size: 0.76rem;
+		font-weight: 900;
+		text-transform: uppercase;
 	}
 </style>

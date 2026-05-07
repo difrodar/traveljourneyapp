@@ -908,10 +908,24 @@ export async function listLocations(userId) {
 	});
 }
 
-export async function listMapLocations(userId) {
-	const locations = await listLocations(userId);
-	return locations
-		.filter((location) => location.events.length > 0)
+export async function listMapLocations(userId, filters = {}) {
+	const events = await listEvents(userId, { ...filters, includeInvitations: true });
+	const locations = new Map();
+	for (const event of events) {
+		if (!event.location) continue;
+		if (!locations.has(event.location.id)) {
+			locations.set(event.location.id, { ...event.location, events: [] });
+		}
+		locations.get(event.location.id).events.push(event);
+	}
+
+	return [...locations.values()]
+		.map((location) => ({
+			...location,
+			events: location.events.sort(
+				(a, b) => (a.date || "").localeCompare(b.date || "") || (a.time || "").localeCompare(b.time || "")
+			)
+		}))
 		.sort((a, b) => {
 			const country = (a.country || "").localeCompare(b.country || "");
 			if (country) return country;
