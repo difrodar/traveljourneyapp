@@ -164,6 +164,8 @@
 		background: var(--sky);
 	}
 
+	:global(.triptales-pin.travel),
+	:global(.triptales-pin.flight),
 	:global(.triptales-pin.weekend-trip) {
 		background: var(--coral);
 	}

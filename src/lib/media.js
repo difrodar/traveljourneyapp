@@ -189,6 +189,8 @@ export const categoryMedia = {
 		imageSourceUrl:
 			"https://commons.wikimedia.org/wiki/File:Rooftop_Bar,_Metropolitan_Museum_Of_Art_(5894065780).jpg"
 	},
+	flight: locationMedia.travel,
+	travel: locationMedia.travel,
 	"weekend trip": locationMedia.travel,
 	study: locationMedia.london,
 	education: locationMedia.london,

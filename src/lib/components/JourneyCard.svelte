@@ -106,6 +106,14 @@
 			linear-gradient(135deg, var(--sky), #60a5fa);
 	}
 
+	.media.travel,
+	.media.flight,
+	.media.weekend-trip {
+		background:
+			linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 18%, transparent 18% 100%),
+			linear-gradient(135deg, var(--coral), var(--brand));
+	}
+
 	.media.culture {
 		background:
 			linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 18%, transparent 18% 100%),

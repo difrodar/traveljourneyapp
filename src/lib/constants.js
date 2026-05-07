@@ -3,6 +3,8 @@ export const categories = [
 	"Food",
 	"Party",
 	"Sightseeing",
+	"Travel",
+	"Flight",
 	"Weekend Trip",
 	"Study",
 	"Education",

@@ -67,6 +67,8 @@
 		background: var(--rose);
 	}
 
+	.event-card.travel::before,
+	.event-card.flight::before,
 	.event-card.weekend-trip::before {
 		background: var(--coral);
 	}
