@@ -106,7 +106,7 @@
 			<section class="month-group">
 				<div class="month-heading">
 					<p>{group.label}</p>
-					<span>{group.entries.length} memor{group.entries.length === 1 ? "y" : "ies"}</span>
+					<span>{group.memoryCount} memor{group.memoryCount === 1 ? "y" : "ies"}</span>
 				</div>
 				<div class="month-entries">
 					{#each group.entries as event}

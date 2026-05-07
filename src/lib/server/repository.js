@@ -5,6 +5,8 @@ import { getCollections } from "./db.js";
 
 const maxUploadBytes = 2 * 1024 * 1024;
 const allowedUploadTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const repeatFrequencies = new Set(["none", "daily", "weekly", "monthly"]);
+const maxRepeatCount = 52;
 const oneDayMs = 24 * 60 * 60 * 1000;
 const reminderWindowDays = 7;
 
@@ -85,6 +87,26 @@ function dateOnly(value) {
 	return new Date(year, month - 1, day);
 }
 
+function formatDate(date) {
+	return `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}-${padDatePart(date.getDate())}`;
+}
+
+function daysInMonth(year, monthIndex) {
+	return new Date(year, monthIndex + 1, 0).getDate();
+}
+
+function addRecurringDate(value, frequency, index) {
+	const date = dateOnly(value);
+	if (!date || index === 0 || frequency === "none") return value;
+	if (frequency === "daily") return formatDate(new Date(date.getFullYear(), date.getMonth(), date.getDate() + index));
+	if (frequency === "weekly") return formatDate(new Date(date.getFullYear(), date.getMonth(), date.getDate() + index * 7));
+	const targetMonth = date.getMonth() + index;
+	const targetYear = date.getFullYear() + Math.floor(targetMonth / 12);
+	const normalizedMonth = ((targetMonth % 12) + 12) % 12;
+	const targetDay = Math.min(date.getDate(), daysInMonth(targetYear, normalizedMonth));
+	return formatDate(new Date(targetYear, normalizedMonth, targetDay));
+}
+
 function monthParamFromDate(date) {
 	return `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}`;
 }
@@ -121,6 +143,12 @@ function reminderForEvent(event) {
 		return { active: false, label: "", badge: "" };
 	}
 	return { ...upcoming, badge: "Upcoming soon" };
+}
+
+function recurrenceLabel(event) {
+	if (!event.recurrenceGroupId || !event.recurrenceFrequency || !event.recurrenceIndex || !event.recurrenceCount) return "";
+	const frequency = `${event.recurrenceFrequency.charAt(0).toUpperCase()}${event.recurrenceFrequency.slice(1)}`;
+	return `${frequency} series ${event.recurrenceIndex}/${event.recurrenceCount}`;
 }
 
 function buildCalendarMonth(events, month) {
@@ -196,6 +224,16 @@ function parseInvitedUserIds(form) {
 	return [...new Set(form.getAll("invitedUserIds").flatMap((value) => clean(value).split(",")))]
 		.map((id) => clean(id))
 		.filter(Boolean);
+}
+
+function recurrenceFromForm(form) {
+	const frequency = repeatFrequencies.has(clean(form.get("repeatFrequency"))) ? clean(form.get("repeatFrequency")) : "none";
+	const countValue = Number(clean(form.get("repeatCount")) || "1");
+	const count = Number.isInteger(countValue) && countValue >= 1 && countValue <= maxRepeatCount ? countValue : 1;
+	return {
+		frequency,
+		count: frequency === "none" ? 1 : count
+	};
 }
 
 function buildInvitations(existing = [], invitedUserIds = []) {
@@ -581,6 +619,7 @@ async function hydrateEvents(events, userId) {
 			friends: (event.invitedUserIds || []).map((id) => invitedUserMap.get(id.toString())).filter(Boolean),
 			isOwner: event.userId?.toString() === ownerId.toString(),
 			invitationStatus,
+			recurrenceLabel: recurrenceLabel(serialized),
 			upcoming: upcomingForEvent(serialized),
 			reminder: reminderForEvent(serialized),
 			journeyEntry: journeyMap.get(event._id.toString()) || null
@@ -668,6 +707,17 @@ export function validateEventForm(form) {
 		if (!clean(form.get(field))) fieldErrors[field] = message;
 	}
 
+	const repeatFrequency = clean(form.get("repeatFrequency")) || "none";
+	if (!repeatFrequencies.has(repeatFrequency)) {
+		fieldErrors.repeatFrequency = "Please choose a supported repeat frequency.";
+	}
+	if (repeatFrequency !== "none") {
+		const repeatCount = Number(clean(form.get("repeatCount")) || "");
+		if (!Number.isInteger(repeatCount) || repeatCount < 1 || repeatCount > maxRepeatCount) {
+			fieldErrors.repeatCount = `Please choose between 1 and ${maxRepeatCount} occurrences.`;
+		}
+	}
+
 	const errors = Object.values(fieldErrors);
 	return {
 		valid: errors.length === 0,
@@ -725,13 +775,14 @@ async function saveLocationFromForm(userId, form, existingId = null) {
 	return (await collections.locations.insertOne({ ...location, createdAt: now })).insertedId;
 }
 
-async function eventPayloadFromForm(userId, form, locationId, invitedUserIds, existing = {}) {
+async function eventPayloadFromForm(userId, form, locationId, invitedUserIds, existing = {}, overrides = {}) {
 	const title = clean(form.get("title"));
-	const imageFields = await uploadedImageFields(form, "eventImageFile", "clearEventImage", existing, title, "Event image");
+	const imageFields =
+		overrides.imageFields || (await uploadedImageFields(form, "eventImageFile", "clearEventImage", existing, title, "Event image"));
 	return {
 		title,
 		userId: userOid(userId),
-		date: clean(form.get("date")),
+		date: overrides.date || clean(form.get("date")),
 		time: clean(form.get("time")),
 		locationId,
 		category: clean(form.get("category")),
@@ -739,6 +790,7 @@ async function eventPayloadFromForm(userId, form, locationId, invitedUserIds, ex
 		status: clean(form.get("status")) === "completed" ? "completed" : "planned",
 		invitedUserIds,
 		invitations: buildInvitations(existing.invitations, invitedUserIds),
+		...(overrides.recurrence || {}),
 		...imageFields,
 		updatedAt: new Date()
 	};
@@ -748,11 +800,33 @@ export async function createEventFromForm(userId, form) {
 	const collections = await getCollections();
 	const invitedUserIds = await resolveInvitedUserIds(userId, form);
 	const locationId = await saveLocationFromForm(userId, form);
-	const result = await collections.events.insertOne({
-		...(await eventPayloadFromForm(userId, form, locationId, invitedUserIds)),
-		createdAt: new Date()
-	});
-	return result.insertedId.toString();
+	const recurrence = recurrenceFromForm(form);
+	const recurrenceGroupId = recurrence.count > 1 ? new ObjectId() : null;
+	const imageFields = await uploadedImageFields(form, "eventImageFile", "clearEventImage", {}, clean(form.get("title")), "Event image");
+	const now = new Date();
+	const events = await Promise.all(
+		Array.from({ length: recurrence.count }, async (_, index) => ({
+			...(await eventPayloadFromForm(userId, form, locationId, invitedUserIds, {}, {
+				date: addRecurringDate(clean(form.get("date")), recurrence.frequency, index),
+				imageFields,
+				recurrence: recurrenceGroupId
+					? {
+							recurrenceGroupId,
+							recurrenceFrequency: recurrence.frequency,
+							recurrenceIndex: index + 1,
+							recurrenceCount: recurrence.count
+						}
+					: {}
+			})),
+			createdAt: now
+		}))
+	);
+	if (events.length === 1) {
+		const result = await collections.events.insertOne(events[0]);
+		return result.insertedId.toString();
+	}
+	const result = await collections.events.insertMany(events);
+	return result.insertedIds[0].toString();
 }
 
 export async function updateEventFromForm(userId, id, form) {
@@ -761,7 +835,7 @@ export async function updateEventFromForm(userId, id, form) {
 	const event = await collections.events.findOne({ userId: ownerId, _id: oid(id) });
 	if (!event) throw new Error("Event not found.");
 	const invitedUserIds = await resolveInvitedUserIds(ownerId, form);
-	const locationId = await saveLocationFromForm(ownerId, form, event.locationId?.toString());
+	const locationId = await saveLocationFromForm(ownerId, form, event.recurrenceGroupId ? null : event.locationId?.toString());
 	await collections.events.updateOne(
 		{ userId: ownerId, _id: oid(id) },
 		{ $set: await eventPayloadFromForm(ownerId, form, locationId, invitedUserIds, event), $unset: { friendIds: "" } }
@@ -772,9 +846,31 @@ export async function deleteEvent(userId, id) {
 	const collections = await getCollections();
 	const ownerId = userOid(userId);
 	const eventId = oid(id);
+	if (!eventId) throw new Error("Event not found.");
+	const result = await collections.events.deleteOne({ userId: ownerId, _id: eventId });
+	if (!result.deletedCount) throw new Error("Event not found.");
+	await collections.journeyEntries.deleteMany({ eventId });
+}
+
+export async function deleteEventSeries(userId, id) {
+	const collections = await getCollections();
+	const ownerId = userOid(userId);
+	const eventId = oid(id);
+	if (!eventId) throw new Error("Event not found.");
+	const event = await collections.events.findOne({ userId: ownerId, _id: eventId });
+	if (!event) throw new Error("Event not found.");
+	if (!event.recurrenceGroupId) {
+		await deleteEvent(ownerId, id);
+		return;
+	}
+	const seriesEvents = await collections.events
+		.find({ userId: ownerId, recurrenceGroupId: event.recurrenceGroupId })
+		.project({ _id: 1 })
+		.toArray();
+	const eventIds = seriesEvents.map((seriesEvent) => seriesEvent._id);
 	await Promise.all([
-		collections.events.deleteOne({ userId: ownerId, _id: eventId }),
-		collections.journeyEntries.deleteOne({ userId: ownerId, eventId })
+		collections.events.deleteMany({ userId: ownerId, recurrenceGroupId: event.recurrenceGroupId }),
+		collections.journeyEntries.deleteMany({ eventId: { $in: eventIds } })
 	]);
 }
 
@@ -857,18 +953,78 @@ function monthLabel(monthKey) {
 	return new Intl.DateTimeFormat("en", { month: "long", year: "numeric" }).format(date);
 }
 
+function recurrenceDateRange(events) {
+	const dates = events.map((event) => event.date).filter(Boolean).sort();
+	if (!dates.length) return { startDate: "", endDate: "", label: "Dates not set" };
+	const startDate = dates[0];
+	const endDate = dates[dates.length - 1];
+	return {
+		startDate,
+		endDate,
+		label: startDate === endDate ? startDate : `${startDate} to ${endDate}`
+	};
+}
+
+function buildJourneyCards(entries, sort) {
+	const byRecurrence = new Map();
+	const cards = [];
+	for (const event of entries) {
+		if (!event.recurrenceGroupId) {
+			cards.push(event);
+			continue;
+		}
+		if (!byRecurrence.has(event.recurrenceGroupId)) byRecurrence.set(event.recurrenceGroupId, []);
+		byRecurrence.get(event.recurrenceGroupId).push(event);
+	}
+
+	for (const [recurrenceGroupId, events] of byRecurrence.entries()) {
+		const occurrences = [...events].sort(
+			(a, b) => (a.date || "").localeCompare(b.date || "") || (a.time || "").localeCompare(b.time || "")
+		);
+		const first = occurrences[0];
+		const range = recurrenceDateRange(occurrences);
+		const occurrenceCount = Math.max(...occurrences.map((event) => Number(event.recurrenceCount) || 1), occurrences.length);
+		cards.push({
+			...first,
+			id: `recurrence-${recurrenceGroupId}`,
+			isRecurrenceBundle: true,
+			recurrenceGroupId,
+			occurrences,
+			occurrenceCount,
+			memoryCount: occurrences.length,
+			startDate: range.startDate,
+			endDate: range.endDate,
+			dateRangeLabel: range.label,
+			groupDate: normalizeJourneySort(sort) === "dateAsc" ? range.startDate : range.endDate,
+			recurrenceLabel: `${first.recurrenceFrequency?.charAt(0).toUpperCase() || ""}${first.recurrenceFrequency?.slice(1) || ""} series`
+		});
+	}
+
+	const direction = normalizeJourneySort(sort) === "dateAsc" ? 1 : -1;
+	return cards.sort((a, b) => {
+		const aDate = a.groupDate || a.date || "";
+		const bDate = b.groupDate || b.date || "";
+		const dateSort = aDate.localeCompare(bDate) * direction;
+		if (dateSort) return dateSort;
+		return (a.time || "").localeCompare(b.time || "") * direction;
+	});
+}
+
 function groupJourneyEntries(entries, sort) {
 	const groups = new Map();
 	for (const event of entries) {
-		const monthKey = isDateFilter(event.date) ? event.date.slice(0, 7) : "undated";
+		const groupDate = event.groupDate || event.date;
+		const monthKey = isDateFilter(groupDate) ? groupDate.slice(0, 7) : "undated";
 		if (!groups.has(monthKey)) {
 			groups.set(monthKey, {
 				key: monthKey,
 				label: monthKey === "undated" ? "Undated memories" : monthLabel(monthKey),
+				memoryCount: 0,
 				entries: []
 			});
 		}
 		groups.get(monthKey).entries.push(event);
+		groups.get(monthKey).memoryCount += event.memoryCount || 1;
 	}
 	const direction = normalizeJourneySort(sort) === "dateAsc" ? 1 : -1;
 	return [...groups.values()].sort((a, b) => {
@@ -910,9 +1066,10 @@ function journeyStats(entries) {
 
 export async function getJourneyDiaryData(userId, filters = {}) {
 	const entries = await listJourneyEntries(userId, filters);
+	const journeyCards = buildJourneyCards(entries, filters.sort);
 	return {
 		entries,
-		groups: groupJourneyEntries(entries, filters.sort),
+		groups: groupJourneyEntries(journeyCards, filters.sort),
 		stats: journeyStats(entries),
 		recentHighlights: [...entries]
 			.sort(

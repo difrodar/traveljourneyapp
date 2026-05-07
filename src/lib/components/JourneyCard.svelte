@@ -1,7 +1,15 @@
 <script>
 	let { event } = $props();
 	const entry = $derived(event.journeyEntry || {});
-	const media = $derived(entry.imageUrl ? { imageUrl: entry.imageUrl, imageAlt: event.title } : event.media);
+	const isBundle = $derived(Boolean(event.isRecurrenceBundle));
+	const detailHref = $derived(isBundle ? `/events/${event.occurrences?.[0]?.id}` : `/events/${event.id}`);
+	const media = $derived.by(() => {
+		if (isBundle) {
+			const memory = event.occurrences?.find((occurrence) => occurrence.journeyEntry?.imageUrl);
+			return memory?.journeyEntry?.imageUrl ? { imageUrl: memory.journeyEntry.imageUrl, imageAlt: event.title } : event.media;
+		}
+		return entry.imageUrl ? { imageUrl: entry.imageUrl, imageAlt: event.title } : event.media;
+	});
 </script>
 
 <article class="card journey-card">
@@ -15,15 +23,33 @@
 	<div>
 		<div class="meta-row">
 			<span class="category">{event.category}</span>
-			<span>{event.date}</span>
+			<span>{isBundle ? event.dateRangeLabel : event.date}</span>
 			<span>{event.location?.city || event.location?.name}, {event.location?.country || "World"}</span>
 		</div>
-		<p class="trail">Journey stop · {event.location?.name}</p>
-		<h3><a href="/events/{event.id}">{event.title}</a></h3>
-		<p>{entry.memoryText}</p>
-		<strong class="memory-date">{event.date || "Memory saved"}</strong>
+		<p class="trail">
+			{#if isBundle}
+				Recurring journey - {event.memoryCount} memor{event.memoryCount === 1 ? "y" : "ies"}
+			{:else}
+				Journey stop - {event.location?.name}
+			{/if}
+		</p>
+		<h3><a href={detailHref}>{event.title}</a></h3>
+		{#if isBundle}
+			<div class="memory-list">
+				{#each event.occurrences as occurrence}
+					<a href="/events/{occurrence.id}">
+						<strong>{occurrence.date}</strong>
+						<span>{occurrence.journeyEntry?.memoryText}</span>
+					</a>
+				{/each}
+			</div>
+			<strong class="memory-date">{event.recurrenceLabel} - {event.occurrenceCount} occurrences</strong>
+		{:else}
+			<p>{entry.memoryText}</p>
+			<strong class="memory-date">{event.date || "Memory saved"}</strong>
+		{/if}
 		{#if event.media?.imageCredit}
-			<p class="credit">{event.media.imageCredit} · {event.media.imageLicense}</p>
+			<p class="credit">{event.media.imageCredit} - {event.media.imageLicense}</p>
 		{/if}
 	</div>
 </article>
@@ -86,6 +112,13 @@
 			linear-gradient(135deg, #8b5cf6, #c084fc);
 	}
 
+	.media.education,
+	.media.study {
+		background:
+			linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 18%, transparent 18% 100%),
+			linear-gradient(135deg, #2563eb, #38bdf8);
+	}
+
 	img {
 		width: 100%;
 		height: 100%;
@@ -93,7 +126,38 @@
 	}
 
 	.memory-date {
+		display: inline-flex;
+		margin-top: 8px;
 		color: var(--brand-dark);
+	}
+
+	.memory-list {
+		display: grid;
+		gap: 8px;
+		margin: 8px 0;
+	}
+
+	.memory-list a {
+		display: grid;
+		gap: 3px;
+		border-radius: 8px;
+		background: #fff7ec;
+		border: 1px solid #efd5b6;
+		padding: 10px;
+	}
+
+	.memory-list a:hover {
+		border-color: #e9b77e;
+	}
+
+	.memory-list strong {
+		color: var(--brand-dark);
+		font-size: 0.86rem;
+	}
+
+	.memory-list span {
+		color: #51453d;
+		line-height: 1.45;
 	}
 
 	.trail {

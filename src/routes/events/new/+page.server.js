@@ -15,7 +15,9 @@ const eventFormFields = [
 	"lng",
 	"backgroundType",
 	"description",
-	"invitedUserIds"
+	"invitedUserIds",
+	"repeatFrequency",
+	"repeatCount"
 ];
 
 function eventValues(form) {

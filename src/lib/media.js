@@ -191,6 +191,7 @@ export const categoryMedia = {
 	},
 	"weekend trip": locationMedia.travel,
 	study: locationMedia.london,
+	education: locationMedia.london,
 	culture: locationMedia["balboa park"],
 	outdoor: locationMedia.zurich,
 	sightseeing: locationMedia.travel

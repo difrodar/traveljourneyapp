@@ -24,6 +24,9 @@
 		<span>{event.date} at {event.time}</span>
 		<span>{event.location?.name || "No location"}</span>
 	</div>
+	{#if event.recurrenceLabel}
+		<span class="series-badge">{event.recurrenceLabel}</span>
+	{/if}
 	{#if event.location?.id}
 		<a class="map-link" href="/map?event={event.id}#location-{event.location.id}">View on map</a>
 	{/if}
@@ -84,6 +87,11 @@
 		background: #8b5cf6;
 	}
 
+	.event-card.education::before,
+	.event-card.study::before {
+		background: #2563eb;
+	}
+
 	.event-card.outdoor::before {
 		background: var(--palm);
 	}
@@ -140,6 +148,18 @@
 
 	.map-link:hover {
 		color: var(--coral);
+	}
+
+	.series-badge {
+		display: inline-flex;
+		width: fit-content;
+		margin-top: 10px;
+		border-radius: 999px;
+		background: #eef6e8;
+		color: #3c6f35;
+		font-size: 0.8rem;
+		font-weight: 900;
+		padding: 6px 10px;
 	}
 
 	.friends span {

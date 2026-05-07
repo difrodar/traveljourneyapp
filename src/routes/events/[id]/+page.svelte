@@ -4,6 +4,8 @@
 	import SharePreview from "$lib/components/SharePreview.svelte";
 
 	let { data, form } = $props();
+	let showDeleteDialog = $state(false);
+	let deleteScope = $state("single");
 	const event = $derived(data.event);
 	const friends = $derived(event.friends || []);
 	const isOwner = $derived(Boolean(event.isOwner));
@@ -45,6 +47,15 @@
 		addPhoto(photos, item.journeyEntry?.imageUrl, `${item.title} memory`, "Memory photo");
 		return photos;
 	}
+
+	function openDeleteDialog() {
+		deleteScope = "single";
+		showDeleteDialog = true;
+	}
+
+	function closeDeleteDialogOnBackdrop(pointerEvent) {
+		if (pointerEvent.target === pointerEvent.currentTarget) showDeleteDialog = false;
+	}
 </script>
 
 <main class="event-screen">
@@ -61,11 +72,50 @@
 			<a href="/events/new" class="muted-link">+ Create Event</a>
 		</nav>
 		{#if isOwner}
-			<form method="POST" action="?/delete">
-				<button class="danger-link" type="submit">Delete event</button>
-			</form>
+			{#if event.recurrenceGroupId}
+				<button class="danger-link" type="button" onclick={openDeleteDialog}>Delete event or series</button>
+			{:else}
+				<form method="POST" action="?/delete">
+					<input type="hidden" name="deleteScope" value="single" />
+					<button class="danger-link" type="submit">Delete event</button>
+				</form>
+			{/if}
 		{/if}
 	</aside>
+
+	{#if showDeleteDialog}
+		<div class="dialog-backdrop" role="presentation" onclick={closeDeleteDialogOnBackdrop}>
+			<div class="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title">
+				<div>
+					<p class="eyebrow">Delete recurring event</p>
+					<h2 id="delete-dialog-title">Delete this event or the whole series?</h2>
+					<p class="muted">This cannot be undone. Journey memories connected to the deleted event dates will be removed too.</p>
+				</div>
+				<form method="POST" action="?/delete">
+					<div class="delete-options">
+						<label>
+							<input type="radio" name="deleteScope" value="single" bind:group={deleteScope} />
+							<span>
+								<strong>Only this event</strong>
+								<small>{event.date} at {event.time}</small>
+							</span>
+						</label>
+						<label>
+							<input type="radio" name="deleteScope" value="series" bind:group={deleteScope} />
+							<span>
+								<strong>Entire series</strong>
+								<small>{event.recurrenceLabel || "All recurring events in this series"}</small>
+							</span>
+						</label>
+					</div>
+					<div class="dialog-actions">
+						<button class="ghost-button" type="button" onclick={() => (showDeleteDialog = false)}>Cancel</button>
+						<button class="danger-button" type="submit">Delete selection</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	{/if}
 
 	<section class="event-detail">
 		{#if form?.error}
@@ -95,6 +145,9 @@
 						<span class="status {event.status}">{event.status}</span>
 					{/if}
 					<span class="category">{event.category}</span>
+					{#if event.recurrenceLabel}
+						<span class="series-badge">{event.recurrenceLabel}</span>
+					{/if}
 					{#if event.upcoming?.active}
 						<span class="reminder-badge">{event.upcoming.badge}: {event.upcoming.label}</span>
 					{/if}
@@ -153,6 +206,12 @@
 							<span>Status</span>
 							<strong>{isInvitedViewer ? event.invitationStatus : event.status}</strong>
 						</div>
+						{#if event.recurrenceLabel}
+							<div>
+								<span>Series</span>
+								<strong>{event.recurrenceLabel}</strong>
+							</div>
+						{/if}
 					</div>
 					<div class="friend-strip">
 						<span>Invited TripTales users</span>
@@ -341,6 +400,76 @@
 
 	.danger-link {
 		color: #b42318;
+	}
+
+	.dialog-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 20;
+		display: grid;
+		place-items: center;
+		background: rgba(38, 35, 33, 0.48);
+		padding: 18px;
+	}
+
+	.delete-dialog {
+		width: min(520px, 100%);
+		display: grid;
+		gap: 18px;
+		border-radius: 8px;
+		background: #fffdf9;
+		border: 1px solid #e5d7c8;
+		box-shadow: 0 24px 70px rgba(38, 35, 33, 0.24);
+		padding: 24px;
+	}
+
+	.delete-dialog h2,
+	.delete-dialog p {
+		margin-bottom: 6px;
+	}
+
+	.delete-options {
+		display: grid;
+		gap: 10px;
+	}
+
+	.delete-options label {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 10px;
+		align-items: start;
+		border: 1px solid #e5d7c8;
+		border-radius: 8px;
+		background: #fff7ec;
+		padding: 12px;
+		cursor: pointer;
+	}
+
+	.delete-options input {
+		width: auto;
+		margin-top: 3px;
+	}
+
+	.delete-options span {
+		display: grid;
+		gap: 3px;
+	}
+
+	.delete-options strong {
+		color: #33251d;
+	}
+
+	.delete-options small {
+		color: var(--muted);
+		font-weight: 800;
+	}
+
+	.dialog-actions {
+		display: flex;
+		justify-content: flex-end;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 16px;
 	}
 
 	.event-detail {
@@ -614,6 +743,18 @@
 		border-radius: 999px;
 		background: #eaf6fb;
 		color: #176b91;
+		font-size: 0.8rem;
+		font-weight: 900;
+		padding: 5px 10px;
+	}
+
+	.series-badge {
+		display: inline-flex;
+		align-items: center;
+		border: 1px solid #b8dfad;
+		border-radius: 999px;
+		background: #eef6e8;
+		color: #3c6f35;
 		font-size: 0.8rem;
 		font-weight: 900;
 		padding: 5px 10px;

@@ -1,9 +1,16 @@
 <script>
-	import { categories } from "$lib/constants.js";
+	import { categories, repeatFrequencies } from "$lib/constants.js";
 	import CityCombobox from "./CityCombobox.svelte";
 	import FriendPicker from "./FriendPicker.svelte";
 
-	let { event = null, action = "?/create", submitLabel = "Save event", form = null, inviteableUsers = [] } = $props();
+	let {
+		event = null,
+		action = "?/create",
+		submitLabel = "Save event",
+		form = null,
+		inviteableUsers = [],
+		showRecurrence = false
+	} = $props();
 	const location = $derived(event?.location || {});
 	const values = $derived(form?.values || {});
 	const fieldErrors = $derived(form?.fieldErrors || {});
@@ -60,6 +67,34 @@
 				<option value="completed" selected={fieldValue("status", event?.status || "planned") === "completed"}>Completed</option>
 			</select>
 		</div>
+		{#if showRecurrence}
+			<div class="field">
+				<label for="repeatFrequency">Repeat</label>
+				<select id="repeatFrequency" name="repeatFrequency" aria-invalid={Boolean(fieldErrors.repeatFrequency)}>
+					{#each repeatFrequencies as frequency}
+						<option value={frequency.value} selected={fieldValue("repeatFrequency", "none") === frequency.value}>{frequency.label}</option>
+					{/each}
+				</select>
+				{#if fieldErrors.repeatFrequency}
+					<p class="field-error">{fieldErrors.repeatFrequency}</p>
+				{/if}
+			</div>
+			<div class="field">
+				<label for="repeatCount">Occurrences</label>
+				<input
+					id="repeatCount"
+					name="repeatCount"
+					type="number"
+					min="1"
+					max="52"
+					value={fieldValue("repeatCount", "1")}
+					aria-invalid={Boolean(fieldErrors.repeatCount)}
+				/>
+				{#if fieldErrors.repeatCount}
+					<p class="field-error">{fieldErrors.repeatCount}</p>
+				{/if}
+			</div>
+		{/if}
 		<div class="field">
 			<label for="locationName">Location</label>
 			<input

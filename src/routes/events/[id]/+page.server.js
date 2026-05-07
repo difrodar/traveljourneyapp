@@ -2,6 +2,7 @@ import { error, fail, redirect } from "@sveltejs/kit";
 import {
 	completeEventFromForm,
 	deleteEvent,
+	deleteEventSeries,
 	getEvent,
 	listInviteableUsers,
 	respondToInvitation,
@@ -92,8 +93,17 @@ export const actions = {
 		}
 		return { message: "Journey memory saved." };
 	},
-	delete: async ({ locals, params }) => {
-		await deleteEvent(locals.user.id, params.id);
+	delete: async ({ locals, params, request }) => {
+		const form = await request.formData();
+		try {
+			if (form.get("deleteScope") === "series") {
+				await deleteEventSeries(locals.user.id, params.id);
+			} else {
+				await deleteEvent(locals.user.id, params.id);
+			}
+		} catch (error) {
+			return fail(400, { error: error.message });
+		}
 		throw redirect(303, "/events");
 	},
 	accept: async ({ locals, params }) => {

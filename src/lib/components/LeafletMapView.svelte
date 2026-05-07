@@ -172,6 +172,11 @@
 		background: #8b5cf6;
 	}
 
+	:global(.triptales-pin.education),
+	:global(.triptales-pin.study) {
+		background: #2563eb;
+	}
+
 	:global(.triptales-pin.outdoor) {
 		background: var(--palm);
 	}
