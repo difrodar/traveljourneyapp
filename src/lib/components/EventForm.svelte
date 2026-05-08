@@ -1,5 +1,5 @@
 <script>
-	import { categories, repeatFrequencies } from "$lib/constants.js";
+	import { categories, repeatFrequencies, UPLOAD_ALLOWED_MIME_TYPES, UPLOAD_MAX_BYTES } from "$lib/constants.js";
 	import CityCombobox from "./CityCombobox.svelte";
 	import FriendPicker from "./FriendPicker.svelte";
 
@@ -19,9 +19,25 @@
 			? values.invitedUserIds
 			: event?.friends?.map((friend) => friend.id) || []
 	);
+	let clientImageError = $state("");
 
 	function fieldValue(name, fallback = "") {
 		return Object.hasOwn(values, name) ? values[name] : fallback;
+	}
+
+	function handleImageChange(domEvent) {
+		clientImageError = "";
+		const file = domEvent.currentTarget.files?.[0];
+		if (!file) return;
+		if (!UPLOAD_ALLOWED_MIME_TYPES.includes(file.type)) {
+			clientImageError = "Use a JPG, PNG, WebP or GIF file.";
+			domEvent.currentTarget.value = "";
+			return;
+		}
+		if (file.size > UPLOAD_MAX_BYTES) {
+			clientImageError = "Image must be 2 MB or smaller.";
+			domEvent.currentTarget.value = "";
+		}
 	}
 </script>
 
@@ -138,8 +154,12 @@
 				name="eventImageFile"
 				type="file"
 				accept="image/jpeg,image/png,image/webp,image/gif"
-				aria-invalid={Boolean(fieldErrors.eventImageFile)}
+				aria-invalid={Boolean(fieldErrors.eventImageFile || clientImageError)}
+				onchange={handleImageChange}
 			/>
+			{#if clientImageError}
+				<p class="field-error">{clientImageError}</p>
+			{/if}
 			{#if fieldErrors.eventImageFile}
 				<p class="field-error">{fieldErrors.eventImageFile}</p>
 			{/if}

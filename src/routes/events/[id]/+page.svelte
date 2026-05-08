@@ -1,61 +1,20 @@
 <script>
+	import DeleteRecurringDialog from "$lib/components/DeleteRecurringDialog.svelte";
 	import EventForm from "$lib/components/EventForm.svelte";
 	import EventMapPanel from "$lib/components/EventMapPanel.svelte";
+	import MemoryForm from "$lib/components/MemoryForm.svelte";
 	import SharePreview from "$lib/components/SharePreview.svelte";
+	import { buildGallery, formatEventDate } from "$lib/utils/event-format.js";
 
 	let { data, form } = $props();
 	let showDeleteDialog = $state(false);
-	let deleteScope = $state("single");
 	const event = $derived(data.event);
 	const friends = $derived(event.friends || []);
 	const isOwner = $derived(Boolean(event.isOwner));
 	const isInvitedViewer = $derived(Boolean(event.invitationStatus) && !isOwner);
 	const canSaveMemory = $derived(isOwner || (event.invitationStatus === "accepted" && event.status === "completed"));
-	const hasMemory = $derived(Boolean(event.journeyEntry?.memoryText));
 	const displayDate = $derived(formatEventDate(event.date, event.time));
 	const gallery = $derived.by(() => buildGallery(event));
-
-	function formatEventDate(date, time) {
-		if (!date) return "Date not set";
-		const eventDate = new Date(`${date}T${time || "00:00"}`);
-		if (Number.isNaN(eventDate.getTime())) return `${date}${time ? ` at ${time}` : ""}`;
-		return new Intl.DateTimeFormat("en", {
-			month: "long",
-			day: "numeric",
-			year: "numeric",
-			hour: time ? "numeric" : undefined,
-			minute: time ? "2-digit" : undefined
-		}).format(eventDate);
-	}
-
-	function addPhoto(photos, url, alt, label, credit = "", license = "") {
-		if (!url || photos.some((photo) => photo.url === url)) return;
-		photos.push({ url, alt, label, credit, license });
-	}
-
-	function buildGallery(item) {
-		const photos = [];
-		addPhoto(photos, item.media?.imageUrl, item.media?.imageAlt || item.title, "Event cover", item.media?.imageCredit, item.media?.imageLicense);
-		addPhoto(
-			photos,
-			item.location?.media?.imageUrl,
-			item.location?.media?.imageAlt || item.location?.name,
-			"Location",
-			item.location?.media?.imageCredit,
-			item.location?.media?.imageLicense
-		);
-		addPhoto(photos, item.journeyEntry?.imageUrl, `${item.title} memory`, "Memory photo");
-		return photos;
-	}
-
-	function openDeleteDialog() {
-		deleteScope = "single";
-		showDeleteDialog = true;
-	}
-
-	function closeDeleteDialogOnBackdrop(pointerEvent) {
-		if (pointerEvent.target === pointerEvent.currentTarget) showDeleteDialog = false;
-	}
 </script>
 
 <main class="event-screen">
@@ -73,7 +32,7 @@
 		</nav>
 		{#if isOwner}
 			{#if event.recurrenceGroupId}
-				<button class="danger-link" type="button" onclick={openDeleteDialog}>Delete event or series</button>
+				<button class="danger-link" type="button" onclick={() => (showDeleteDialog = true)}>Delete event or series</button>
 			{:else}
 				<form method="POST" action="?/delete">
 					<input type="hidden" name="deleteScope" value="single" />
@@ -83,39 +42,7 @@
 		{/if}
 	</aside>
 
-	{#if showDeleteDialog}
-		<div class="dialog-backdrop" role="presentation" onclick={closeDeleteDialogOnBackdrop}>
-			<div class="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title">
-				<div>
-					<p class="eyebrow">Delete recurring event</p>
-					<h2 id="delete-dialog-title">Delete this event or the whole series?</h2>
-					<p class="muted">This cannot be undone. Journey memories connected to the deleted event dates will be removed too.</p>
-				</div>
-				<form method="POST" action="?/delete">
-					<div class="delete-options">
-						<label>
-							<input type="radio" name="deleteScope" value="single" bind:group={deleteScope} />
-							<span>
-								<strong>Only this event</strong>
-								<small>{event.date} at {event.time}</small>
-							</span>
-						</label>
-						<label>
-							<input type="radio" name="deleteScope" value="series" bind:group={deleteScope} />
-							<span>
-								<strong>Entire series</strong>
-								<small>{event.recurrenceLabel || "All recurring events in this series"}</small>
-							</span>
-						</label>
-					</div>
-					<div class="dialog-actions">
-						<button class="ghost-button" type="button" onclick={() => (showDeleteDialog = false)}>Cancel</button>
-						<button class="danger-button" type="submit">Delete selection</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	{/if}
+	<DeleteRecurringDialog open={showDeleteDialog} {event} onClose={() => (showDeleteDialog = false)} />
 
 	<section class="event-detail">
 		{#if form?.error}
@@ -265,47 +192,7 @@
 
 			<aside class="secondary-column">
 				{#if canSaveMemory}
-					<section class="after-panel">
-						<p class="eyebrow">After the event</p>
-						<h2>Journey memory</h2>
-						<p class="muted">Add your personal memory once the event has happened.</p>
-						<form class="memory-form" method="POST" action="?/complete" enctype="multipart/form-data">
-							<div class="field">
-								<label for="memoryText">Memory text</label>
-								<textarea id="memoryText" name="memoryText" aria-invalid={Boolean(form?.memoryFieldErrors?.memoryText)} required>{form?.memoryValues?.memoryText ?? event.journeyEntry?.memoryText ?? ""}</textarea>
-								{#if form?.memoryFieldErrors?.memoryText}
-									<p class="field-error">{form.memoryFieldErrors.memoryText}</p>
-								{/if}
-							</div>
-							<div class="field">
-								<label for="memoryImageFile">Memory image optional</label>
-								<input
-									id="memoryImageFile"
-									name="memoryImageFile"
-									type="file"
-									accept="image/jpeg,image/png,image/webp,image/gif"
-									aria-invalid={Boolean(form?.memoryFieldErrors?.memoryImageFile)}
-								/>
-								{#if form?.memoryFieldErrors?.memoryImageFile}
-									<p class="field-error">{form.memoryFieldErrors.memoryImageFile}</p>
-								{/if}
-								{#if event.journeyEntry?.imageUrl}
-									<label class="checkbox-field">
-										<input name="clearMemoryImage" type="checkbox" value="true" />
-										<span>Remove current memory image</span>
-									</label>
-								{/if}
-							</div>
-							<button class="button" type="submit">Save memory</button>
-						</form>
-
-						{#if hasMemory}
-							<article class="memory-card">
-								<span>Saved journey memory</span>
-								<p>{event.journeyEntry.memoryText}</p>
-							</article>
-						{/if}
-					</section>
+					<MemoryForm {event} {form} />
 				{:else if isInvitedViewer}
 					<section class="after-panel">
 						<p class="eyebrow">After the event</p>
@@ -400,76 +287,6 @@
 
 	.danger-link {
 		color: #b42318;
-	}
-
-	.dialog-backdrop {
-		position: fixed;
-		inset: 0;
-		z-index: 20;
-		display: grid;
-		place-items: center;
-		background: rgba(38, 35, 33, 0.48);
-		padding: 18px;
-	}
-
-	.delete-dialog {
-		width: min(520px, 100%);
-		display: grid;
-		gap: 18px;
-		border-radius: 8px;
-		background: #fffdf9;
-		border: 1px solid #e5d7c8;
-		box-shadow: 0 24px 70px rgba(38, 35, 33, 0.24);
-		padding: 24px;
-	}
-
-	.delete-dialog h2,
-	.delete-dialog p {
-		margin-bottom: 6px;
-	}
-
-	.delete-options {
-		display: grid;
-		gap: 10px;
-	}
-
-	.delete-options label {
-		display: grid;
-		grid-template-columns: auto 1fr;
-		gap: 10px;
-		align-items: start;
-		border: 1px solid #e5d7c8;
-		border-radius: 8px;
-		background: #fff7ec;
-		padding: 12px;
-		cursor: pointer;
-	}
-
-	.delete-options input {
-		width: auto;
-		margin-top: 3px;
-	}
-
-	.delete-options span {
-		display: grid;
-		gap: 3px;
-	}
-
-	.delete-options strong {
-		color: #33251d;
-	}
-
-	.delete-options small {
-		color: var(--muted);
-		font-weight: 800;
-	}
-
-	.dialog-actions {
-		display: flex;
-		justify-content: flex-end;
-		flex-wrap: wrap;
-		gap: 10px;
-		margin-top: 16px;
 	}
 
 	.event-detail {
@@ -719,17 +536,6 @@
 		color: rgba(255, 255, 255, 0.76);
 	}
 
-	.memory-form {
-		display: grid;
-		gap: 14px;
-		margin-top: 16px;
-	}
-
-	.field-label {
-		font-weight: 800;
-		color: #253044;
-	}
-
 	.status.invited {
 		background: #fff0dc;
 		border-color: #f4c28e;
@@ -773,51 +579,6 @@
 
 	.invitation-actions form {
 		margin: 0;
-	}
-
-	.field-error {
-		margin: 0;
-		color: #b42318;
-		font-size: 0.88rem;
-		font-weight: 800;
-	}
-
-	input[aria-invalid="true"],
-	textarea[aria-invalid="true"] {
-		border-color: #ef4444;
-		background: #fff7f7;
-	}
-
-	.memory-card {
-		margin-top: 16px;
-		border-radius: 8px;
-		background: #fff5e7;
-		border: 1px solid #efd5b6;
-		padding: 15px;
-	}
-
-	.memory-card span {
-		color: #a94724;
-		font-weight: 900;
-	}
-
-	.memory-card p {
-		margin: 8px 0 0;
-		color: #51453d;
-		line-height: 1.55;
-	}
-
-	.checkbox-field {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		margin-top: 8px;
-		color: var(--muted);
-		font-weight: 800;
-	}
-
-	.checkbox-field input {
-		width: auto;
 	}
 
 	.section-heading h2,

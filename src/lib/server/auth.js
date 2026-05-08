@@ -80,8 +80,8 @@ export async function signup(username, password) {
 	if (!/^[a-z0-9_-]{3,32}$/.test(normalizedUsername)) {
 		return { error: "Username must be 3-32 characters and use letters, numbers, - or _." };
 	}
-	if (String(password || "").length < 3) {
-		return { error: "Password must be at least 3 characters." };
+	if (String(password || "").length < 8) {
+		return { error: "Password must be at least 8 characters." };
 	}
 	const now = new Date();
 	try {

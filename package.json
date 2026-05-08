@@ -13,6 +13,7 @@
 		"normalize:city-coordinates": "node scripts/normalize-city-coordinates.js",
 		"cleanup:legacy-friends": "node scripts/cleanup-legacy-friends.js",
 		"cleanup:journey-ratings": "node scripts/cleanup-journey-ratings.js",
+		"smoke": "node scripts/smoke.js",
 		"prepare": "svelte-kit sync || echo ''"
 	},
 	"devDependencies": {

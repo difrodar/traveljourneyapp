@@ -1,4 +1,5 @@
 <script>
+	import { dev } from "$app/environment";
 	import { categoryMedia } from "$lib/media.js";
 
 	let { form } = $props();
@@ -13,10 +14,12 @@
 			<p class="lead">
 				Sign in to continue to your dashboard, events, journey timeline, travel ideas and map.
 			</p>
-			<div class="demo-logins">
-				<span>difrodar / difrodar</span>
-				<span>dummy / dummy</span>
-			</div>
+			{#if dev}
+				<div class="demo-logins">
+					<span>difrodar / difrodar</span>
+					<span>dummy / dummy</span>
+				</div>
+			{/if}
 		</div>
 
 		<div class="visual">
@@ -64,7 +67,8 @@
 			</label>
 			<label class="field">
 				<span>Password</span>
-				<input name="password" type="password" autocomplete="new-password" required />
+				<input name="password" type="password" autocomplete="new-password" minlength="8" required />
+				<small class="muted">At least 8 characters.</small>
 			</label>
 			<button class="ghost-button" type="submit">Create account</button>
 		</form>

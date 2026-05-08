@@ -60,6 +60,12 @@
 		{/if}
 	</div>
 
+	{#if data.locations.length === 0 && !data.hasActiveFilters}
+		<div class="empty-state">No mapped places yet. Create an event with a city to see the first pin appear here.</div>
+	{:else if data.locations.length === 0 && data.hasActiveFilters}
+		<div class="empty-state">No places match these filters. Clear the filters to see all your mapped events.</div>
+	{/if}
+
 	{#key data.filterKey}
 		<LeafletMapView locations={data.locations} highlightedEventId={data.highlightedEventId} />
 	{/key}

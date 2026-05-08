@@ -1,0 +1,114 @@
+<script>
+	let { open, event, onClose } = $props();
+	let deleteScope = $state("single");
+
+	function closeOnBackdrop(pointerEvent) {
+		if (pointerEvent.target === pointerEvent.currentTarget) onClose();
+	}
+</script>
+
+{#if open}
+	<div class="dialog-backdrop" role="presentation" onclick={closeOnBackdrop}>
+		<div class="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title">
+			<div>
+				<p class="eyebrow">Delete recurring event</p>
+				<h2 id="delete-dialog-title">Delete this event or the whole series?</h2>
+				<p class="muted">This cannot be undone. Journey memories connected to the deleted event dates will be removed too.</p>
+			</div>
+			<form method="POST" action="?/delete">
+				<div class="delete-options">
+					<label>
+						<input type="radio" name="deleteScope" value="single" bind:group={deleteScope} />
+						<span>
+							<strong>Only this event</strong>
+							<small>{event.date} at {event.time}</small>
+						</span>
+					</label>
+					<label>
+						<input type="radio" name="deleteScope" value="series" bind:group={deleteScope} />
+						<span>
+							<strong>Entire series</strong>
+							<small>{event.recurrenceLabel || "All recurring events in this series"}</small>
+						</span>
+					</label>
+				</div>
+				<div class="dialog-actions">
+					<button class="ghost-button" type="button" onclick={onClose}>Cancel</button>
+					<button class="danger-button" type="submit">Delete selection</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{/if}
+
+<style>
+	.dialog-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 20;
+		display: grid;
+		place-items: center;
+		background: rgba(38, 35, 33, 0.48);
+		padding: 18px;
+	}
+
+	.delete-dialog {
+		width: min(520px, 100%);
+		display: grid;
+		gap: 18px;
+		border-radius: 8px;
+		background: #fffdf9;
+		border: 1px solid #e5d7c8;
+		box-shadow: 0 24px 70px rgba(38, 35, 33, 0.24);
+		padding: 24px;
+	}
+
+	.delete-dialog h2,
+	.delete-dialog p {
+		margin-bottom: 6px;
+	}
+
+	.delete-options {
+		display: grid;
+		gap: 10px;
+	}
+
+	.delete-options label {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 10px;
+		align-items: start;
+		border: 1px solid #e5d7c8;
+		border-radius: 8px;
+		background: #fff7ec;
+		padding: 12px;
+		cursor: pointer;
+	}
+
+	.delete-options input {
+		width: auto;
+		margin-top: 3px;
+	}
+
+	.delete-options span {
+		display: grid;
+		gap: 3px;
+	}
+
+	.delete-options strong {
+		color: #33251d;
+	}
+
+	.delete-options small {
+		color: var(--muted);
+		font-weight: 800;
+	}
+
+	.dialog-actions {
+		display: flex;
+		justify-content: flex-end;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 16px;
+	}
+</style>
