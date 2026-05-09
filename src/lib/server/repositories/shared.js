@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { findCityCoordinates } from "$lib/cities.js";
 
-export const maxUploadBytes = 2 * 1024 * 1024;
+export const maxUploadBytes = 5 * 1024 * 1024;
 export const allowedUploadTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 export const repeatFrequencies = new Set(["none", "daily", "weekly", "monthly"]);
 export const maxRepeatCount = 52;
@@ -262,7 +262,7 @@ export async function uploadedImageFields(
 			throw new Error(`${uploadLabel}: Please upload a JPG, PNG, WebP or GIF image.`);
 		}
 		if (file.size > maxUploadBytes) {
-			throw new Error(`${uploadLabel}: The selected file is too large. Please upload an image up to 2 MB.`);
+			throw new Error(`${uploadLabel}: The selected file is too large. Please upload an image up to 5 MB.`);
 		}
 		const buffer = Buffer.from(await file.arrayBuffer());
 		return {

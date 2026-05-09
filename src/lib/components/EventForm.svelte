@@ -35,7 +35,7 @@
 			return;
 		}
 		if (file.size > UPLOAD_MAX_BYTES) {
-			clientImageError = "Image must be 2 MB or smaller.";
+			clientImageError = "Image must be 5 MB or smaller.";
 			domEvent.currentTarget.value = "";
 		}
 	}
@@ -141,7 +141,7 @@
 		</div>
 		<div class="field full media-fields">
 			<h3>Event image optional</h3>
-			<p class="muted">Upload a JPG, PNG, WebP or GIF up to 2 MB.</p>
+			<p class="muted">Upload a JPG, PNG, WebP or GIF up to 5 MB.</p>
 		</div>
 		<div class="field full">
 			<label for="eventImageFile">Event image</label>

@@ -15,7 +15,7 @@
 			return;
 		}
 		if (file.size > UPLOAD_MAX_BYTES) {
-			clientImageError = "Image must be 2 MB or smaller.";
+			clientImageError = "Image must be 5 MB or smaller.";
 			domEvent.currentTarget.value = "";
 		}
 	}
