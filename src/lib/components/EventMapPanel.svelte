@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from "svelte";
 	import "leaflet/dist/leaflet.css";
+	import PlaceholderIcon from "$lib/components/PlaceholderIcon.svelte";
 
 	let { event } = $props();
 	let mapEl = $state();
@@ -60,6 +61,10 @@
 		<div class="map-fallback">
 			{#if location.media?.imageUrl}
 				<img src={location.media.imageUrl} alt={location.media.imageAlt || location.name} />
+			{:else}
+				<div class="map-fallback-icon" aria-hidden="true">
+					<PlaceholderIcon size={56} />
+				</div>
 			{/if}
 			<div>
 				<strong>{location.name}</strong>
@@ -102,6 +107,15 @@
 		display: grid;
 		align-items: end;
 		color: white;
+	}
+
+	.map-fallback-icon {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: center;
+		color: rgba(255, 255, 255, 0.65);
+		pointer-events: none;
 	}
 
 	.map-fallback img {

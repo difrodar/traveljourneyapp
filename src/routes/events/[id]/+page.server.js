@@ -112,7 +112,7 @@ export const actions = {
 		} catch (error) {
 			return fail(400, { error: error.message });
 		}
-		return { message: "Invitation accepted." };
+		return { message: "You're going! After the event you'll be able to add your own memory." };
 	},
 	decline: async ({ locals, params }) => {
 		try {
@@ -120,6 +120,8 @@ export const actions = {
 		} catch (error) {
 			return fail(400, { error: error.message });
 		}
+		// Decline removes the user from invitedUserIds, so the event detail page would
+		// 404 on re-render. Redirect to the events list instead.
 		throw redirect(303, "/events");
 	}
 };

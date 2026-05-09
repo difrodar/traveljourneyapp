@@ -81,4 +81,19 @@
 	.actions {
 		margin-top: 18px;
 	}
+
+	@media (max-width: 900px) {
+		.ideas-layout {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 380px) {
+		.ideas-layout :global(.button),
+		.ideas-layout :global(.ghost-button),
+		.ideas-layout :global(.danger-button) {
+			min-height: 44px;
+			padding-block: 10px;
+		}
+	}
 </style>

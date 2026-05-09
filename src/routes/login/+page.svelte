@@ -1,5 +1,4 @@
 <script>
-	import { dev } from "$app/environment";
 	import { categoryMedia } from "$lib/media.js";
 
 	let { form } = $props();
@@ -14,12 +13,6 @@
 			<p class="lead">
 				Sign in to continue to your dashboard, events, journey timeline, travel ideas and map.
 			</p>
-			{#if dev}
-				<div class="demo-logins">
-					<span>difrodar / difrodar</span>
-					<span>dummy / dummy</span>
-				</div>
-			{/if}
 		</div>
 
 		<div class="visual">
@@ -63,7 +56,16 @@
 			{/if}
 			<label class="field">
 				<span>Username</span>
-				<input name="username" value={form?.signupUsername || ""} autocomplete="username" required />
+				<input
+					name="username"
+					value={form?.signupUsername || ""}
+					autocomplete="username"
+					pattern="^[a-zA-Z0-9_-]{3,32}$"
+					minlength="3"
+					maxlength="32"
+					required
+				/>
+				<small class="muted">3–32 characters. Letters, numbers, '-' and '_' only.</small>
 			</label>
 			<label class="field">
 				<span>Password</span>
@@ -95,22 +97,6 @@
 		flex-direction: column;
 		justify-content: center;
 		padding: 22px 0;
-	}
-
-	.demo-logins {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		margin-top: 8px;
-	}
-
-	.demo-logins span {
-		border: 1px solid var(--line);
-		border-radius: 999px;
-		background: #fff7ec;
-		color: var(--muted);
-		padding: 7px 11px;
-		font-weight: 800;
 	}
 
 	.visual {

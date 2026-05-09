@@ -135,10 +135,6 @@
 			lngValue={fieldValue("lng", location.coordinates?.lng || "")}
 			help="Pick the nearest city so the event appears at the right place on the map."
 		/>
-		<div class="field">
-			<label for="backgroundType">Visual type</label>
-			<input id="backgroundType" name="backgroundType" value={fieldValue("backgroundType", location.backgroundType || "")} placeholder="beach, culture, nightlife" />
-		</div>
 		<div class="field full">
 			<label for="description">Description</label>
 			<textarea id="description" name="description">{fieldValue("description", event?.description || "")}</textarea>

@@ -1,5 +1,6 @@
 <script>
 	import { statusLabels } from "$lib/constants.js";
+	import PlaceholderIcon from "$lib/components/PlaceholderIcon.svelte";
 
 	let { event, compact = false } = $props();
 	const displayStatus = $derived(event.invitationStatus || event.status);
@@ -11,7 +12,10 @@
 		{#if event.media?.imageUrl}
 			<img src={event.media.imageUrl} alt={event.media.imageAlt || event.title} />
 		{:else}
-			<span>{event.category}</span>
+			<div class="cover-placeholder">
+				<PlaceholderIcon size={36} />
+				<span>{event.category}</span>
+			</div>
 		{/if}
 	</a>
 	<div class="topline">
@@ -109,6 +113,13 @@
 		color: white;
 		font-weight: 900;
 		overflow: hidden;
+	}
+
+	.cover-placeholder {
+		display: grid;
+		place-items: center;
+		gap: 6px;
+		opacity: 0.92;
 	}
 
 	.cover img {

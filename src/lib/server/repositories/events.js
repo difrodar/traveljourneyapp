@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { resolveEventMedia, resolveLocationMedia } from "$lib/media.js";
+import { storedEventMedia, storedLocationMedia } from "$lib/media.js";
 import { getCollections } from "../db.js";
 import {
 	addRecurringDate,
@@ -63,8 +63,8 @@ async function hydrateEvents(events, userId) {
 		const invitationStatus = viewerInvitation?.status || (isInvited ? "invited" : "");
 		return {
 			...serialized,
-			location: location ? { ...location, media: resolveLocationMedia(location) } : null,
-			media: resolveEventMedia(serialized, location),
+			location: location ? { ...location, media: storedLocationMedia(location) } : null,
+			media: storedEventMedia(serialized, location),
 			owner: ownerMap.get(event.userId?.toString()) || null,
 			friends: (event.invitedUserIds || []).map((id) => invitedUserMap.get(id.toString())).filter(Boolean),
 			isOwner: event.userId?.toString() === ownerId.toString(),
@@ -407,7 +407,7 @@ export async function listLocations(userId) {
 		const serialized = serialize(location);
 		return {
 			...serialized,
-			media: resolveLocationMedia(serialized),
+			media: storedLocationMedia(serialized),
 			events: events.filter((event) => event.locationId === serialized.id)
 		};
 	});

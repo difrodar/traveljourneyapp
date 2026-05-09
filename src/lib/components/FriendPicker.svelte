@@ -1,18 +1,48 @@
 <script>
 	let { users = [], selectedIds = [], error = "" } = $props();
 	const selected = $derived(new Set((selectedIds || []).map(String)));
+	let query = $state("");
+	const showSearch = $derived(users.length > 5);
+	const visibleUsers = $derived(
+		query.trim()
+			? users.filter((u) => u.username.toLowerCase().includes(query.trim().toLowerCase()))
+			: users
+	);
+	const hiddenSelected = $derived(
+		users.filter((u) => selected.has(String(u.id)) && !visibleUsers.some((v) => v.id === u.id))
+	);
+
+	function blockEnter(domEvent) {
+		if (domEvent.key === "Enter") domEvent.preventDefault();
+	}
 </script>
 
 <div class="picker">
 	{#if users.length}
+		{#if showSearch}
+			<input
+				class="search"
+				type="search"
+				bind:value={query}
+				onkeydown={blockEnter}
+				placeholder="Search by username"
+				aria-label="Filter users"
+			/>
+		{/if}
 		<div class="user-grid">
-			{#each users as user}
+			{#each visibleUsers as user}
 				<label class="user-option">
-					<input type="checkbox" name="invitedUserIds" value={user.id} checked={selected.has(user.id)} />
+					<input type="checkbox" name="invitedUserIds" value={user.id} checked={selected.has(String(user.id))} />
 					<span>{user.username}</span>
 				</label>
 			{/each}
 		</div>
+		{#if visibleUsers.length === 0}
+			<p class="muted">No users match "{query}".</p>
+		{/if}
+		{#each hiddenSelected as user}
+			<input type="hidden" name="invitedUserIds" value={user.id} />
+		{/each}
 	{:else}
 		<p class="muted">No other users available yet. Create another account to invite someone.</p>
 	{/if}
@@ -25,6 +55,11 @@
 	.picker {
 		display: grid;
 		gap: 10px;
+	}
+
+	.search {
+		width: 100%;
+		max-width: 320px;
 	}
 
 	.user-grid {

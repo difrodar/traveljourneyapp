@@ -103,6 +103,18 @@ async function main() {
 
 	await step("list events", () => get("/events"));
 
+	await step("download ics", async () => {
+		const headers = sessionCookie ? { Cookie: sessionCookie } : {};
+		const response = await fetch(`${BASE_URL}/events/${eventId}/ics`, { headers });
+		if (response.status !== 200) throw new Error(`expected 200 got ${response.status}`);
+		const ct = response.headers.get("content-type") || "";
+		if (!ct.startsWith("text/calendar")) throw new Error(`expected text/calendar got ${ct}`);
+		const body = await response.text();
+		if (!body.includes("BEGIN:VEVENT") || !body.includes(EVENT_TITLE)) {
+			throw new Error(`ics body missing required parts: ${body.slice(0, 200)}`);
+		}
+	});
+
 	await step("save journey memory", async () => {
 		const result = await action(`/events/${eventId}`, "complete", {
 			memoryText: `smoke memory ${Date.now()}`

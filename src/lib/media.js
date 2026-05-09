@@ -189,7 +189,17 @@ export const categoryMedia = {
 		imageSourceUrl:
 			"https://commons.wikimedia.org/wiki/File:Rooftop_Bar,_Metropolitan_Museum_Of_Art_(5894065780).jpg"
 	},
+	nightlife: {
+		imageUrl: wikimedia("Rooftop Bar, Metropolitan Museum Of Art (5894065780).jpg"),
+		imageAlt: "Rooftop bar with skyline view",
+		imageCredit: "Alex Proimos / Wikimedia Commons",
+		imageLicense: "CC BY 2.0",
+		imageSourceUrl:
+			"https://commons.wikimedia.org/wiki/File:Rooftop_Bar,_Metropolitan_Museum_Of_Art_(5894065780).jpg"
+	},
 	flight: locationMedia.travel,
+	airport: locationMedia.travel,
+	transit: locationMedia.travel,
 	travel: locationMedia.travel,
 	"weekend trip": locationMedia.travel,
 	study: locationMedia.london,
@@ -198,6 +208,8 @@ export const categoryMedia = {
 	outdoor: locationMedia.zurich,
 	sightseeing: locationMedia.travel
 };
+
+export const categoryMediaKeys = Object.keys(categoryMedia);
 
 export const eventMedia = {
 	"taco tuesday in pacific beach": categoryMedia.food,
@@ -222,9 +234,13 @@ export function resolveLocationMedia(location = {}) {
 		};
 	}
 
+	// Explicit backgroundType wins over name/city heuristics — the user picked it on purpose.
+	const explicit = categoryMedia[normalize(location.backgroundType)];
+	if (explicit) return explicit;
+
 	const name = normalize(location.name);
 	const city = normalize(location.city);
-	return locationMedia[name] || locationMedia[city] || categoryMedia[normalize(location.backgroundType)] || null;
+	return locationMedia[name] || locationMedia[city] || null;
 }
 
 export function resolveEventMedia(event = {}, location = {}) {
@@ -244,4 +260,32 @@ export function resolveEventMedia(event = {}, location = {}) {
 		categoryMedia[normalize(event.category)] ||
 		locationMedia.travel
 	);
+}
+
+// Runtime media resolver: returns only explicitly stored images (user upload or seed-time
+// stamped imageUrl). Returns null when nothing is stored — consumers render a CSS-only
+// styled placeholder (PlaceholderIcon) instead of guessing a stock photo, because
+// auto-guessing produced misleading mismatches (e.g. "airport" → bicycle on beach).
+export function storedLocationMedia(location = {}) {
+	if (!location?.imageUrl) return null;
+	return {
+		imageUrl: location.imageUrl,
+		imageAlt: location.imageAlt || `${location.name || ""}${location.city ? ` in ${location.city}` : ""}`.trim(),
+		imageCredit: location.imageCredit || "",
+		imageLicense: location.imageLicense || "",
+		imageSourceUrl: location.imageSourceUrl || ""
+	};
+}
+
+export function storedEventMedia(event = {}, location = {}) {
+	if (event?.imageUrl) {
+		return {
+			imageUrl: event.imageUrl,
+			imageAlt: event.imageAlt || event.title || "",
+			imageCredit: event.imageCredit || "",
+			imageLicense: event.imageLicense || "",
+			imageSourceUrl: event.imageSourceUrl || ""
+		};
+	}
+	return storedLocationMedia(location);
 }

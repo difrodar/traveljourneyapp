@@ -1,4 +1,6 @@
 <script>
+	import PlaceholderIcon from "$lib/components/PlaceholderIcon.svelte";
+
 	let { event } = $props();
 	const entry = $derived(event.journeyEntry || {});
 	const isBundle = $derived(Boolean(event.isRecurrenceBundle));
@@ -17,7 +19,10 @@
 		{#if media?.imageUrl}
 			<img src={media.imageUrl} alt={media.imageAlt || event.title} />
 		{:else}
-			<span>{event.category}</span>
+			<div class="media-placeholder">
+				<PlaceholderIcon size={32} />
+				<span>{event.category}</span>
+			</div>
 		{/if}
 	</div>
 	<div>
@@ -86,6 +91,13 @@
 		background:
 			linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 18%, transparent 18% 100%),
 			linear-gradient(135deg, var(--brand), var(--sky));
+	}
+
+	.media-placeholder {
+		display: grid;
+		place-items: center;
+		gap: 6px;
+		opacity: 0.92;
 	}
 
 	.media.food {

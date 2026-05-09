@@ -1,4 +1,6 @@
 <script>
+	import PlaceholderIcon from "$lib/components/PlaceholderIcon.svelte";
+
 	let { event } = $props();
 	const entry = $derived(event?.journeyEntry || {});
 </script>
@@ -6,6 +8,10 @@
 <aside class="preview">
 	{#if event.media?.imageUrl}
 		<img src={event.media.imageUrl} alt="" />
+	{:else}
+		<div class="preview-placeholder" aria-hidden="true">
+			<PlaceholderIcon size={64} />
+		</div>
 	{/if}
 	<div class="preview-head">
 		<strong>TripTales</strong>
@@ -45,6 +51,15 @@
 		object-fit: cover;
 		z-index: 0;
 		filter: saturate(1.05);
+	}
+
+	.preview-placeholder {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: center;
+		color: rgba(255, 255, 255, 0.55);
+		z-index: 1;
 	}
 
 	.preview::before {

@@ -3,6 +3,7 @@
 	import EventForm from "$lib/components/EventForm.svelte";
 	import EventMapPanel from "$lib/components/EventMapPanel.svelte";
 	import MemoryForm from "$lib/components/MemoryForm.svelte";
+	import PlaceholderIcon from "$lib/components/PlaceholderIcon.svelte";
 	import SharePreview from "$lib/components/SharePreview.svelte";
 	import { buildGallery, formatEventDate } from "$lib/utils/event-format.js";
 
@@ -46,22 +47,26 @@
 
 	<section class="event-detail">
 		{#if form?.error}
-			<div class="message error">{form.error}</div>
+			<div class="message error" role="alert">{form.error}</div>
 		{:else if form?.message}
-			<div class="message">{form.message}</div>
+			<div class="message" role="status">{form.message}</div>
 		{/if}
 
 		<section class="photo-hero">
 			{#if event.media?.imageUrl}
 				<img src={event.media.imageUrl} alt={event.media.imageAlt || event.title} />
 			{:else}
-				<div class="cover-fallback">{event.category}</div>
+				<div class="cover-fallback">
+					<PlaceholderIcon size={72} />
+					<span>{event.category}</span>
+				</div>
 			{/if}
 			<div class="hero-actions">
 				{#if isOwner}
 					<a href="#edit-plan">Edit Event</a>
 				{/if}
 				<a href="#share-preview">Share</a>
+				<a href="/events/{event.id}/ics" download>Add to calendar</a>
 			</div>
 			<a class="close-button" href="/events" aria-label="Back to events">X</a>
 			<div class="hero-copy">
@@ -314,6 +319,11 @@
 		color: white;
 		font-weight: 900;
 		font-size: 2rem;
+	}
+
+	.cover-fallback {
+		gap: 12px;
+		opacity: 0.92;
 	}
 
 	.photo-hero::after {

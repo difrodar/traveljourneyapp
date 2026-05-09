@@ -1,4 +1,6 @@
 <script>
+	import PlaceholderIcon from "$lib/components/PlaceholderIcon.svelte";
+
 	let { locations = [], highlightedEventId = "", highlightedLocationId = "" } = $props();
 
 	function groupLocations(items) {
@@ -51,7 +53,7 @@
 									{#if location.media?.imageUrl}
 										<img src={location.media.imageUrl} alt={location.media.imageAlt || location.name} />
 									{:else}
-										<span class="pin">•</span>
+										<span class="pin"><PlaceholderIcon size={28} /></span>
 									{/if}
 								</div>
 								<div class="location-content">
@@ -236,7 +238,8 @@
 	}
 
 	.pin {
-		font-size: 1.5rem;
+		display: inline-flex;
+		opacity: 0.92;
 	}
 
 	.credit {

@@ -22,6 +22,12 @@
 		<div class="message error">{data.setupError}</div>
 	{/if}
 
+	{#if data.pendingInvitationCount > 0}
+		<a class="invite-strip" href={data.pendingInvitationLink}>
+			You have {data.pendingInvitationCount} pending invitation{data.pendingInvitationCount === 1 ? "" : "s"} →
+		</a>
+	{/if}
+
 	<section class="panel calendar-panel" aria-label="Monthly event calendar">
 		<div class="calendar-toolbar">
 			<a class="month-button" href="/?month={calendar.previousMonthParam}" aria-label="Previous month">Prev</a>
@@ -131,6 +137,22 @@
 	.dashboard-page {
 		display: grid;
 		gap: 22px;
+	}
+
+	.invite-strip {
+		display: block;
+		padding: 12px 16px;
+		border-radius: 8px;
+		background: linear-gradient(135deg, var(--coral), var(--accent));
+		color: white;
+		font-weight: 800;
+		text-decoration: none;
+		box-shadow: var(--shadow);
+	}
+
+	.invite-strip:hover,
+	.invite-strip:focus-visible {
+		filter: brightness(1.05);
 	}
 
 	.planner-header {
