@@ -1,4 +1,5 @@
-import { clean, isDateFilter, normalizeJourneySort } from "./shared.js";
+import { getCollections } from "../db.js";
+import { clean, isDateFilter, normalizeJourneySort, serialize, userOid } from "./shared.js";
 import { listEvents } from "./events.js";
 
 function matchesJourneySearch(event, search) {
@@ -156,6 +157,63 @@ export async function getJourneyDiaryData(userId, filters = {}) {
 	return {
 		entries,
 		groups: groupJourneyEntries(journeyCards, filters.sort),
+		stats: journeyStats(entries),
+		recentHighlights: [...entries]
+			.sort(
+				(a, b) =>
+					(b.date || "").localeCompare(a.date || "") ||
+					(b.time || "").localeCompare(a.time || "")
+			)
+			.slice(0, 3)
+	};
+}
+
+function groupJourneyByTrip(cards, tripsById, sort) {
+	const direction = normalizeJourneySort(sort) === "dateAsc" ? 1 : -1;
+	const groups = new Map();
+	for (const card of cards) {
+		const tripId = card.tripId?.toString() || "";
+		const key = tripId || "untripped";
+		if (!groups.has(key)) {
+			const trip = tripId ? tripsById.get(tripId) : null;
+			groups.set(key, {
+				key,
+				label: trip ? trip.name : "Untripped memories",
+				tripId: trip?.id || "",
+				dateFrom: trip?.dateFrom || "",
+				dateTo: trip?.dateTo || "",
+				memoryCount: 0,
+				entries: []
+			});
+		}
+		groups.get(key).entries.push(card);
+		groups.get(key).memoryCount += card.memoryCount || 1;
+	}
+	const result = [...groups.values()];
+	for (const group of result) {
+		group.entries.sort((a, b) => {
+			const aDate = a.groupDate || a.date || "";
+			const bDate = b.groupDate || b.date || "";
+			return aDate.localeCompare(bDate) * direction;
+		});
+	}
+	return result.sort((a, b) => {
+		if (a.key === "untripped") return 1;
+		if (b.key === "untripped") return -1;
+		return (a.dateFrom || "").localeCompare(b.dateFrom || "") * direction;
+	});
+}
+
+export async function getJourneyTripGroups(userId, filters = {}) {
+	const entries = await listJourneyEntries(userId, filters);
+	const journeyCards = buildJourneyCards(entries, filters.sort);
+	const collections = await getCollections();
+	const ownerId = userOid(userId);
+	const trips = await collections.trips.find({ userId: ownerId }).toArray();
+	const tripsById = new Map(trips.map((trip) => [trip._id.toString(), serialize(trip)]));
+	return {
+		entries,
+		groups: groupJourneyByTrip(journeyCards, tripsById, filters.sort),
 		stats: journeyStats(entries),
 		recentHighlights: [...entries]
 			.sort(

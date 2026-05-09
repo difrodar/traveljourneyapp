@@ -1,10 +1,19 @@
 <script>
 	import JourneyCard from "$lib/components/JourneyCard.svelte";
+	import { page } from "$app/state";
 	import { rememberFilters, clearRememberedFilters } from "$lib/utils/filter-persistence.svelte.js";
 
 	let { data, form } = $props();
 	let filterForm;
 	let searchTimer;
+
+	function groupHref(value) {
+		const params = new URLSearchParams(page.url.searchParams);
+		if (value === "month") params.delete("groupBy");
+		else params.set("groupBy", value);
+		const query = params.toString();
+		return query ? `/journey?${query}` : "/journey";
+	}
 
 	rememberFilters("journey");
 
@@ -36,7 +45,7 @@
 	{/if}
 
 	<form class="panel share-form" method="POST" action="?/share">
-		<details>
+		<details open={Boolean(form?.shareError || form?.shareCreated)}>
 			<summary>Share this journey&hellip;</summary>
 			<p class="share-warning">
 				Photos, places and notes in your memories will be visible to anyone with this link. Make sure you're comfortable
@@ -52,7 +61,7 @@
 						<option value="never">Never</option>
 					</select>
 				</label>
-				<button class="primary-button" type="submit">Create share link</button>
+				<button class="button" type="submit">Create share link</button>
 			</div>
 			{#if form?.shareCreated}
 				<div class="share-result">
@@ -157,11 +166,25 @@
 		</section>
 	{/if}
 
+	<div class="group-toggle" role="tablist" aria-label="Group memories">
+		<a class:active={data.filters.groupBy === "month"} href={groupHref("month")} role="tab">By month</a>
+		<a class:active={data.filters.groupBy === "trip"} href={groupHref("trip")} role="tab">By trip</a>
+	</div>
+
 	<section class="timeline world-trail">
 		{#each data.groups as group}
 			<section class="month-group">
 				<div class="month-heading">
-					<p>{group.label}</p>
+					<p>
+						{#if group.tripId}
+							<a href="/trips/{group.tripId}">{group.label}</a>
+							{#if group.dateFrom || group.dateTo}
+								<small>{group.dateFrom || "?"} – {group.dateTo || "?"}</small>
+							{/if}
+						{:else}
+							{group.label}
+						{/if}
+					</p>
 					<span>{group.memoryCount} memor{group.memoryCount === 1 ? "y" : "ies"}</span>
 				</div>
 				<div class="month-entries">
@@ -337,6 +360,41 @@
 	}
 
 	.diary-highlight small {
+		color: var(--brand-dark);
+	}
+
+	.group-toggle {
+		display: inline-flex;
+		gap: 4px;
+		margin-bottom: 14px;
+		padding: 4px;
+		background: #fff7ec;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+	}
+
+	.group-toggle a {
+		padding: 6px 14px;
+		border-radius: 999px;
+		color: var(--muted);
+		font-weight: 800;
+		font-size: 0.86rem;
+	}
+
+	.group-toggle a.active {
+		background: var(--coral);
+		color: white;
+	}
+
+	.month-heading p small {
+		display: inline-block;
+		margin-left: 8px;
+		color: var(--muted);
+		font-size: 0.8rem;
+		font-weight: 700;
+	}
+
+	.month-heading p a {
 		color: var(--brand-dark);
 	}
 

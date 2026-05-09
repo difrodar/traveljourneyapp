@@ -12,6 +12,7 @@
 		"normalize:idea-media": "node scripts/normalize-converted-idea-media.js",
 		"normalize:city-coordinates": "node scripts/normalize-city-coordinates.js",
 		"normalize:multi-image": "node scripts/normalize-multi-image.js",
+		"migrate:trips": "node scripts/migrate-trips.js",
 		"cleanup:legacy-friends": "node scripts/cleanup-legacy-friends.js",
 		"cleanup:journey-ratings": "node scripts/cleanup-journey-ratings.js",
 		"smoke": "node scripts/smoke.js",

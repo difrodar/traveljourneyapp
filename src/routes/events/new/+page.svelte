@@ -17,5 +17,12 @@
 		<div class="message error">{form.error}</div>
 	{/if}
 
-	<EventForm action="?/create" submitLabel="Create event" {form} inviteableUsers={data.inviteableUsers} showRecurrence />
+	<EventForm
+		action="?/create"
+		submitLabel="Create event"
+		{form}
+		inviteableUsers={data.inviteableUsers}
+		trips={data.trips}
+		showRecurrence
+	/>
 </main>

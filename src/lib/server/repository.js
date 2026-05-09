@@ -15,7 +15,7 @@ export {
 	updateEventFromForm,
 	validateEventForm
 } from "./repositories/events.js";
-export { getJourneyDiaryData, listJourneyEntries } from "./repositories/journey.js";
+export { getJourneyDiaryData, getJourneyTripGroups, listJourneyEntries } from "./repositories/journey.js";
 export { convertIdeaToEvent, createIdeaFromForm, deleteIdea, listIdeas } from "./repositories/ideas.js";
 export {
 	createShare,
@@ -24,3 +24,13 @@ export {
 	listSharesForUser,
 	revokeShare
 } from "./repositories/shares.js";
+export {
+	addEventToTrip,
+	createTrip,
+	deleteTrip,
+	getTrip,
+	getTripDetail,
+	listTrips,
+	removeEventFromTrip,
+	updateTrip
+} from "./repositories/trips.js";

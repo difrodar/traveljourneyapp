@@ -28,6 +28,7 @@ export async function getCollections() {
 		travelIdeas: db.collection("travelIdeas"),
 		users: db.collection("users"),
 		sessions: db.collection("sessions"),
-		shares: db.collection("shares")
+		shares: db.collection("shares"),
+		trips: db.collection("trips")
 	};
 }

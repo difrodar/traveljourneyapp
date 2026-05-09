@@ -89,6 +89,9 @@
 						<span class="status {event.status}">{event.status}</span>
 					{/if}
 					<span class="category">{event.category}</span>
+					{#if data.trip}
+						<a class="trip-badge" href="/trips/{data.trip.id}">Trip · {data.trip.name}</a>
+					{/if}
 					{#if event.recurrenceLabel}
 						<span class="series-badge">{event.recurrenceLabel}</span>
 					{/if}
@@ -202,7 +205,7 @@
 							<p class="eyebrow">Organize</p>
 							<h2>Edit plan</h2>
 						</div>
-						<EventForm event={event} action="?/update" submitLabel="Save changes" {form} inviteableUsers={data.inviteableUsers} />
+						<EventForm event={event} action="?/update" submitLabel="Save changes" {form} inviteableUsers={data.inviteableUsers} trips={data.trips} />
 					</section>
 				{/if}
 			</div>
@@ -581,6 +584,24 @@
 		font-size: 0.8rem;
 		font-weight: 900;
 		padding: 5px 10px;
+	}
+
+	.trip-badge {
+		display: inline-flex;
+		align-items: center;
+		border: 1px solid #efd5b6;
+		border-radius: 999px;
+		background: #fff1dc;
+		color: #7a3f1d;
+		font-size: 0.8rem;
+		font-weight: 900;
+		padding: 5px 10px;
+		text-decoration: none;
+	}
+
+	.trip-badge:hover {
+		border-color: #e9b77e;
+		background: #ffe5c2;
 	}
 
 	.series-badge {

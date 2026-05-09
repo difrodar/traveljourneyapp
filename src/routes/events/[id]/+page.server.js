@@ -5,6 +5,7 @@ import {
 	deleteEventSeries,
 	getEvent,
 	listInviteableUsers,
+	listTrips,
 	respondToInvitation,
 	updateEventFromForm,
 	validateEventForm
@@ -16,6 +17,7 @@ const eventFormFields = [
 	"date",
 	"time",
 	"status",
+	"tripId",
 	"locationName",
 	"address",
 	"city",
@@ -35,9 +37,14 @@ function eventValues(form) {
 }
 
 export async function load({ locals, params }) {
-	const [event, inviteableUsers] = await Promise.all([getEvent(locals.user.id, params.id), listInviteableUsers(locals.user.id)]);
+	const [event, inviteableUsers, trips] = await Promise.all([
+		getEvent(locals.user.id, params.id),
+		listInviteableUsers(locals.user.id),
+		listTrips(locals.user.id)
+	]);
 	if (!event) throw error(404, "Event not found");
-	return { event, inviteableUsers };
+	const trip = event.tripId ? trips.find((entry) => entry.id === event.tripId) || null : null;
+	return { event, inviteableUsers, trips, trip };
 }
 
 export const actions = {

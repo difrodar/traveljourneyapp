@@ -146,6 +146,55 @@ async function main() {
 
 	await step("list journey", () => get("/journey"));
 
+	let tripId = "";
+	await step("create trip", async () => {
+		const result = await action("/trips", "create", { name: `Smoke trip ${Date.now()}` });
+		const match = result.location?.match(/^\/trips\/([0-9a-f]+)$/);
+		if (!match) throw new Error(`unexpected trip create result: ${JSON.stringify(result)}`);
+		tripId = match[1];
+	});
+
+	await step("add event to trip", async () => {
+		const result = await action(`/trips/${tripId}`, "addEvent", { eventId });
+		if (result.type !== "success") {
+			throw new Error(`addEvent failed: ${JSON.stringify(result)}`);
+		}
+	});
+
+	await step("trip detail renders with event", async () => {
+		const headers = sessionCookie ? { Cookie: sessionCookie } : {};
+		const response = await fetch(`${BASE_URL}/trips/${tripId}`, { headers });
+		if (response.status !== 200) {
+			throw new Error(`expected 200 got ${response.status}`);
+		}
+		const html = await response.text();
+		if (!html.includes(EVENT_TITLE)) {
+			throw new Error("trip detail missing event title");
+		}
+	});
+
+	await step("journey by-trip view groups by trip", async () => {
+		const headers = sessionCookie ? { Cookie: sessionCookie } : {};
+		const response = await fetch(`${BASE_URL}/journey?groupBy=trip`, { headers });
+		if (response.status !== 200) {
+			throw new Error(`expected 200 got ${response.status}`);
+		}
+	});
+
+	await step("remove event from trip", async () => {
+		const result = await action(`/trips/${tripId}`, "removeEvent", { eventId });
+		if (result.type !== "success") {
+			throw new Error(`removeEvent failed: ${JSON.stringify(result)}`);
+		}
+	});
+
+	await step("delete trip", async () => {
+		const result = await action(`/trips/${tripId}`, "delete", {});
+		if (result.type !== "redirect" || result.location !== "/trips") {
+			throw new Error(`unexpected trip delete: ${JSON.stringify(result)}`);
+		}
+	});
+
 	let shareHash = "";
 	await step("create share link", async () => {
 		const result = await action("/journey", "share", { expiresIn: "7d" });

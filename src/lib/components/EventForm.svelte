@@ -16,6 +16,7 @@
 		submitLabel = "Save event",
 		form = null,
 		inviteableUsers = [],
+		trips = [],
 		showRecurrence = false
 	} = $props();
 	const location = $derived(event?.location || {});
@@ -158,6 +159,17 @@
 			<select id="status" name="status">
 				<option value="planned" selected={fieldValue("status", event?.status || "planned") === "planned"}>Planned</option>
 				<option value="completed" selected={fieldValue("status", event?.status || "planned") === "completed"}>Completed</option>
+			</select>
+		</div>
+		<div class="field">
+			<label for="tripId">Trip (optional)</label>
+			<select id="tripId" name="tripId">
+				<option value="">No trip</option>
+				{#each trips as trip}
+					<option
+						value={trip.id}
+						selected={fieldValue("tripId", event?.tripId || "") === trip.id}>{trip.name}</option>
+				{/each}
 			</select>
 		</div>
 		{#if showRecurrence}

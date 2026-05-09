@@ -34,7 +34,7 @@ There is no test runner, linter, formatter, or `svelte-check` script. Run `npx s
 
 - **Plan first** for changes touching >3 files, public component APIs, route contracts, data shapes, or new dependencies. Use Claude Code plan mode.
 - **Iterate.** Small, dokumentierbare Schritte. No big-bang rewrites; one logical change at a time.
-- **README kapitelstruktur is immutable.** Add bullets inside existing sections; never add, rename, or reorder `##` or `###`.
+- **README kapitelstruktur is mostly immutable.** Never rename or reorder `##` or `###`. New `###` sub-sections are only OK for net-new features at the next available number under `## 4 Erweiterungen` (e.g. `### 4.10`); update §3.4.2 in the same commit. Never add or rename `##` chapters.
 - **Document new features in the appropriate existing section** of [README.md](README.md) (codex §5). Internal tooling/dev-only scripts are exempt.
 - **Never invent evaluation results, URLs, sketches, sources, testers, or Figma links.** `[…ergänzen]` placeholders stay until real data lands.
 - **Empty/loading states required** on every list view.

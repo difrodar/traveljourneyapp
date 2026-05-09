@@ -103,6 +103,11 @@ export async function listEvents(userId, filters = {}) {
 				: { userId: ownerId };
 	if (filters.status && filters.status !== "all" && filters.status !== "invited") query.status = filters.status;
 	if (filters.category && filters.category !== "all") query.category = filters.category;
+	if (filters.tripId) {
+		const tripObjectId = oid(filters.tripId);
+		if (!tripObjectId) return [];
+		query.tripId = tripObjectId;
+	}
 	if (filters.search) query.title = { $regex: filters.search, $options: "i" };
 	if (filters.from || filters.to) {
 		query.date = {};
@@ -247,6 +252,8 @@ async function eventPayloadFromForm(userId, form, locationId, invitedUserIds, ex
 	const imageFields =
 		overrides.imageFields ||
 		(await uploadedImagesFields(form, "eventImageFiles", "removeEventImageIndex", existing.images || [], title, "Event image"));
+	const tripIdValue = clean(form.get("tripId"));
+	const tripIdObject = tripIdValue ? oid(tripIdValue) : null;
 	return {
 		title,
 		userId: userOid(userId),
@@ -258,6 +265,7 @@ async function eventPayloadFromForm(userId, form, locationId, invitedUserIds, ex
 		status: clean(form.get("status")) === "completed" ? "completed" : "planned",
 		invitedUserIds,
 		invitations: buildInvitations(existing.invitations, invitedUserIds),
+		...(tripIdObject ? { tripId: tripIdObject } : {}),
 		...(overrides.recurrence || {}),
 		...imageFields,
 		updatedAt: new Date()
@@ -304,11 +312,13 @@ export async function updateEventFromForm(userId, id, form) {
 	if (!event) throw new Error("Event not found.");
 	const invitedUserIds = await resolveInvitedUserIds(ownerId, form);
 	const locationId = await saveLocationFromForm(ownerId, form, event.recurrenceGroupId ? null : event.locationId?.toString());
+	const $unset = { friendIds: "", imageUrl: "", imageAlt: "", imageCredit: "", imageLicense: "", imageSourceUrl: "" };
+	if (!clean(form.get("tripId"))) $unset.tripId = "";
 	await collections.events.updateOne(
 		{ userId: ownerId, _id: oid(id) },
 		{
 			$set: await eventPayloadFromForm(ownerId, form, locationId, invitedUserIds, event),
-			$unset: { friendIds: "", imageUrl: "", imageAlt: "", imageCredit: "", imageLicense: "", imageSourceUrl: "" }
+			$unset
 		}
 	);
 }

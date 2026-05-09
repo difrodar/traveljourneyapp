@@ -1,5 +1,5 @@
 import { fail, redirect } from "@sveltejs/kit";
-import { createEventFromForm, listInviteableUsers, validateEventForm } from "$lib/server/repository.js";
+import { createEventFromForm, listInviteableUsers, listTrips, validateEventForm } from "$lib/server/repository.js";
 
 const eventFormFields = [
 	"title",
@@ -7,6 +7,7 @@ const eventFormFields = [
 	"date",
 	"time",
 	"status",
+	"tripId",
 	"locationName",
 	"address",
 	"city",
@@ -28,7 +29,11 @@ function eventValues(form) {
 }
 
 export async function load({ locals }) {
-	return { inviteableUsers: await listInviteableUsers(locals.user.id) };
+	const [inviteableUsers, trips] = await Promise.all([
+		listInviteableUsers(locals.user.id),
+		listTrips(locals.user.id)
+	]);
+	return { inviteableUsers, trips };
 }
 
 export const actions = {

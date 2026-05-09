@@ -80,7 +80,11 @@
 	{/if}
 
 	{#key data.filterKey}
-		<LeafletMapView locations={data.locations} highlightedEventId={data.highlightedEventId} />
+		<LeafletMapView
+			locations={data.locations}
+			highlightedEventId={data.highlightedEventId}
+			defaultWorldView={!data.hasActiveFilters && !data.highlightedEventId}
+		/>
 	{/key}
 </main>
 

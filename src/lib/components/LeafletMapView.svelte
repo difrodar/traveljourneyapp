@@ -5,7 +5,7 @@
 	import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 	import LocationPinGrid from "./LocationPinGrid.svelte";
 
-	let { locations = [], highlightedEventId = "" } = $props();
+	let { locations = [], highlightedEventId = "", defaultWorldView = false } = $props();
 	let mapEl = $state();
 	let failed = $state(false);
 	const highlightedLocationId = $derived(
@@ -64,17 +64,24 @@
 		Promise.all([import("leaflet"), import("leaflet.markercluster")])
 			.then(([{ default: L }]) => {
 				const highlightedLocation = locations.find((location) => location.id === highlightedLocationId && location.coordinates);
-				const firstMappedLocation = locations.find((location) => location.coordinates);
-				if (!firstMappedLocation) {
+				const mappedLocations = locations.filter((location) => location.coordinates);
+				if (mappedLocations.length === 0) {
 					failed = true;
 					return;
 				}
-				const first = highlightedLocation?.coordinates || firstMappedLocation.coordinates;
+				const bounds = mappedLocations.map((location) => [location.coordinates.lat, location.coordinates.lng]);
 
-				map = L.map(mapEl, {
-					scrollWheelZoom: false,
-					worldCopyJump: true
-				}).setView([first.lat, first.lng], highlightedLocation ? 12 : 3);
+				map = L.map(mapEl, { scrollWheelZoom: false, worldCopyJump: true });
+
+				if (highlightedLocation) {
+					map.setView([highlightedLocation.coordinates.lat, highlightedLocation.coordinates.lng], 12);
+				} else if (defaultWorldView) {
+					map.setView([20, 0], 2);
+				} else if (bounds.length > 1) {
+					map.fitBounds(bounds, { padding: [36, 36] });
+				} else {
+					map.setView(bounds[0], 12);
+				}
 
 				L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 					maxZoom: 19,
@@ -96,9 +103,7 @@
 					}
 				});
 
-				const bounds = [];
-				for (const location of locations) {
-					if (!location.coordinates) continue;
+				for (const location of mappedLocations) {
 					const active = location.id === highlightedLocationId;
 					const icon = L.divIcon({
 						html: `<span>${location.events.length || 1}</span>`,
@@ -114,17 +119,8 @@
 					marker.bindPopup(popupHtml(location), { maxWidth: 280 });
 					marker.on("click", () => focusLocation(location));
 					clusters.addLayer(marker);
-					bounds.push([location.coordinates.lat, location.coordinates.lng]);
 				}
 				map.addLayer(clusters);
-
-				if (!highlightedLocation) {
-					if (bounds.length > 1) {
-						map.fitBounds(bounds, { padding: [36, 36] });
-					} else if (bounds.length === 1) {
-						map.setView(bounds[0], 12);
-					}
-				}
 			})
 			.catch(() => {
 				failed = true;
