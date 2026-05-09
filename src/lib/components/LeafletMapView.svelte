@@ -1,6 +1,8 @@
 <script>
 	import { onMount } from "svelte";
 	import "leaflet/dist/leaflet.css";
+	import "leaflet.markercluster/dist/MarkerCluster.css";
+	import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 	import LocationPinGrid from "./LocationPinGrid.svelte";
 
 	let { locations = [], highlightedEventId = "" } = $props();
@@ -59,8 +61,8 @@
 		if (locations.length === 0) return;
 
 		let map;
-		import("leaflet")
-			.then(({ default: L }) => {
+		Promise.all([import("leaflet"), import("leaflet.markercluster")])
+			.then(([{ default: L }]) => {
 				const highlightedLocation = locations.find((location) => location.id === highlightedLocationId && location.coordinates);
 				const firstMappedLocation = locations.find((location) => location.coordinates);
 				if (!firstMappedLocation) {
@@ -79,6 +81,21 @@
 					attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 				}).addTo(map);
 
+				const clusters = L.markerClusterGroup({
+					showCoverageOnHover: false,
+					spiderfyOnMaxZoom: true,
+					zoomToBoundsOnClick: true,
+					iconCreateFunction: (cluster) => {
+						const count = cluster.getChildCount();
+						return L.divIcon({
+							html: `<span>${count}</span>`,
+							className: "triptales-cluster",
+							iconSize: [44, 44],
+							iconAnchor: [22, 22]
+						});
+					}
+				});
+
 				const bounds = [];
 				for (const location of locations) {
 					if (!location.coordinates) continue;
@@ -93,13 +110,21 @@
 					const marker = L.marker([location.coordinates.lat, location.coordinates.lng], {
 						icon,
 						title: `${location.name}, ${location.city}`
-					}).addTo(map);
+					});
 					marker.bindPopup(popupHtml(location), { maxWidth: 280 });
 					marker.on("click", () => focusLocation(location));
+					clusters.addLayer(marker);
 					bounds.push([location.coordinates.lat, location.coordinates.lng]);
 				}
+				map.addLayer(clusters);
 
-				if (!highlightedLocation && bounds.length > 1) map.fitBounds(bounds, { padding: [36, 36] });
+				if (!highlightedLocation) {
+					if (bounds.length > 1) {
+						map.fitBounds(bounds, { padding: [36, 36] });
+					} else if (bounds.length === 1) {
+						map.setView(bounds[0], 12);
+					}
+				}
 			})
 			.catch(() => {
 				failed = true;
@@ -186,6 +211,29 @@
 	:global(.triptales-pin.active) {
 		transform: scale(1.14);
 		box-shadow: 0 12px 30px rgba(231, 95, 67, 0.38);
+	}
+
+	:global(.triptales-cluster) {
+		width: 44px !important;
+		height: 44px !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		border-radius: 999px;
+		background: var(--accent);
+		color: white;
+		display: grid;
+		place-items: center;
+		font-weight: 900;
+		font-size: 0.95rem;
+		border: 3px solid white;
+		box-shadow: 0 10px 26px rgba(231, 95, 67, 0.36);
+	}
+
+	:global(.triptales-cluster span) {
+		display: grid;
+		place-items: center;
+		width: 100%;
+		height: 100%;
 	}
 
 	:global(.leaflet-popup-card) {
