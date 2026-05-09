@@ -52,6 +52,15 @@
 				sharing them. You can revoke the link any time from <a href="/profile">your profile</a>.
 			</p>
 			<div class="share-controls">
+				<label class="filter-field share-scope">
+					<span>What to share</span>
+					<select name="tripId">
+						<option value="">Whole journey (all memories)</option>
+						{#each data.trips as trip}
+							<option value={trip.id}>Just trip: {trip.name}</option>
+						{/each}
+					</select>
+				</label>
 				<label class="filter-field share-expiry">
 					<span>Link expires after</span>
 					<select name="expiresIn">
@@ -232,8 +241,9 @@
 		align-items: end;
 	}
 
-	.share-expiry {
-		min-width: 180px;
+	.share-expiry,
+	.share-scope {
+		min-width: 200px;
 	}
 
 	.share-result {

@@ -142,6 +142,14 @@
 					<div class="share-info">
 						<code>/share/{share.hash}</code>
 						<span>
+							{#if share.tripName}
+								Trip: {share.tripName}
+							{:else if share.tripId}
+								Trip: (deleted)
+							{:else}
+								Whole journey
+							{/if}
+							·
 							{#if share.expiresAt}
 								Expires {share.expiresAt.slice(0, 10)}
 							{:else}

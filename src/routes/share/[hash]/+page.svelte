@@ -6,18 +6,24 @@
 </script>
 
 <svelte:head>
-	<title>Shared TripTales journey</title>
+	<title>{journey.tripName ? `Shared trip — ${journey.tripName}` : "Shared TripTales journey"}</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
 <main class="page-shell share-shell">
 	<header class="page-header">
 		<div>
-			<p class="eyebrow">Shared TripTales journey</p>
-			<h1>A read-only travel diary</h1>
+			<p class="eyebrow">
+				{#if journey.scope === "trip"}
+					Shared TripTales trip
+				{:else}
+					Shared TripTales journey
+				{/if}
+			</p>
+			<h1>{journey.tripName || "A read-only travel diary"}</h1>
 			<p class="lead">
-				Someone shared their TripTales memories with you. Photos, places and notes are visible to anyone with this link.
-				Want your own diary? <a href="/login">Open TripTales</a>.
+				Someone shared their TripTales {journey.scope === "trip" ? "trip" : "memories"} with you. Photos, places and notes
+				are visible to anyone with this link. Want your own diary? <a href="/login">Open TripTales</a>.
 			</p>
 		</div>
 	</header>

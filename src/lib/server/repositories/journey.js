@@ -140,6 +140,7 @@ export async function listJourneyEntries(userId, filters = {}) {
 		category: filters.category,
 		from: filters.from,
 		to: filters.to,
+		tripId: filters.tripId,
 		includeInvitations: true
 	});
 	const entries = events.filter(

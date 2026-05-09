@@ -181,6 +181,31 @@ async function main() {
 		}
 	});
 
+	let tripShareHash = "";
+	await step("create trip-scoped share", async () => {
+		const result = await action("/journey", "share", { expiresIn: "7d", tripId });
+		if (result.type !== "success") {
+			throw new Error(`unexpected trip-share result: ${JSON.stringify(result)}`);
+		}
+		const match = String(result.data || "").match(/[a-f0-9]{32}/);
+		if (!match) throw new Error(`no trip-share hash in result: ${result.data}`);
+		tripShareHash = match[0];
+	});
+
+	await step("trip-scoped share renders with event title only", async () => {
+		const response = await fetch(`${BASE_URL}/share/${tripShareHash}`);
+		if (response.status !== 200) {
+			throw new Error(`expected 200 got ${response.status}`);
+		}
+		const html = await response.text();
+		if (!html.includes(EVENT_TITLE)) {
+			throw new Error("trip share missing event title");
+		}
+		if (!html.includes("Shared TripTales trip")) {
+			throw new Error("trip share missing 'Shared TripTales trip' eyebrow");
+		}
+	});
+
 	await step("remove event from trip", async () => {
 		const result = await action(`/trips/${tripId}`, "removeEvent", { eventId });
 		if (result.type !== "success") {
@@ -192,6 +217,13 @@ async function main() {
 		const result = await action(`/trips/${tripId}`, "delete", {});
 		if (result.type !== "redirect" || result.location !== "/trips") {
 			throw new Error(`unexpected trip delete: ${JSON.stringify(result)}`);
+		}
+	});
+
+	await step("trip share auto-revoked after trip delete", async () => {
+		const response = await fetch(`${BASE_URL}/share/${tripShareHash}`);
+		if (response.status !== 404) {
+			throw new Error(`expected 404 after trip delete, got ${response.status}`);
 		}
 	});
 

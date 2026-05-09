@@ -47,9 +47,16 @@ export async function deleteTrip(userId, id) {
 	const ownerId = userOid(userId);
 	const _id = oid(id);
 	if (!_id) throw new Error("Trip not found.");
+	const now = new Date();
 	await collections.events.updateMany(
 		{ userId: ownerId, tripId: _id },
-		{ $unset: { tripId: "" }, $set: { updatedAt: new Date() } }
+		{ $unset: { tripId: "" }, $set: { updatedAt: now } }
+	);
+	// Revoke any active shares pointing at this trip — the share would otherwise
+	// render an empty journey after the trip's events are detached.
+	await collections.shares.updateMany(
+		{ userId: ownerId, tripId: _id, revokedAt: null },
+		{ $set: { revokedAt: now, updatedAt: now } }
 	);
 	await collections.trips.deleteOne({ userId: ownerId, _id });
 }

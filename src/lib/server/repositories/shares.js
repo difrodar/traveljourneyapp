@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { getCollections } from "../db.js";
-import { userOid, clean } from "./shared.js";
+import { clean, oid, userOid } from "./shared.js";
 import { getJourneyDiaryData } from "./journey.js";
 
 const RATE_LIMIT_PER_DAY = 10;
@@ -16,7 +16,7 @@ function startOfTodayUTC() {
 	return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 }
 
-export async function createShare(userId, { expiresIn = "never" } = {}) {
+export async function createShare(userId, { expiresIn = "never", tripId = "" } = {}) {
 	const collections = await getCollections();
 	const ownerId = userOid(userId);
 	const todayCount = await collections.shares.countDocuments({
@@ -29,18 +29,27 @@ export async function createShare(userId, { expiresIn = "never" } = {}) {
 	if (!Object.prototype.hasOwnProperty.call(EXPIRY_OPTIONS, expiresIn)) {
 		throw new Error("Unknown expiry option.");
 	}
+	let tripObjectId = null;
+	const tripIdValue = clean(tripId);
+	if (tripIdValue) {
+		tripObjectId = oid(tripIdValue);
+		if (!tripObjectId) throw new Error("Invalid trip.");
+		const trip = await collections.trips.findOne({ userId: ownerId, _id: tripObjectId });
+		if (!trip) throw new Error("Trip not found.");
+	}
 	const offset = EXPIRY_OPTIONS[expiresIn];
 	const now = new Date();
 	const doc = {
 		userId: ownerId,
 		hash: crypto.randomBytes(16).toString("hex"),
+		tripId: tripObjectId,
 		expiresAt: offset === null ? null : new Date(now.getTime() + offset),
 		revokedAt: null,
 		createdAt: now,
 		updatedAt: now
 	};
 	await collections.shares.insertOne(doc);
-	return { hash: doc.hash, expiresAt: doc.expiresAt };
+	return { hash: doc.hash, expiresAt: doc.expiresAt, tripId: tripObjectId?.toString() || null };
 }
 
 export async function findActiveShareByHash(hash) {
@@ -62,8 +71,15 @@ export async function listSharesForUser(userId) {
 		.find({ userId: ownerId, revokedAt: null })
 		.sort({ createdAt: -1 })
 		.toArray();
+	const tripIds = docs.map((doc) => doc.tripId).filter(Boolean);
+	const trips = tripIds.length
+		? await collections.trips.find({ userId: ownerId, _id: { $in: tripIds } }).toArray()
+		: [];
+	const tripMap = new Map(trips.map((trip) => [trip._id.toString(), trip.name]));
 	return docs.map((doc) => ({
 		hash: doc.hash,
+		tripId: doc.tripId?.toString() || null,
+		tripName: doc.tripId ? tripMap.get(doc.tripId.toString()) || null : null,
 		expiresAt: doc.expiresAt ? doc.expiresAt.toISOString() : null,
 		createdAt: doc.createdAt.toISOString(),
 		isExpired: Boolean(doc.expiresAt && doc.expiresAt <= new Date())
@@ -125,8 +141,17 @@ function publicEventShape(event) {
 }
 
 export async function getPublicJourneyForShare(share) {
-	const data = await getJourneyDiaryData(share.userId, {});
+	const filters = share.tripId ? { tripId: share.tripId.toString() } : {};
+	const data = await getJourneyDiaryData(share.userId, filters);
+	let tripName = null;
+	if (share.tripId) {
+		const collections = await getCollections();
+		const trip = await collections.trips.findOne({ userId: share.userId, _id: share.tripId });
+		tripName = trip?.name || null;
+	}
 	return {
+		scope: share.tripId ? "trip" : "journey",
+		tripName,
 		entries: data.entries.map(publicEventShape),
 		groups: data.groups.map((group) => ({
 			key: group.key,

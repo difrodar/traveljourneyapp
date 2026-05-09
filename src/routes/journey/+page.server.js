@@ -1,6 +1,6 @@
 import { fail } from "@sveltejs/kit";
 import { categories } from "$lib/constants.js";
-import { createShare, getJourneyDiaryData, getJourneyTripGroups } from "$lib/server/repository.js";
+import { createShare, getJourneyDiaryData, getJourneyTripGroups, listTrips } from "$lib/server/repository.js";
 
 const journeySorts = new Set(["dateDesc", "dateAsc", "desc", "asc"]);
 const groupings = new Set(["month", "trip"]);
@@ -9,13 +9,15 @@ export const actions = {
 	share: async ({ locals, request, url }) => {
 		const form = await request.formData();
 		const expiresIn = String(form.get("expiresIn") || "7d");
+		const tripId = String(form.get("tripId") || "");
 		try {
-			const { hash, expiresAt } = await createShare(locals.user.id, { expiresIn });
+			const { hash, expiresAt, tripId: createdTripId } = await createShare(locals.user.id, { expiresIn, tripId });
 			return {
 				shareCreated: {
 					hash,
 					shareUrl: `${url.origin}/share/${hash}`,
-					expiresAt: expiresAt ? expiresAt.toISOString() : null
+					expiresAt: expiresAt ? expiresAt.toISOString() : null,
+					tripId: createdTripId
 				}
 			};
 		} catch (error) {
@@ -45,10 +47,13 @@ export async function load({ locals, url }) {
 			filters.sort !== "dateDesc"
 	);
 	try {
-		const data = groupBy === "trip"
-			? await getJourneyTripGroups(locals.user.id, filters)
-			: await getJourneyDiaryData(locals.user.id, filters);
-		return { ...data, filters, hasActiveFilters, categories, setupError: "" };
+		const [data, trips] = await Promise.all([
+			groupBy === "trip"
+				? getJourneyTripGroups(locals.user.id, filters)
+				: getJourneyDiaryData(locals.user.id, filters),
+			listTrips(locals.user.id)
+		]);
+		return { ...data, filters, hasActiveFilters, categories, trips, setupError: "" };
 	} catch (error) {
 		return {
 			entries: [],
@@ -58,6 +63,7 @@ export async function load({ locals, url }) {
 			filters,
 			hasActiveFilters,
 			categories,
+			trips: [],
 			setupError: error.message
 		};
 	}
