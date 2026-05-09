@@ -39,6 +39,52 @@
 			domEvent.currentTarget.value = "";
 		}
 	}
+
+	let startDate = $state(fieldValue("date", event?.date || ""));
+	let repeatFrequencyValue = $state(fieldValue("repeatFrequency", "none"));
+	let repeatMode = $state("count");
+	let untilDate = $state("");
+
+	const computedCount = $derived(computeOccurrenceCount(startDate, untilDate, repeatFrequencyValue));
+	const computedHidden = $derived(Math.max(1, computedCount));
+	const untilError = $derived(
+		repeatMode === "until" && untilDate && computedCount === 0
+			? "Until date must be on or after the start date."
+			: ""
+	);
+
+	function parseDate(value) {
+		const parts = String(value || "").split("-").map(Number);
+		if (parts.length !== 3) return null;
+		const [y, m, d] = parts;
+		if (!y || !m || !d) return null;
+		return new Date(y, m - 1, d);
+	}
+
+	function nextOccurrence(start, frequency, index) {
+		if (index === 0 || frequency === "none") return start;
+		if (frequency === "daily") return new Date(start.getFullYear(), start.getMonth(), start.getDate() + index);
+		if (frequency === "weekly") return new Date(start.getFullYear(), start.getMonth(), start.getDate() + index * 7);
+		const target = start.getMonth() + index;
+		const year = start.getFullYear() + Math.floor(target / 12);
+		const month = ((target % 12) + 12) % 12;
+		const daysInMonth = new Date(year, month + 1, 0).getDate();
+		const day = Math.min(start.getDate(), daysInMonth);
+		return new Date(year, month, day);
+	}
+
+	function computeOccurrenceCount(start, until, frequency) {
+		if (frequency === "none") return 1;
+		const s = parseDate(start);
+		const u = parseDate(until);
+		if (!s || !u || u < s) return 0;
+		let count = 0;
+		for (let i = 0; i < 52; i++) {
+			if (nextOccurrence(s, frequency, i) > u) break;
+			count++;
+		}
+		return count;
+	}
 </script>
 
 <form class="panel" method="POST" action={action} enctype="multipart/form-data">
@@ -64,7 +110,7 @@
 		</div>
 		<div class="field">
 			<label for="date">Date</label>
-			<input id="date" name="date" type="date" value={fieldValue("date", event?.date || "")} aria-invalid={Boolean(fieldErrors.date)} required />
+			<input id="date" name="date" type="date" bind:value={startDate} aria-invalid={Boolean(fieldErrors.date)} required />
 			{#if fieldErrors.date}
 				<p class="field-error">{fieldErrors.date}</p>
 			{/if}
@@ -86,28 +132,63 @@
 		{#if showRecurrence}
 			<div class="field">
 				<label for="repeatFrequency">Repeat</label>
-				<select id="repeatFrequency" name="repeatFrequency" aria-invalid={Boolean(fieldErrors.repeatFrequency)}>
+				<select id="repeatFrequency" name="repeatFrequency" bind:value={repeatFrequencyValue} aria-invalid={Boolean(fieldErrors.repeatFrequency)}>
 					{#each repeatFrequencies as frequency}
-						<option value={frequency.value} selected={fieldValue("repeatFrequency", "none") === frequency.value}>{frequency.label}</option>
+						<option value={frequency.value}>{frequency.label}</option>
 					{/each}
 				</select>
 				{#if fieldErrors.repeatFrequency}
 					<p class="field-error">{fieldErrors.repeatFrequency}</p>
 				{/if}
 			</div>
+			{#if repeatFrequencyValue !== "none"}
+				<div class="field">
+					<span class="field-label">How long?</span>
+					<div class="repeat-mode">
+						<label class="radio-option">
+							<input type="radio" value="count" bind:group={repeatMode} />
+							<span>Repeat N times</span>
+						</label>
+						<label class="radio-option">
+							<input type="radio" value="until" bind:group={repeatMode} />
+							<span>Repeat until date</span>
+						</label>
+					</div>
+				</div>
+			{/if}
 			<div class="field">
-				<label for="repeatCount">Occurrences</label>
-				<input
-					id="repeatCount"
-					name="repeatCount"
-					type="number"
-					min="1"
-					max="52"
-					value={fieldValue("repeatCount", "1")}
-					aria-invalid={Boolean(fieldErrors.repeatCount)}
-				/>
-				{#if fieldErrors.repeatCount}
-					<p class="field-error">{fieldErrors.repeatCount}</p>
+				{#if repeatMode === "until" && repeatFrequencyValue !== "none"}
+					<label for="repeatUntil">Until</label>
+					<input
+						id="repeatUntil"
+						type="date"
+						min={startDate || undefined}
+						bind:value={untilDate}
+						aria-invalid={Boolean(untilError || fieldErrors.repeatCount)}
+					/>
+					<input type="hidden" name="repeatCount" value={computedHidden} />
+					{#if untilError}
+						<p class="field-error">{untilError}</p>
+					{:else if untilDate && computedCount > 0}
+						<p class="muted">→ {computedCount} occurrence{computedCount === 1 ? "" : "s"}{computedCount === 52 ? " (max — pick an earlier date for fewer)" : ""}</p>
+					{/if}
+					{#if fieldErrors.repeatCount}
+						<p class="field-error">{fieldErrors.repeatCount}</p>
+					{/if}
+				{:else}
+					<label for="repeatCount">Occurrences</label>
+					<input
+						id="repeatCount"
+						name="repeatCount"
+						type="number"
+						min="1"
+						max="52"
+						value={fieldValue("repeatCount", "1")}
+						aria-invalid={Boolean(fieldErrors.repeatCount)}
+					/>
+					{#if fieldErrors.repeatCount}
+						<p class="field-error">{fieldErrors.repeatCount}</p>
+					{/if}
 				{/if}
 			</div>
 		{/if}
@@ -215,6 +296,25 @@
 	}
 
 	.checkbox-field input {
+		width: auto;
+	}
+
+	.repeat-mode {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 14px;
+		margin-top: 4px;
+	}
+
+	.radio-option {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		color: var(--muted);
+		font-weight: 700;
+	}
+
+	.radio-option input {
 		width: auto;
 	}
 
