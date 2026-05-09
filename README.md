@@ -130,10 +130,11 @@ Dokumentiert Erweiterungen über den Mindestumfang hinaus.
 - **Aus Evaluation abgeleitet?:** Nein, technische Absicherung für stabilen Prototyp.
 
 ### 4.3 Share-/Insta-Preview
-- **Beschreibung & Nutzen:** Event- und Journey-Daten werden als prototypische Social-Preview visualisiert.
-- **Wo umgesetzt:** `SharePreview` auf der Event-Detailseite.
-- **Referenz:** Siehe `/events/[id]`.
-- **Aus Evaluation abgeleitet?:** Nein, Erweiterung mit erkennbarem Storytelling-Mehrwert.
+- **Beschreibung & Nutzen:** Event- und Journey-Daten werden als prototypische Social-Preview visualisiert. Zusätzlich kann eine schreibgeschützte öffentliche Link-Variante der Journey via `/share/[hash]` geteilt werden — ohne Account-Zugriff für Empfänger:innen.
+- **Wo umgesetzt:** `SharePreview` auf der Event-Detailseite. Öffentliche Share-Links: `src/lib/server/repositories/shares.js`, Route `src/routes/share/[hash]`, Verwaltung auf `/profile`, Erstellung auf `/journey` (Ablauf optional 1/7/30 Tage oder nie).
+- **Sicherheits-Hinweis:** Die öffentliche Route umgeht bewusst die `userId`-Bindung. Repo-Helfer `getPublicJourneyForShare` filtert über eine Whitelist und entfernt Owner-IDs, Friend-Listen und Invitation-Daten. Hashes sind 32 Hex-Zeichen (16 Random-Bytes via `crypto.randomBytes`), Rate-Limit 10 Shares/User/Tag, Widerrufung ist sofort wirksam. Antworten setzen `Cache-Control: private, no-store`, `Referrer-Policy: no-referrer` und `X-Robots-Tag: noindex`.
+- **Referenz:** Siehe `/events/[id]`, `/journey`, `/profile` und `/share/[hash]`.
+- **Aus Evaluation abgeleitet?:** Nein, Erweiterung mit erkennbarem Storytelling-Mehrwert (UX-Audit B5).
 
 ### 4.4 Bildwelt für Events und Orte
 - **Beschreibung & Nutzen:** Event-, Journey- und Location-Cards zeigen passende Bilder, damit Aktivitäten wie “Balboa Park Museum Day” sofort visuell erkennbar sind.

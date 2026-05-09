@@ -17,3 +17,10 @@ export {
 } from "./repositories/events.js";
 export { getJourneyDiaryData, listJourneyEntries } from "./repositories/journey.js";
 export { convertIdeaToEvent, createIdeaFromForm, deleteIdea, listIdeas } from "./repositories/ideas.js";
+export {
+	createShare,
+	findActiveShareByHash,
+	getPublicJourneyForShare,
+	listSharesForUser,
+	revokeShare
+} from "./repositories/shares.js";

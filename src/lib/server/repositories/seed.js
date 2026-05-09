@@ -15,7 +15,9 @@ async function ensureIndexes(collections) {
 		collections.locations.createIndex({ userId: 1, name: 1, city: 1 }),
 		collections.friends.createIndex({ userId: 1, name: 1 }, { unique: true }),
 		collections.journeyEntries.createIndex({ userId: 1, eventId: 1 }, { unique: true }),
-		collections.travelIdeas.createIndex({ userId: 1, priority: 1 })
+		collections.travelIdeas.createIndex({ userId: 1, priority: 1 }),
+		collections.shares.createIndex({ hash: 1 }, { unique: true }),
+		collections.shares.createIndex({ userId: 1, createdAt: -1 })
 	]);
 }
 

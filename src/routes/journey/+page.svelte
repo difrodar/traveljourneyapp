@@ -2,7 +2,7 @@
 	import JourneyCard from "$lib/components/JourneyCard.svelte";
 	import { rememberFilters, clearRememberedFilters } from "$lib/utils/filter-persistence.svelte.js";
 
-	let { data } = $props();
+	let { data, form } = $props();
 	let filterForm;
 	let searchTimer;
 
@@ -34,6 +34,47 @@
 	{#if data.setupError}
 		<div class="message error">{data.setupError}</div>
 	{/if}
+
+	<form class="panel share-form" method="POST" action="?/share">
+		<details>
+			<summary>Share this journey&hellip;</summary>
+			<p class="share-warning">
+				Photos, places and notes in your memories will be visible to anyone with this link. Make sure you're comfortable
+				sharing them. You can revoke the link any time from <a href="/profile">your profile</a>.
+			</p>
+			<div class="share-controls">
+				<label class="filter-field share-expiry">
+					<span>Link expires after</span>
+					<select name="expiresIn">
+						<option value="1d">1 day</option>
+						<option value="7d" selected>7 days</option>
+						<option value="30d">30 days</option>
+						<option value="never">Never</option>
+					</select>
+				</label>
+				<button class="primary-button" type="submit">Create share link</button>
+			</div>
+			{#if form?.shareCreated}
+				<div class="share-result">
+					<input
+						type="text"
+						readonly
+						value={form.shareCreated.shareUrl}
+						aria-label="Public share URL"
+						onclick={(e) => e.currentTarget.select()}
+					/>
+					<small>
+						{form.shareCreated.expiresAt
+							? `Expires ${form.shareCreated.expiresAt.slice(0, 10)}.`
+							: "This link never expires unless you revoke it."}
+					</small>
+				</div>
+			{/if}
+			{#if form?.shareError}
+				<p class="share-error">{form.shareError}</p>
+			{/if}
+		</details>
+	</form>
 
 	<form class="panel filters" method="GET" bind:this={filterForm}>
 		<label class="filter-field filter-field--search">
@@ -140,6 +181,55 @@
 </main>
 
 <style>
+	.share-form {
+		margin-bottom: 16px;
+		padding: 14px 18px;
+	}
+
+	.share-form summary {
+		cursor: pointer;
+		font-weight: 900;
+		color: var(--brand-dark);
+	}
+
+	.share-warning {
+		margin: 12px 0;
+		padding: 10px 12px;
+		border: 1px solid #efd5b6;
+		background: #fff4e2;
+		border-radius: 8px;
+		color: #6a4324;
+		font-size: 0.9rem;
+	}
+
+	.share-controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		align-items: end;
+	}
+
+	.share-expiry {
+		min-width: 180px;
+	}
+
+	.share-result {
+		margin-top: 12px;
+		display: grid;
+		gap: 6px;
+	}
+
+	.share-result input {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.92rem;
+	}
+
+	.share-error {
+		margin-top: 10px;
+		color: #b9442e;
+		font-weight: 800;
+	}
+
 	.filters {
 		display: flex;
 		flex-wrap: wrap;

@@ -1,8 +1,6 @@
 import { redirect } from "@sveltejs/kit";
 import { ensureAuthSetup, getSessionCookie, getUserFromSession } from "$lib/server/auth.js";
 
-const publicRoutes = new Set(["/login"]);
-
 export async function handle({ event, resolve }) {
 	await ensureAuthSetup();
 
@@ -10,7 +8,7 @@ export async function handle({ event, resolve }) {
 	event.locals.user = await getUserFromSession(token);
 
 	const pathname = event.url.pathname;
-	const isPublic = publicRoutes.has(pathname);
+	const isPublic = pathname === "/login" || pathname.startsWith("/share/");
 
 	if (!event.locals.user && !isPublic) {
 		throw redirect(303, `/login?redirectTo=${encodeURIComponent(pathname + event.url.search)}`);

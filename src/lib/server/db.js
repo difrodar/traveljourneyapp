@@ -27,6 +27,7 @@ export async function getCollections() {
 		journeyEntries: db.collection("journeyEntries"),
 		travelIdeas: db.collection("travelIdeas"),
 		users: db.collection("users"),
-		sessions: db.collection("sessions")
+		sessions: db.collection("sessions"),
+		shares: db.collection("shares")
 	};
 }

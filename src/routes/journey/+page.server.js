@@ -1,7 +1,27 @@
+import { fail } from "@sveltejs/kit";
 import { categories } from "$lib/constants.js";
-import { getJourneyDiaryData } from "$lib/server/repository.js";
+import { createShare, getJourneyDiaryData } from "$lib/server/repository.js";
 
 const journeySorts = new Set(["dateDesc", "dateAsc", "desc", "asc"]);
+
+export const actions = {
+	share: async ({ locals, request, url }) => {
+		const form = await request.formData();
+		const expiresIn = String(form.get("expiresIn") || "7d");
+		try {
+			const { hash, expiresAt } = await createShare(locals.user.id, { expiresIn });
+			return {
+				shareCreated: {
+					hash,
+					shareUrl: `${url.origin}/share/${hash}`,
+					expiresAt: expiresAt ? expiresAt.toISOString() : null
+				}
+			};
+		} catch (error) {
+			return fail(400, { shareError: error.message });
+		}
+	}
+};
 
 export async function load({ locals, url }) {
 	const requestedSort = url.searchParams.get("sort") || "dateDesc";

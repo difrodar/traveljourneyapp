@@ -1,12 +1,21 @@
-import { listEvents, listIdeas, listInvitedEvents, listLocations } from "$lib/server/repository.js";
+import { fail } from "@sveltejs/kit";
+import {
+	listEvents,
+	listIdeas,
+	listInvitedEvents,
+	listLocations,
+	listSharesForUser,
+	revokeShare
+} from "$lib/server/repository.js";
 
 export async function load({ locals }) {
 	try {
-		const [events, invitedEvents, locations, ideas] = await Promise.all([
+		const [events, invitedEvents, locations, ideas, shares] = await Promise.all([
 			listEvents(locals.user.id, { sort: "updatedDesc" }),
 			listInvitedEvents(locals.user.id),
 			listLocations(locals.user.id),
-			listIdeas(locals.user.id)
+			listIdeas(locals.user.id),
+			listSharesForUser(locals.user.id)
 		]);
 		const plannedEvents = events.filter((event) => event.status === "planned");
 		const completedMemories = events.filter((event) => event.status === "completed" && event.journeyEntry);
@@ -23,6 +32,7 @@ export async function load({ locals }) {
 			},
 			recentActivity: events.slice(0, 3),
 			invitedEvents,
+			shares,
 			setupError: ""
 		};
 	} catch (error) {
@@ -38,7 +48,20 @@ export async function load({ locals }) {
 			},
 			recentActivity: [],
 			invitedEvents: [],
+			shares: [],
 			setupError: error.message
 		};
 	}
 }
+
+export const actions = {
+	revoke: async ({ locals, request }) => {
+		const form = await request.formData();
+		try {
+			await revokeShare(locals.user.id, String(form.get("hash") || ""));
+		} catch (error) {
+			return fail(400, { error: error.message });
+		}
+		return { message: "Share link revoked." };
+	}
+};

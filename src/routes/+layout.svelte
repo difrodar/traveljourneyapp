@@ -5,7 +5,11 @@
 	import { page } from '$app/state';
 
 	let { children, data } = $props();
-	const hideNavigation = $derived(page.url.pathname === "/login" || /^\/events\/(?!new(?:\/|$))[^/]+$/.test(page.url.pathname));
+	const hideNavigation = $derived(
+		page.url.pathname === "/login"
+		|| page.url.pathname.startsWith("/share/")
+		|| /^\/events\/(?!new(?:\/|$))[^/]+$/.test(page.url.pathname)
+	);
 </script>
 
 <svelte:head>

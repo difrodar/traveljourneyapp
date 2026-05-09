@@ -125,6 +125,41 @@
 			{/each}
 		</div>
 	</section>
+
+	<section class="panel shares-panel">
+		<div class="section-heading">
+			<div>
+				<p class="eyebrow">Shares</p>
+				<h2>Active share links</h2>
+			</div>
+		</div>
+		<p class="muted shares-hint">
+			Anyone with one of these links can view your journey memories. Revoke a link to make it stop working immediately.
+		</p>
+		<div class="recent-list">
+			{#each data.shares as share}
+				<div class="share-row">
+					<div class="share-info">
+						<code>/share/{share.hash}</code>
+						<span>
+							{#if share.expiresAt}
+								Expires {share.expiresAt.slice(0, 10)}
+							{:else}
+								Never expires
+							{/if}
+							· created {share.createdAt.slice(0, 10)}
+						</span>
+					</div>
+					<form method="POST" action="?/revoke">
+						<input type="hidden" name="hash" value={share.hash} />
+						<button class="ghost-button" type="submit">Revoke</button>
+					</form>
+				</div>
+			{:else}
+				<div class="empty-state">No active share links yet. Create one from the <a href="/journey">Journey</a> page.</div>
+			{/each}
+		</div>
+	</section>
 </main>
 
 <style>
@@ -189,8 +224,47 @@
 		margin-top: 18px;
 	}
 
-	.invited-panel {
+	.invited-panel,
+	.shares-panel {
 		margin-top: 18px;
+	}
+
+	.shares-hint {
+		margin: -6px 0 14px;
+		font-size: 0.9rem;
+	}
+
+	.share-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #fff7ec;
+		padding: 12px 14px;
+	}
+
+	.share-info {
+		display: grid;
+		gap: 4px;
+		min-width: 0;
+		overflow: hidden;
+	}
+
+	.share-info code {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.86rem;
+		color: var(--brand-dark);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.share-info span {
+		color: var(--muted);
+		font-size: 0.82rem;
+		font-weight: 700;
 	}
 
 	.section-heading {

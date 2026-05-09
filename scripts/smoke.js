@@ -146,6 +146,55 @@ async function main() {
 
 	await step("list journey", () => get("/journey"));
 
+	let shareHash = "";
+	await step("create share link", async () => {
+		const result = await action("/journey", "share", { expiresIn: "7d" });
+		if (result.type !== "success") {
+			throw new Error(`unexpected share result: ${JSON.stringify(result)}`);
+		}
+		const match = String(result.data || "").match(/[a-f0-9]{32}/);
+		if (!match) throw new Error(`no share hash in result: ${result.data}`);
+		shareHash = match[0];
+	});
+
+	await step("public share renders without auth", async () => {
+		// Deliberately omit Cookie header to verify the route is public.
+		const response = await fetch(`${BASE_URL}/share/${shareHash}`);
+		if (response.status !== 200) {
+			throw new Error(`expected 200 got ${response.status}`);
+		}
+		const html = await response.text();
+		if (!html.includes(EVENT_TITLE)) {
+			throw new Error("share page missing event title");
+		}
+		for (const marker of ["invitedUserIds", '"invitations"', '"isOwner"', '"invitationStatus"']) {
+			if (html.includes(marker)) {
+				throw new Error(`leak marker present in public share: ${marker}`);
+			}
+		}
+	});
+
+	await step("revoke share link", async () => {
+		const result = await action("/profile", "revoke", { hash: shareHash });
+		if (result.type !== "success") {
+			throw new Error(`unexpected revoke result: ${JSON.stringify(result)}`);
+		}
+	});
+
+	await step("revoked share returns 404", async () => {
+		const response = await fetch(`${BASE_URL}/share/${shareHash}`);
+		if (response.status !== 404) {
+			throw new Error(`expected 404 got ${response.status}`);
+		}
+	});
+
+	await step("invalid share hash returns 404", async () => {
+		const response = await fetch(`${BASE_URL}/share/short`);
+		if (response.status !== 404) {
+			throw new Error(`expected 404 got ${response.status}`);
+		}
+	});
+
 	await step("delete event (cleanup)", async () => {
 		const result = await action(`/events/${eventId}`, "delete", { deleteScope: "single" });
 		if (result.type !== "redirect" || result.location !== "/events") {
