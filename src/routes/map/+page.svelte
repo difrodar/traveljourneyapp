@@ -1,12 +1,19 @@
 <script>
 	import LeafletMapView from "$lib/components/LeafletMapView.svelte";
+	import { rememberFilters, clearRememberedFilters } from "$lib/utils/filter-persistence.svelte.js";
 
 	let { data } = $props();
 	let filterForm;
 	const clearHref = $derived(data.highlightedEventId ? `/map?event=${data.highlightedEventId}` : "/map");
 
+	rememberFilters("map");
+
 	function submitFilters() {
 		filterForm?.requestSubmit();
+	}
+
+	function handleClearFilters() {
+		clearRememberedFilters("map");
 	}
 </script>
 
@@ -48,7 +55,7 @@
 			<input type="date" name="to" value={data.filters.to} onchange={submitFilters} />
 		</label>
 		{#if data.hasActiveFilters}
-			<a class="ghost-button" href={clearHref}>Clear filters</a>
+			<a class="ghost-button" href={clearHref} onclick={handleClearFilters}>Clear filters</a>
 		{/if}
 	</form>
 

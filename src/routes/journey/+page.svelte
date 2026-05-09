@@ -1,9 +1,12 @@
 <script>
 	import JourneyCard from "$lib/components/JourneyCard.svelte";
+	import { rememberFilters, clearRememberedFilters } from "$lib/utils/filter-persistence.svelte.js";
 
 	let { data } = $props();
 	let filterForm;
 	let searchTimer;
+
+	rememberFilters("journey");
 
 	function submitFilters() {
 		filterForm?.requestSubmit();
@@ -12,6 +15,10 @@
 	function submitSearch() {
 		clearTimeout(searchTimer);
 		searchTimer = setTimeout(submitFilters, 350);
+	}
+
+	function handleClearFilters() {
+		clearRememberedFilters("journey");
 	}
 </script>
 
@@ -56,7 +63,7 @@
 		</select>
 		{#if data.hasActiveFilters}
 			<div class="filter-actions">
-				<a class="ghost-button" href="/journey">Clear filters</a>
+				<a class="ghost-button" href="/journey" onclick={handleClearFilters}>Clear filters</a>
 			</div>
 		{/if}
 	</form>

@@ -1,9 +1,12 @@
 <script>
 	import EventCard from "$lib/components/EventCard.svelte";
+	import { rememberFilters, clearRememberedFilters } from "$lib/utils/filter-persistence.svelte.js";
 
 	let { data } = $props();
 	let filterForm;
 	let searchTimer;
+
+	rememberFilters("events");
 
 	function submitFilters() {
 		filterForm?.requestSubmit();
@@ -12,6 +15,10 @@
 	function submitSearch() {
 		clearTimeout(searchTimer);
 		searchTimer = setTimeout(submitFilters, 350);
+	}
+
+	function handleClearFilters() {
+		clearRememberedFilters("events");
 	}
 </script>
 
@@ -58,7 +65,7 @@
 		</select>
 		{#if data.hasActiveFilters}
 			<div class="filter-actions">
-				<a class="ghost-button" href="/events">Clear filters</a>
+				<a class="ghost-button" href="/events" onclick={handleClearFilters}>Clear filters</a>
 			</div>
 		{/if}
 	</form>
