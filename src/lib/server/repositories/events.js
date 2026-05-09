@@ -18,7 +18,7 @@ import {
 	repeatFrequencies,
 	serialize,
 	upcomingForEvent,
-	uploadedImageFields,
+	uploadedImagesFields,
 	userOid
 } from "./shared.js";
 
@@ -245,7 +245,8 @@ async function saveLocationFromForm(userId, form, existingId = null) {
 async function eventPayloadFromForm(userId, form, locationId, invitedUserIds, existing = {}, overrides = {}) {
 	const title = clean(form.get("title"));
 	const imageFields =
-		overrides.imageFields || (await uploadedImageFields(form, "eventImageFile", "clearEventImage", existing, title, "Event image"));
+		overrides.imageFields ||
+		(await uploadedImagesFields(form, "eventImageFiles", "removeEventImageIndex", existing.images || [], title, "Event image"));
 	return {
 		title,
 		userId: userOid(userId),
@@ -269,7 +270,7 @@ export async function createEventFromForm(userId, form) {
 	const locationId = await saveLocationFromForm(userId, form);
 	const recurrence = recurrenceFromForm(form);
 	const recurrenceGroupId = recurrence.count > 1 ? new ObjectId() : null;
-	const imageFields = await uploadedImageFields(form, "eventImageFile", "clearEventImage", {}, clean(form.get("title")), "Event image");
+	const imageFields = await uploadedImagesFields(form, "eventImageFiles", "removeEventImageIndex", [], clean(form.get("title")), "Event image");
 	const now = new Date();
 	const events = await Promise.all(
 		Array.from({ length: recurrence.count }, async (_, index) => ({
@@ -305,7 +306,10 @@ export async function updateEventFromForm(userId, id, form) {
 	const locationId = await saveLocationFromForm(ownerId, form, event.recurrenceGroupId ? null : event.locationId?.toString());
 	await collections.events.updateOne(
 		{ userId: ownerId, _id: oid(id) },
-		{ $set: await eventPayloadFromForm(ownerId, form, locationId, invitedUserIds, event), $unset: { friendIds: "" } }
+		{
+			$set: await eventPayloadFromForm(ownerId, form, locationId, invitedUserIds, event),
+			$unset: { friendIds: "", imageUrl: "", imageAlt: "", imageCredit: "", imageLicense: "", imageSourceUrl: "" }
+		}
 	);
 }
 
@@ -357,11 +361,11 @@ export async function completeEventFromForm(userId, id, form) {
 		throw new Error("Journey memory can be saved after the event is completed.");
 	}
 	const existingEntry = await collections.journeyEntries.findOne({ userId: ownerId, eventId });
-	const memoryImageFields = await uploadedImageFields(
+	const memoryImageFields = await uploadedImagesFields(
 		form,
-		"memoryImageFile",
-		"clearMemoryImage",
-		existingEntry || {},
+		"memoryImageFiles",
+		"removeMemoryImageIndex",
+		existingEntry?.images || [],
 		"Journey memory photo",
 		"Memory image"
 	);
@@ -373,9 +377,10 @@ export async function completeEventFromForm(userId, id, form) {
 		{
 			$set: {
 				memoryText: clean(form.get("memoryText")),
-				imageUrl: memoryImageFields.imageUrl,
+				images: memoryImageFields.images,
 				updatedAt: now
 			},
+			$unset: { imageUrl: "", imageAlt: "" },
 			$setOnInsert: { userId: ownerId, eventId, createdAt: now }
 		},
 		{ upsert: true }

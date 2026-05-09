@@ -1,7 +1,9 @@
 import { ObjectId } from "mongodb";
 import { findCityCoordinates } from "$lib/cities.js";
 
-export const maxUploadBytes = 5 * 1024 * 1024;
+export const maxUploadBytes = 2 * 1024 * 1024;
+export const maxImagesPerDoc = 5;
+export const maxImagesTotalBytes = 9 * 1024 * 1024;
 export const allowedUploadTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 export const repeatFrequencies = new Set(["none", "daily", "weekly", "monthly"]);
 export const maxRepeatCount = 52;
@@ -248,49 +250,60 @@ function hasUploadedFile(value) {
 	return value && typeof value === "object" && typeof value.arrayBuffer === "function" && value.size > 0;
 }
 
-export async function uploadedImageFields(
+function estimateRawSizeFromDataUrl(url) {
+	if (!url) return 0;
+	const commaIdx = url.indexOf(",");
+	const base64Length = commaIdx >= 0 ? url.length - commaIdx - 1 : url.length;
+	return Math.floor((base64Length * 3) / 4);
+}
+
+export async function uploadedImagesFields(
 	form,
 	fieldName,
-	clearFieldName,
-	existing = {},
+	removeFieldName,
+	existingImages = [],
 	altFallback = "Uploaded image",
 	uploadLabel = "Image upload"
 ) {
-	const file = form.get(fieldName);
-	if (hasUploadedFile(file)) {
+	const files = form.getAll(fieldName).filter(hasUploadedFile);
+	const removeIndices = new Set(form.getAll(removeFieldName).map(String));
+
+	const kept = (Array.isArray(existingImages) ? existingImages : []).filter(
+		(_, idx) => !removeIndices.has(String(idx))
+	);
+
+	for (const file of files) {
 		if (!allowedUploadTypes.has(file.type)) {
 			throw new Error(`${uploadLabel}: Please upload a JPG, PNG, WebP or GIF image.`);
 		}
 		if (file.size > maxUploadBytes) {
-			throw new Error(`${uploadLabel}: The selected file is too large. Please upload an image up to 5 MB.`);
+			throw new Error(`${uploadLabel}: Each image must be 2 MB or smaller.`);
 		}
-		const buffer = Buffer.from(await file.arrayBuffer());
-		return {
-			imageUrl: `data:${file.type};base64,${buffer.toString("base64")}`,
-			imageAlt: altFallback,
-			imageCredit: "",
-			imageLicense: "",
-			imageSourceUrl: ""
-		};
 	}
 
-	if (form.get(clearFieldName)) {
-		return {
-			imageUrl: "",
-			imageAlt: "",
-			imageCredit: "",
-			imageLicense: "",
-			imageSourceUrl: ""
-		};
+	const newImages = await Promise.all(
+		files.map(async (file) => {
+			const buffer = Buffer.from(await file.arrayBuffer());
+			return {
+				url: `data:${file.type};base64,${buffer.toString("base64")}`,
+				alt: altFallback || ""
+			};
+		})
+	);
+
+	const combined = [...kept, ...newImages];
+	if (combined.length > maxImagesPerDoc) {
+		throw new Error(`${uploadLabel}: At most ${maxImagesPerDoc} images per item.`);
 	}
 
-	return {
-		imageUrl: existing.imageUrl || clean(form.get("imageUrl")),
-		imageAlt: existing.imageAlt || clean(form.get("imageAlt")),
-		imageCredit: existing.imageCredit || clean(form.get("imageCredit")),
-		imageLicense: existing.imageLicense || clean(form.get("imageLicense")),
-		imageSourceUrl: existing.imageSourceUrl || clean(form.get("imageSourceUrl"))
-	};
+	const totalRaw = combined.reduce((sum, img) => sum + estimateRawSizeFromDataUrl(img.url), 0);
+	if (totalRaw > maxImagesTotalBytes) {
+		throw new Error(
+			`${uploadLabel}: Combined images exceed the ${Math.round(maxImagesTotalBytes / 1024 / 1024)} MB total per item.`
+		);
+	}
+
+	return { images: combined };
 }
 
 export function defaultCoordinates(name, city, country, lat, lng) {

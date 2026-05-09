@@ -18,15 +18,14 @@ function addPhoto(photos, url, alt, label, credit = "", license = "") {
 
 export function buildGallery(item) {
 	const photos = [];
-	addPhoto(photos, item.media?.imageUrl, item.media?.imageAlt || item.title, "Event cover", item.media?.imageCredit, item.media?.imageLicense);
-	addPhoto(
-		photos,
-		item.location?.media?.imageUrl,
-		item.location?.media?.imageAlt || item.location?.name,
-		"Location",
-		item.location?.media?.imageCredit,
-		item.location?.media?.imageLicense
-	);
-	addPhoto(photos, item.journeyEntry?.imageUrl, `${item.title} memory`, "Memory photo");
+	for (const img of item.media?.images || []) {
+		addPhoto(photos, img.url, img.alt || item.title, "Event photo", img.credit || "", img.license || "");
+	}
+	for (const img of item.location?.media?.images || []) {
+		addPhoto(photos, img.url, img.alt || item.location?.name, "Location", img.credit || "", img.license || "");
+	}
+	for (const img of item.journeyEntry?.images || []) {
+		addPhoto(photos, img.url, img.alt || `${item.title} memory`, "Memory photo");
+	}
 	return photos;
 }

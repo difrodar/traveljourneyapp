@@ -267,24 +267,40 @@ export function resolveEventMedia(event = {}, location = {}) {
 // styled placeholder (PlaceholderIcon) instead of guessing a stock photo, because
 // auto-guessing produced misleading mismatches (e.g. "airport" → bicycle on beach).
 export function storedLocationMedia(location = {}) {
-	if (!location?.imageUrl) return null;
-	return {
-		imageUrl: location.imageUrl,
-		imageAlt: location.imageAlt || `${location.name || ""}${location.city ? ` in ${location.city}` : ""}`.trim(),
-		imageCredit: location.imageCredit || "",
-		imageLicense: location.imageLicense || "",
-		imageSourceUrl: location.imageSourceUrl || ""
-	};
+	if (Array.isArray(location?.images) && location.images.length > 0) {
+		return { images: location.images };
+	}
+	if (location?.imageUrl) {
+		return {
+			images: [
+				{
+					url: location.imageUrl,
+					alt: location.imageAlt || `${location.name || ""}${location.city ? ` in ${location.city}` : ""}`.trim(),
+					credit: location.imageCredit || "",
+					license: location.imageLicense || "",
+					sourceUrl: location.imageSourceUrl || ""
+				}
+			]
+		};
+	}
+	return { images: [] };
 }
 
 export function storedEventMedia(event = {}, location = {}) {
+	if (Array.isArray(event?.images) && event.images.length > 0) {
+		return { images: event.images };
+	}
 	if (event?.imageUrl) {
 		return {
-			imageUrl: event.imageUrl,
-			imageAlt: event.imageAlt || event.title || "",
-			imageCredit: event.imageCredit || "",
-			imageLicense: event.imageLicense || "",
-			imageSourceUrl: event.imageSourceUrl || ""
+			images: [
+				{
+					url: event.imageUrl,
+					alt: event.imageAlt || event.title || "",
+					credit: event.imageCredit || "",
+					license: event.imageLicense || "",
+					sourceUrl: event.imageSourceUrl || ""
+				}
+			]
 		};
 	}
 	return storedLocationMedia(location);

@@ -198,7 +198,7 @@ async function seedDemoData(userId) {
 			userId: ownerId,
 			eventId: eventIds[1],
 			memoryText: "Balboa Park felt like a whole day of tiny discoveries. The botanical building was the highlight.",
-			imageUrl: "",
+			images: [],
 			createdAt: now,
 			updatedAt: now
 		},
@@ -206,7 +206,7 @@ async function seedDemoData(userId) {
 			userId: ownerId,
 			eventId: eventIds[3],
 			memoryText: "Great skyline view, lots of new people, and one of the first nights where San Diego felt familiar.",
-			imageUrl: "",
+			images: [],
 			createdAt: now,
 			updatedAt: now
 		},
@@ -214,7 +214,7 @@ async function seedDemoData(userId) {
 			userId: ownerId,
 			eventId: eventIds[7],
 			memoryText: "The Golden Gate walk made the journey feel bigger than San Diego. Fog, wind and a lot of photos.",
-			imageUrl: "",
+			images: [],
 			createdAt: now,
 			updatedAt: now
 		}

@@ -32,7 +32,18 @@ async function get(path) {
 //   {type:"failure",status:400,data:"<serialized fail payload>"}
 async function action(path, name, fields) {
 	const fd = new FormData();
-	for (const [key, value] of Object.entries(fields)) fd.set(key, value);
+	for (const [key, value] of Object.entries(fields)) {
+		if (Array.isArray(value)) {
+			for (const v of value) {
+				if (v instanceof Blob) fd.append(key, v, v.name || "upload.bin");
+				else fd.append(key, String(v));
+			}
+		} else if (value instanceof Blob) {
+			fd.append(key, value, value.name || "upload.bin");
+		} else {
+			fd.set(key, value);
+		}
+	}
 	const headers = { Origin: BASE_URL };
 	if (sessionCookie) headers.Cookie = sessionCookie;
 	const response = await fetch(`${BASE_URL}${path}?/${name}`, {
@@ -115,9 +126,16 @@ async function main() {
 		}
 	});
 
-	await step("save journey memory", async () => {
+	await step("save journey memory with 2 images", async () => {
+		const tinyPng = Buffer.from(
+			"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGD4DwABBAEAfbLI3wAAAABJRU5ErkJggg==",
+			"base64"
+		);
+		const file1 = new File([tinyPng], "smoke-1.png", { type: "image/png" });
+		const file2 = new File([tinyPng], "smoke-2.png", { type: "image/png" });
 		const result = await action(`/events/${eventId}`, "complete", {
-			memoryText: `smoke memory ${Date.now()}`
+			memoryText: `smoke memory ${Date.now()}`,
+			memoryImageFiles: [file1, file2]
 		});
 		if (result.type !== "success") {
 			throw new Error(`unexpected complete result: ${JSON.stringify(result)}`);

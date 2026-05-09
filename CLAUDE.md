@@ -38,7 +38,7 @@ There is no test runner, linter, formatter, or `svelte-check` script. Run `npx s
 - **Document new features in the appropriate existing section** of [README.md](README.md) (codex §5). Internal tooling/dev-only scripts are exempt.
 - **Never invent evaluation results, URLs, sketches, sources, testers, or Figma links.** `[…ergänzen]` placeholders stay until real data lands.
 - **Empty/loading states required** on every list view.
-- **Image uploads:** 5 MB max; JPG/PNG/WebP/GIF only. Server-side check in [shared.js](src/lib/server/repositories/shared.js) is the source of truth; client guards in [EventForm.svelte](src/lib/components/EventForm.svelte) and [MemoryForm.svelte](src/lib/components/MemoryForm.svelte).
+- **Image uploads:** Up to 5 images per event/memory, 2 MB max per image, 9 MB total per item; JPG/PNG/WebP/GIF only. Stored as `images: [{ url, alt, credit?, license?, sourceUrl? }]`. Server-side check in `uploadedImagesFields` ([shared.js](src/lib/server/repositories/shared.js)) is the source of truth; client guards in [EventForm.svelte](src/lib/components/EventForm.svelte) and [MemoryForm.svelte](src/lib/components/MemoryForm.svelte).
 - **Priority order:** Stabilität → Workflows → Dokumentation → Usability → Code-Struktur → Evaluation → Erweiterungen → optische Verfeinerung.
 - **KI-Deklaration honesty.** When Claude Code makes substantive contributions, [README §6.1](README.md#L184) tracks who used what. Don't silently add work without declaring it.
 

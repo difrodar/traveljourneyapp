@@ -75,14 +75,25 @@ export async function convertIdeaToEvent(userId, id) {
 	form.set("category", idea.category);
 	form.set("description", idea.notes);
 	form.set("friendNames", "");
-	if (!knownLocationMedia) {
-		form.set("imageUrl", locationMedia.travel.imageUrl);
-		form.set("imageAlt", locationMedia.travel.imageAlt);
-		form.set("imageCredit", locationMedia.travel.imageCredit);
-		form.set("imageLicense", locationMedia.travel.imageLicense);
-		form.set("imageSourceUrl", locationMedia.travel.imageSourceUrl);
-	}
 	const eventId = await createEventFromForm(ownerId, form);
+	if (!knownLocationMedia) {
+		await collections.events.updateOne(
+			{ userId: ownerId, _id: oid(eventId) },
+			{
+				$set: {
+					images: [
+						{
+							url: locationMedia.travel.imageUrl,
+							alt: locationMedia.travel.imageAlt,
+							credit: locationMedia.travel.imageCredit,
+							license: locationMedia.travel.imageLicense,
+							sourceUrl: locationMedia.travel.imageSourceUrl
+						}
+					]
+				}
+			}
+		);
+	}
 	await collections.travelIdeas.updateOne(
 		{ userId: ownerId, _id: oid(id) },
 		{ $set: { convertedToEvent: eventId, updatedAt: new Date() } }

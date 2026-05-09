@@ -5,17 +5,21 @@
 	let { event, compact = false } = $props();
 	const displayStatus = $derived(event.invitationStatus || event.status);
 	const displayStatusLabel = $derived(event.invitationStatus ? event.invitationStatus : statusLabels[event.status]);
+	const photoCount = $derived((event.media?.images?.length || 0) + (event.journeyEntry?.images?.length || 0));
 </script>
 
 <article class="card event-card {event.category?.toLowerCase().replaceAll(' ', '-') || 'default'}">
 	<a class="cover" href="/events/{event.id}" aria-label="Open {event.title}">
-		{#if event.media?.imageUrl}
-			<img src={event.media.imageUrl} alt={event.media.imageAlt || event.title} />
+		{#if event.media?.images?.[0]?.url}
+			<img src={event.media.images[0].url} alt={event.media.images[0].alt || event.title} />
 		{:else}
 			<div class="cover-placeholder">
 				<PlaceholderIcon size={36} />
 				<span>{event.category}</span>
 			</div>
+		{/if}
+		{#if photoCount > 1}
+			<span class="multi-photo-dot" aria-label="{photoCount} photos">●●●</span>
 		{/if}
 	</a>
 	<div class="topline">
@@ -105,6 +109,7 @@
 	.cover {
 		display: grid;
 		place-items: center;
+		position: relative;
 		height: 150px;
 		margin: -18px -18px 16px;
 		background:
@@ -127,6 +132,20 @@
 		height: 100%;
 		object-fit: cover;
 		transition: transform 0.22s ease;
+	}
+
+	.multi-photo-dot {
+		position: absolute;
+		top: 10px;
+		right: 12px;
+		border-radius: 999px;
+		background: rgba(0, 0, 0, 0.55);
+		color: white;
+		font-size: 0.62rem;
+		font-weight: 900;
+		letter-spacing: 0.16em;
+		padding: 4px 9px;
+		pointer-events: none;
 	}
 
 	.event-card:hover .cover img {

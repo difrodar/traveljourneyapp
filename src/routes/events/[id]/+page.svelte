@@ -65,8 +65,8 @@
 		{/if}
 
 		<section class="photo-hero">
-			{#if event.media?.imageUrl}
-				<img src={event.media.imageUrl} alt={event.media.imageAlt || event.title} />
+			{#if event.media?.images?.[0]?.url}
+				<img src={event.media.images[0].url} alt={event.media.images[0].alt || event.title} />
 			{:else}
 				<div class="cover-fallback">
 					<PlaceholderIcon size={72} />
@@ -100,8 +100,8 @@
 				<p>{displayDate}</p>
 				<p>{event.location?.name}, {event.location?.city || event.location?.country}</p>
 			</div>
-			{#if event.media?.imageCredit}
-				<p class="image-credit">{event.media.imageCredit} / {event.media.imageLicense}</p>
+			{#if event.media?.images?.[0]?.credit}
+				<p class="image-credit">{event.media.images[0].credit}{event.media.images[0].license ? ` / ${event.media.images[0].license}` : ""}</p>
 			{/if}
 		</section>
 
@@ -509,34 +509,41 @@
 	}
 
 	.photo-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		display: flex;
+		flex-wrap: nowrap;
 		gap: 14px;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		padding-bottom: 6px;
 	}
 
 	.photo-grid figure {
 		position: relative;
-		min-height: 190px;
+		flex: 0 0 min(75%, 320px);
+		min-height: 220px;
 		margin: 0;
 		border-radius: 8px;
 		overflow: hidden;
 		background: #f2e7dc;
+		scroll-snap-align: center;
 	}
 
-	.photo-grid figure:first-child {
-		grid-column: span 2;
-	}
-
-	.photo-grid figure:first-child:nth-last-child(1) {
-		grid-column: 1 / -1;
+	.photo-grid figure:only-child {
+		flex-basis: 100%;
 		min-height: 280px;
 	}
 
 	.photo-grid img {
 		width: 100%;
 		height: 100%;
-		min-height: 190px;
+		min-height: 220px;
 		object-fit: cover;
+	}
+
+	@media (min-width: 720px) {
+		.photo-grid figure {
+			flex-basis: min(42%, 280px);
+		}
 	}
 
 	.photo-grid figcaption {
@@ -676,12 +683,8 @@
 		}
 
 		.detail-grid,
-		.photo-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.photo-grid figure:first-child {
-			grid-column: auto;
+		.photo-grid figure {
+			flex-basis: 80%;
 		}
 	}
 </style>

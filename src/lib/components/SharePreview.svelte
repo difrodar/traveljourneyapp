@@ -6,8 +6,8 @@
 </script>
 
 <aside class="preview">
-	{#if event.media?.imageUrl}
-		<img src={event.media.imageUrl} alt="" />
+	{#if event.media?.images?.[0]?.url}
+		<img src={event.media.images[0].url} alt="" />
 	{:else}
 		<div class="preview-placeholder" aria-hidden="true">
 			<PlaceholderIcon size={64} />

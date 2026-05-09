@@ -50,8 +50,8 @@
 								class:highlighted={location.id === highlightedLocationId}
 							>
 								<div class="location-image">
-									{#if location.media?.imageUrl}
-										<img src={location.media.imageUrl} alt={location.media.imageAlt || location.name} />
+									{#if location.media?.images?.[0]?.url}
+										<img src={location.media.images[0].url} alt={location.media.images[0].alt || location.name} />
 									{:else}
 										<span class="pin"><PlaceholderIcon size={28} /></span>
 									{/if}
@@ -84,8 +84,8 @@
 										<span>{location.coordinates?.lat}</span>
 										<span>{location.coordinates?.lng}</span>
 									</div>
-									{#if location.media?.imageCredit}
-										<p class="credit">{location.media.imageCredit} · {location.media.imageLicense}</p>
+									{#if location.media?.images?.[0]?.credit}
+										<p class="credit">{location.media.images[0].credit}{location.media.images[0].license ? ` · ${location.media.images[0].license}` : ""}</p>
 									{/if}
 								</div>
 							</article>

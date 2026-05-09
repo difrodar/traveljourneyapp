@@ -59,8 +59,8 @@
 		<div class="mini-map" bind:this={mapEl}></div>
 	{:else}
 		<div class="map-fallback">
-			{#if location.media?.imageUrl}
-				<img src={location.media.imageUrl} alt={location.media.imageAlt || location.name} />
+			{#if location.media?.images?.[0]?.url}
+				<img src={location.media.images[0].url} alt={location.media.images[0].alt || location.name} />
 			{:else}
 				<div class="map-fallback-icon" aria-hidden="true">
 					<PlaceholderIcon size={56} />

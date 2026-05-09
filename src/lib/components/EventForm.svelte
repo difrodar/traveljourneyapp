@@ -1,5 +1,12 @@
 <script>
-	import { categories, repeatFrequencies, UPLOAD_ALLOWED_MIME_TYPES, UPLOAD_MAX_BYTES } from "$lib/constants.js";
+	import {
+		categories,
+		repeatFrequencies,
+		UPLOAD_ALLOWED_MIME_TYPES,
+		UPLOAD_MAX_BYTES,
+		UPLOAD_MAX_IMAGES,
+		UPLOAD_MAX_TOTAL_BYTES
+	} from "$lib/constants.js";
 	import CityCombobox from "./CityCombobox.svelte";
 	import FriendPicker from "./FriendPicker.svelte";
 
@@ -25,19 +32,43 @@
 		return Object.hasOwn(values, name) ? values[name] : fallback;
 	}
 
+	const existingImages = $derived(event?.images || []);
+	let removeIndices = $state(new Set());
+	const keptCount = $derived(existingImages.filter((_, idx) => !removeIndices.has(idx)).length);
+
 	function handleImageChange(domEvent) {
 		clientImageError = "";
-		const file = domEvent.currentTarget.files?.[0];
-		if (!file) return;
-		if (!UPLOAD_ALLOWED_MIME_TYPES.includes(file.type)) {
-			clientImageError = "Use a JPG, PNG, WebP or GIF file.";
+		const files = Array.from(domEvent.currentTarget.files || []);
+		if (files.length === 0) return;
+		for (const file of files) {
+			if (!UPLOAD_ALLOWED_MIME_TYPES.includes(file.type)) {
+				clientImageError = "Use a JPG, PNG, WebP or GIF file.";
+				domEvent.currentTarget.value = "";
+				return;
+			}
+			if (file.size > UPLOAD_MAX_BYTES) {
+				clientImageError = "Each image must be 2 MB or smaller.";
+				domEvent.currentTarget.value = "";
+				return;
+			}
+		}
+		if (keptCount + files.length > UPLOAD_MAX_IMAGES) {
+			clientImageError = `At most ${UPLOAD_MAX_IMAGES} images per event.`;
 			domEvent.currentTarget.value = "";
 			return;
 		}
-		if (file.size > UPLOAD_MAX_BYTES) {
-			clientImageError = "Image must be 5 MB or smaller.";
+		const totalNew = files.reduce((sum, f) => sum + f.size, 0);
+		if (totalNew > UPLOAD_MAX_TOTAL_BYTES) {
+			clientImageError = "Combined images exceed the 9 MB total per event.";
 			domEvent.currentTarget.value = "";
 		}
+	}
+
+	function toggleRemoveImage(idx) {
+		const next = new Set(removeIndices);
+		if (next.has(idx)) next.delete(idx);
+		else next.add(idx);
+		removeIndices = next;
 	}
 
 	let startDate = $state(fieldValue("date", event?.date || ""));
@@ -221,30 +252,44 @@
 			<textarea id="description" name="description">{fieldValue("description", event?.description || "")}</textarea>
 		</div>
 		<div class="field full media-fields">
-			<h3>Event image optional</h3>
-			<p class="muted">Upload a JPG, PNG, WebP or GIF up to 5 MB.</p>
+			<h3>Event images optional</h3>
+			<p class="muted">Up to 5 photos per event, each JPG/PNG/WebP/GIF up to 2 MB.</p>
 		</div>
 		<div class="field full">
-			<label for="eventImageFile">Event image</label>
+			<label for="eventImageFiles">Event images</label>
 			<input
-				id="eventImageFile"
-				name="eventImageFile"
+				id="eventImageFiles"
+				name="eventImageFiles"
 				type="file"
 				accept="image/jpeg,image/png,image/webp,image/gif"
-				aria-invalid={Boolean(fieldErrors.eventImageFile || clientImageError)}
+				multiple
+				aria-invalid={Boolean(fieldErrors.eventImageFiles || clientImageError)}
 				onchange={handleImageChange}
 			/>
 			{#if clientImageError}
 				<p class="field-error">{clientImageError}</p>
 			{/if}
-			{#if fieldErrors.eventImageFile}
-				<p class="field-error">{fieldErrors.eventImageFile}</p>
+			{#if fieldErrors.eventImageFiles}
+				<p class="field-error">{fieldErrors.eventImageFiles}</p>
 			{/if}
-			{#if event?.imageUrl}
-				<label class="checkbox-field">
-					<input name="clearEventImage" type="checkbox" value="true" />
-					<span>Remove current event image</span>
-				</label>
+			{#if existingImages.length > 0}
+				<div class="existing-images">
+					{#each existingImages as img, idx}
+						<label class="existing-image" class:marked-removed={removeIndices.has(idx)}>
+							<img src={img.url} alt={img.alt || ""} />
+							<span class="remove-control">
+								<input
+									type="checkbox"
+									name="removeEventImageIndex"
+									value={idx}
+									checked={removeIndices.has(idx)}
+									onchange={() => toggleRemoveImage(idx)}
+								/>
+								<small>{removeIndices.has(idx) ? "Will be removed" : "Remove"}</small>
+							</span>
+						</label>
+					{/each}
+				</div>
 			{/if}
 		</div>
 		<input type="hidden" name="locationImageUrl" value={location.imageUrl || ""} />
@@ -296,6 +341,48 @@
 	}
 
 	.checkbox-field input {
+		width: auto;
+	}
+
+	.existing-images {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+		gap: 10px;
+		margin-top: 12px;
+	}
+
+	.existing-image {
+		display: grid;
+		gap: 6px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 8px;
+		background: #fffdf8;
+		cursor: pointer;
+	}
+
+	.existing-image img {
+		width: 100%;
+		aspect-ratio: 1 / 1;
+		object-fit: cover;
+		border-radius: 6px;
+	}
+
+	.existing-image.marked-removed {
+		border-color: #ef4444;
+		background: #fff5f5;
+		opacity: 0.7;
+	}
+
+	.remove-control {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		color: var(--muted);
+		font-weight: 700;
+	}
+
+	.remove-control input {
 		width: auto;
 	}
 
