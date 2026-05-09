@@ -36,19 +36,24 @@
 	{/if}
 
 	<form class="panel filters" method="GET" bind:this={filterForm}>
-		<input
-			class="search-field"
-			name="search"
-			placeholder="Search memories, places or categories"
-			value={data.filters.search}
-			oninput={submitSearch}
-		/>
-		<select name="category" onchange={submitFilters}>
-			<option value="all" selected={data.filters.category === "all"}>All categories</option>
-			{#each data.categories as category}
-				<option value={category} selected={data.filters.category === category}>{category}</option>
-			{/each}
-		</select>
+		<label class="filter-field filter-field--search">
+			<span>Search</span>
+			<input
+				name="search"
+				placeholder="Search memories, places or categories"
+				value={data.filters.search}
+				oninput={submitSearch}
+			/>
+		</label>
+		<label class="filter-field">
+			<span>Category</span>
+			<select name="category" onchange={submitFilters}>
+				<option value="all" selected={data.filters.category === "all"}>All categories</option>
+				{#each data.categories as category}
+					<option value={category} selected={data.filters.category === category}>{category}</option>
+				{/each}
+			</select>
+		</label>
 		<label class="filter-field">
 			<span>From</span>
 			<input type="date" name="from" value={data.filters.from} onchange={submitFilters} />
@@ -57,10 +62,13 @@
 			<span>To</span>
 			<input type="date" name="to" value={data.filters.to} onchange={submitFilters} />
 		</label>
-		<select name="sort" onchange={submitFilters}>
-			<option value="dateDesc" selected={data.filters.sort === "dateDesc" || data.filters.sort === "desc"}>Newest memories first</option>
-			<option value="dateAsc" selected={data.filters.sort === "dateAsc" || data.filters.sort === "asc"}>Oldest first</option>
-		</select>
+		<label class="filter-field">
+			<span>Sort</span>
+			<select name="sort" onchange={submitFilters}>
+				<option value="dateDesc" selected={data.filters.sort === "dateDesc" || data.filters.sort === "desc"}>Newest memories first</option>
+				<option value="dateAsc" selected={data.filters.sort === "dateAsc" || data.filters.sort === "asc"}>Oldest first</option>
+			</select>
+		</label>
 		{#if data.hasActiveFilters}
 			<div class="filter-actions">
 				<a class="ghost-button" href="/journey" onclick={handleClearFilters}>Clear filters</a>
@@ -133,15 +141,21 @@
 
 <style>
 	.filters {
-		display: grid;
-		grid-template-columns: 1.4fr repeat(4, minmax(130px, 1fr)) auto;
-		gap: 10px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px;
 		margin-bottom: 20px;
 		align-items: end;
 	}
 
-	.search-field {
-		min-width: 0;
+	.filters > * {
+		flex: 1 1 160px;
+		min-width: 160px;
+	}
+
+	.filters > .filter-field--search {
+		flex: 2 1 240px;
+		min-width: 240px;
 	}
 
 	.filter-field {
@@ -160,6 +174,8 @@
 		display: flex;
 		gap: 8px;
 		flex-wrap: wrap;
+		flex: 0 0 auto;
+		min-width: 0;
 	}
 
 	.diary-stats {
@@ -289,8 +305,14 @@
 		}
 	}
 
+	@media (max-width: 600px) {
+		.filters > * {
+			flex-basis: 100%;
+			min-width: 0;
+		}
+	}
+
 	@media (max-width: 720px) {
-		.filters,
 		.diary-stats,
 		.highlight-grid {
 			grid-template-columns: 1fr;

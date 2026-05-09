@@ -34,18 +34,24 @@
 		{#if data.highlightedEventId}
 			<input type="hidden" name="event" value={data.highlightedEventId} />
 		{/if}
-		<select name="status" aria-label="Filter map by status" onchange={submitFilters}>
-			<option value="all" selected={data.filters.status === "all"}>All status</option>
-			<option value="planned" selected={data.filters.status === "planned"}>Planned</option>
-			<option value="completed" selected={data.filters.status === "completed"}>Completed</option>
-			<option value="invited" selected={data.filters.status === "invited"}>Invited to me</option>
-		</select>
-		<select name="category" aria-label="Filter map by category" onchange={submitFilters}>
-			<option value="all" selected={data.filters.category === "all"}>All categories</option>
-			{#each data.categories as category}
-				<option value={category} selected={data.filters.category === category}>{category}</option>
-			{/each}
-		</select>
+		<label class="filter-field">
+			<span>Status</span>
+			<select name="status" onchange={submitFilters}>
+				<option value="all" selected={data.filters.status === "all"}>All status</option>
+				<option value="planned" selected={data.filters.status === "planned"}>Planned</option>
+				<option value="completed" selected={data.filters.status === "completed"}>Completed</option>
+				<option value="invited" selected={data.filters.status === "invited"}>Invited to me</option>
+			</select>
+		</label>
+		<label class="filter-field">
+			<span>Category</span>
+			<select name="category" onchange={submitFilters}>
+				<option value="all" selected={data.filters.category === "all"}>All categories</option>
+				{#each data.categories as category}
+					<option value={category} selected={data.filters.category === category}>{category}</option>
+				{/each}
+			</select>
+		</label>
 		<label class="filter-field">
 			<span>From</span>
 			<input type="date" name="from" value={data.filters.from} onchange={submitFilters} />
@@ -80,11 +86,21 @@
 
 <style>
 	.map-filters {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(150px, 1fr)) repeat(2, minmax(140px, 0.8fr)) auto;
-		gap: 10px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px;
 		align-items: end;
 		margin-bottom: 14px;
+	}
+
+	.map-filters > * {
+		flex: 1 1 160px;
+		min-width: 160px;
+	}
+
+	.map-filters > .ghost-button {
+		flex: 0 0 auto;
+		min-width: 0;
 	}
 
 	.filter-field {
@@ -121,9 +137,10 @@
 		color: var(--brand-dark);
 	}
 
-	@media (max-width: 900px) {
-		.map-filters {
-			grid-template-columns: 1fr;
+	@media (max-width: 600px) {
+		.map-filters > * {
+			flex-basis: 100%;
+			min-width: 0;
 		}
 	}
 </style>
