@@ -124,6 +124,8 @@ async function main() {
 		}
 	});
 
+	await step("dashboard awaiting-memory section renders", () => get("/"));
+
 	await step("list journey", () => get("/journey"));
 
 	await step("delete event (cleanup)", async () => {

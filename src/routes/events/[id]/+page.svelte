@@ -1,4 +1,7 @@
 <script>
+	import { onMount } from "svelte";
+	import { browser } from "$app/environment";
+	import { page } from "$app/state";
 	import DeleteRecurringDialog from "$lib/components/DeleteRecurringDialog.svelte";
 	import EventForm from "$lib/components/EventForm.svelte";
 	import EventMapPanel from "$lib/components/EventMapPanel.svelte";
@@ -16,6 +19,15 @@
 	const canSaveMemory = $derived(isOwner || (event.invitationStatus === "accepted" && event.status === "completed"));
 	const displayDate = $derived(formatEventDate(event.date, event.time));
 	const gallery = $derived.by(() => buildGallery(event));
+
+	onMount(() => {
+		if (!browser) return;
+		if (page.url.hash !== "#after-event-panel") return;
+		const ta = document.getElementById("memoryText");
+		if (!ta) return;
+		ta.focus({ preventScroll: true });
+		ta.scrollIntoView({ behavior: "smooth", block: "center" });
+	});
 </script>
 
 <main class="event-screen">

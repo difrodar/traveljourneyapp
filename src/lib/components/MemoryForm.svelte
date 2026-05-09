@@ -21,7 +21,7 @@
 	}
 </script>
 
-<section class="after-panel">
+<section id="after-event-panel" class="after-panel">
 	<p class="eyebrow">After the event</p>
 	<h2>Journey memory</h2>
 	<p class="muted">Add your personal memory once the event has happened.</p>

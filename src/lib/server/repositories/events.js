@@ -122,13 +122,30 @@ export async function listInvitedEvents(userId) {
 	return hydrateEvents(events, ownerId);
 }
 
+function todayString() {
+	const d = new Date();
+	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+export async function listEventsAwaitingMemory(userId, limit = 5) {
+	const events = await listEvents(userId, { sort: "asc", includeInvitations: true });
+	const today = todayString();
+	return events
+		.filter((event) => event.date && event.date < today && !event.journeyEntry)
+		.slice(0, limit);
+}
+
 export async function getDashboardData(userId, options = {}) {
 	const events = await listEvents(userId, { sort: "asc", includeInvitations: true });
 	const completed = events.filter((event) => event.status === "completed");
+	const today = todayString();
 	return {
 		calendar: buildCalendarMonth(events, options.month),
 		upcomingSoonEvents: events.filter((event) => event.reminder?.active).slice(0, 4),
-		journeyHighlights: completed.filter((event) => event.journeyEntry).slice(0, 3)
+		journeyHighlights: completed.filter((event) => event.journeyEntry).slice(0, 3),
+		eventsAwaitingMemory: events
+			.filter((event) => event.date && event.date < today && !event.journeyEntry)
+			.slice(0, 5)
 	};
 }
 

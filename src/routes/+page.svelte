@@ -85,6 +85,33 @@
 		{/if}
 	</section>
 
+	{#if data.eventsAwaitingMemory.length > 0}
+		<section class="memory-prompts">
+			<div class="page-header slim">
+				<div>
+					<p class="eyebrow">Close the loop</p>
+					<h2>Add memories</h2>
+					<p class="muted">Past events still waiting for a memory — pick one to write a quick reflection.</p>
+				</div>
+			</div>
+			<div class="grid three">
+				{#each data.eventsAwaitingMemory as event}
+					<a class="card memory-prompt-card" href="/events/{event.id}#after-event-panel">
+						<span class="category">{event.category}</span>
+						<strong>{event.title}</strong>
+						<span class="prompt-meta">
+							{event.date}{event.location?.city ? ` · ${event.location.city}` : ""}
+						</span>
+						{#if event.status !== "completed"}
+							<span class="status-badge">Not marked attended</span>
+						{/if}
+						<small class="prompt-cta">Add memory →</small>
+					</a>
+				{/each}
+			</div>
+		</section>
+	{/if}
+
 	<section class="grid two dashboard-sections">
 		<div>
 			<div class="page-header slim">
@@ -359,6 +386,58 @@
 
 	.dashboard-sections {
 		margin-top: 0;
+	}
+
+	.memory-prompt-card {
+		display: grid;
+		gap: 6px;
+		padding: 16px;
+		min-height: 130px;
+		align-content: start;
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.memory-prompt-card .category {
+		display: inline-block;
+		width: fit-content;
+		border-radius: 999px;
+		background: #fff0dc;
+		color: #8a4a12;
+		font-size: 0.74rem;
+		font-weight: 900;
+		text-transform: uppercase;
+		padding: 3px 10px;
+	}
+
+	.memory-prompt-card strong {
+		color: #253044;
+		font-size: 1.02rem;
+		line-height: 1.25;
+		overflow-wrap: anywhere;
+	}
+
+	.memory-prompt-card .prompt-meta {
+		color: var(--muted);
+		font-size: 0.84rem;
+		font-weight: 700;
+	}
+
+	.memory-prompt-card .status-badge {
+		width: fit-content;
+		border-radius: 999px;
+		background: #fde7d6;
+		color: #a94724;
+		font-size: 0.72rem;
+		font-weight: 900;
+		text-transform: uppercase;
+		padding: 3px 10px;
+	}
+
+	.memory-prompt-card .prompt-cta {
+		margin-top: auto;
+		color: var(--accent);
+		font-weight: 900;
 	}
 
 	.slim {
