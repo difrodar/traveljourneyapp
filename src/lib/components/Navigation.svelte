@@ -1,7 +1,9 @@
 <script>
 	import { page } from "$app/state";
+	import Avatar from "$lib/components/Avatar.svelte";
+	import NotificationBell from "$lib/components/NotificationBell.svelte";
 
-	let { user } = $props();
+	let { user, notifications } = $props();
 
 	const links = [
 		{ href: "/", label: "Dashboard" },
@@ -25,7 +27,12 @@
 			</a>
 		{/each}
 		{#if user}
-			<a class="user-pill" class:active={page.url.pathname === "/profile"} href="/profile">{user.username}</a>
+			{#if notifications}
+				<NotificationBell {notifications} />
+			{/if}
+			<a class="profile-link" class:active={page.url.pathname === "/profile"} href="/profile" aria-label="Open profile, signed in as {user.username}" title={user.username}>
+				<Avatar username={user.username} avatarUrl={user.avatarUrl} size={36} ariaHidden={true} />
+			</a>
 			<form method="POST" action="/logout">
 				<button class="logout-button" type="submit">Logout</button>
 			</form>
@@ -74,8 +81,7 @@
 	}
 
 	.links a,
-	.logout-button,
-	.user-pill {
+	.logout-button {
 		border-radius: 999px;
 		padding: 8px 13px;
 		color: var(--muted);
@@ -92,10 +98,22 @@
 		border-color: var(--line);
 	}
 
-	.user-pill {
-		background: #edf8e9;
-		border-color: #b8dfad;
-		color: #2f6f35;
+	.profile-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		border-radius: 50%;
+		border: 2px solid transparent;
+		line-height: 0;
+	}
+
+	.profile-link:hover,
+	.profile-link.active,
+	.profile-link:focus-visible {
+		border-color: var(--coral);
+		box-shadow: 0 6px 16px rgba(231, 95, 67, 0.22);
+		outline: none;
 	}
 
 	.links a.active,
@@ -104,6 +122,12 @@
 		background: linear-gradient(135deg, var(--coral), var(--accent));
 		color: white;
 		box-shadow: 0 8px 20px rgba(231, 95, 67, 0.22);
+	}
+
+	.links a.profile-link.active,
+	.links a.profile-link:hover {
+		background: transparent;
+		color: inherit;
 	}
 
 	@media (max-width: 760px) {

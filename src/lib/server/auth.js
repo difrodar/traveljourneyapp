@@ -16,7 +16,7 @@ function normalizeUsername(username) {
 }
 
 function publicUser(user) {
-	return user ? { id: user._id.toString(), username: user.username } : null;
+	return user ? { id: user._id.toString(), username: user.username, avatarUrl: user.avatarUrl || null } : null;
 }
 
 function hashToken(token) {
@@ -72,6 +72,37 @@ export async function ensureAuthSetup() {
 		});
 	}
 	return setupPromise;
+}
+
+const AVATAR_MAX_BYTES = 1 * 1024 * 1024;
+const AVATAR_ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp"]);
+
+export async function updateUserAvatar(userId, file) {
+	if (!file || typeof file.arrayBuffer !== "function" || !file.size) {
+		throw new Error("Please choose an image to upload.");
+	}
+	if (!AVATAR_ALLOWED_MIME.has(file.type)) {
+		throw new Error("Avatar must be a JPG, PNG or WebP image.");
+	}
+	if (file.size > AVATAR_MAX_BYTES) {
+		throw new Error("Avatar must be 1 MB or smaller.");
+	}
+	const collections = await getCollections();
+	const buffer = Buffer.from(await file.arrayBuffer());
+	const dataUrl = `data:${file.type};base64,${buffer.toString("base64")}`;
+	await collections.users.updateOne(
+		{ _id: ObjectId.isValid(userId) ? new ObjectId(userId) : userId },
+		{ $set: { avatarUrl: dataUrl, updatedAt: new Date() } }
+	);
+	return dataUrl;
+}
+
+export async function removeUserAvatar(userId) {
+	const collections = await getCollections();
+	await collections.users.updateOne(
+		{ _id: ObjectId.isValid(userId) ? new ObjectId(userId) : userId },
+		{ $unset: { avatarUrl: "" }, $set: { updatedAt: new Date() } }
+	);
 }
 
 export async function signup(username, password) {

@@ -17,6 +17,6 @@
 </svelte:head>
 
 {#if !hideNavigation}
-	<Navigation user={data.user} />
+	<Navigation user={data.user} notifications={data.notifications} />
 {/if}
 {@render children()}

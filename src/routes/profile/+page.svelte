@@ -1,5 +1,7 @@
 <script>
-	let { data } = $props();
+	import Avatar from "$lib/components/Avatar.svelte";
+
+	let { data, form } = $props();
 
 	const statItems = $derived([
 		{ label: "Events", value: data.stats.events, hint: "all plans and memories" },
@@ -39,11 +41,28 @@
 	<section class="profile-grid">
 		<article class="panel account-card">
 			<p class="eyebrow">Account</p>
-			<div class="avatar" aria-hidden="true">{data.user.username.slice(0, 1).toUpperCase()}</div>
+			<Avatar username={data.user.username} avatarUrl={data.user.avatarUrl} size={88} ariaHidden={true} />
 			<h2>{data.user.username}</h2>
 			<p class="muted">
 				This prototype keeps events, friends, locations, ideas and memories separated by account. No roles, emails or password settings are part of this page.
 			</p>
+			<div class="avatar-tools">
+				{#if form?.error}
+					<p class="message error" role="alert">{form.error}</p>
+				{:else if form?.message}
+					<p class="message" role="status">{form.message}</p>
+				{/if}
+				<form method="POST" action="?/uploadAvatar" enctype="multipart/form-data" class="avatar-upload">
+					<label class="ghost-button" for="avatarFile">Upload picture</label>
+					<input id="avatarFile" name="avatarFile" type="file" accept="image/jpeg,image/png,image/webp" onchange={(domEvent) => domEvent.currentTarget.form?.requestSubmit()} />
+				</form>
+				{#if data.user.avatarUrl}
+					<form method="POST" action="?/removeAvatar">
+						<button class="ghost-button" type="submit">Remove picture</button>
+					</form>
+				{/if}
+				<small class="muted avatar-hint">JPG, PNG or WebP — up to 1 MB.</small>
+			</div>
 		</article>
 
 		<section class="stats-grid" aria-label="Account statistics">
@@ -185,17 +204,41 @@
 		gap: 12px;
 	}
 
-	.avatar {
-		display: grid;
-		place-items: center;
-		width: 74px;
-		height: 74px;
-		border-radius: 50%;
-		background: linear-gradient(135deg, var(--coral), var(--accent));
-		color: white;
-		font-size: 2rem;
-		font-weight: 900;
-		box-shadow: var(--shadow-soft);
+	.avatar-tools {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+		margin-top: 4px;
+	}
+
+	.avatar-tools .message {
+		flex-basis: 100%;
+		margin: 0 0 4px;
+	}
+
+	.avatar-upload {
+		display: contents;
+	}
+
+	.avatar-upload input[type="file"] {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		border: 0;
+	}
+
+	.avatar-upload label {
+		cursor: pointer;
+	}
+
+	.avatar-hint {
+		flex-basis: 100%;
+		font-size: 0.78rem;
 	}
 
 	.stats-grid {

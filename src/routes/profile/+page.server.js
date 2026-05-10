@@ -1,4 +1,5 @@
 import { fail } from "@sveltejs/kit";
+import { removeUserAvatar, updateUserAvatar } from "$lib/server/auth.js";
 import {
 	listEvents,
 	listIdeas,
@@ -63,5 +64,22 @@ export const actions = {
 			return fail(400, { error: error.message });
 		}
 		return { message: "Share link revoked." };
+	},
+	uploadAvatar: async ({ locals, request }) => {
+		const form = await request.formData();
+		try {
+			await updateUserAvatar(locals.user.id, form.get("avatarFile"));
+		} catch (error) {
+			return fail(400, { error: error.message });
+		}
+		return { message: "Profile picture updated." };
+	},
+	removeAvatar: async ({ locals }) => {
+		try {
+			await removeUserAvatar(locals.user.id);
+		} catch (error) {
+			return fail(400, { error: error.message });
+		}
+		return { message: "Profile picture removed." };
 	}
 };

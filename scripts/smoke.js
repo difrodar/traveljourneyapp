@@ -142,7 +142,53 @@ async function main() {
 		}
 	});
 
-	await step("dashboard awaiting-memory section renders", () => get("/"));
+	await step("dashboard renders with notification bell", async () => {
+		const headers = sessionCookie ? { Cookie: sessionCookie } : {};
+		const response = await fetch(`${BASE_URL}/`, { headers });
+		if (response.status !== 200) throw new Error(`expected 200 got ${response.status}`);
+		const html = await response.text();
+		if (!html.includes("data-notification-bell")) {
+			throw new Error("dashboard layout missing notification bell marker");
+		}
+	});
+
+	await step("event detail renders share preview", async () => {
+		const headers = sessionCookie ? { Cookie: sessionCookie } : {};
+		const response = await fetch(`${BASE_URL}/events/${eventId}`, { headers });
+		if (response.status !== 200) throw new Error(`expected 200 got ${response.status}`);
+		const html = await response.text();
+		if (!html.includes("Preview format")) {
+			throw new Error("event detail missing share-preview format toggle");
+		}
+	});
+
+	await step("upload avatar", async () => {
+		const tinyPng = Buffer.from(
+			"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGD4DwABBAEAfbLI3wAAAABJRU5ErkJggg==",
+			"base64"
+		);
+		const file = new File([tinyPng], "avatar.png", { type: "image/png" });
+		const result = await action("/profile", "uploadAvatar", { avatarFile: file });
+		if (result.type !== "success") {
+			throw new Error(`unexpected uploadAvatar result: ${JSON.stringify(result)}`);
+		}
+	});
+
+	await step("nav serves avatar image after upload", async () => {
+		const headers = sessionCookie ? { Cookie: sessionCookie } : {};
+		const response = await fetch(`${BASE_URL}/`, { headers });
+		const html = await response.text();
+		if (!html.includes("avatar-image")) {
+			throw new Error("nav avatar did not flip to image variant after upload");
+		}
+	});
+
+	await step("remove avatar (cleanup)", async () => {
+		const result = await action("/profile", "removeAvatar", {});
+		if (result.type !== "success") {
+			throw new Error(`unexpected removeAvatar result: ${JSON.stringify(result)}`);
+		}
+	});
 
 	await step("list journey", () => get("/journey"));
 

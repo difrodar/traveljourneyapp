@@ -29,3 +29,18 @@ export function buildGallery(item) {
 	}
 	return photos;
 }
+
+export function buildShareText(event) {
+	if (!event) return "";
+	const title = (event.title || "").trim();
+	const place = (event.location?.city || event.location?.country || "").trim();
+	const body = (event.journeyEntry?.memoryText || event.description || "").trim();
+	const trimmed = body.length > 140 ? `${body.slice(0, 137).trimEnd()}…` : body;
+	const lines = [];
+	if (title) lines.push(place ? `${title} — ${place}` : title);
+	else if (place) lines.push(place);
+	if (trimmed) lines.push(trimmed);
+	lines.push("");
+	lines.push("shared via TripTales");
+	return lines.join("\n");
+}

@@ -7,6 +7,7 @@ export {
 	getDashboardData,
 	getEvent,
 	listEvents,
+	listEventsAwaitingMemory,
 	listInviteableUsers,
 	listInvitedEvents,
 	listLocations,
