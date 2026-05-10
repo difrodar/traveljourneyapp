@@ -3,7 +3,7 @@
 	import { rememberFilters, clearRememberedFilters } from "$lib/utils/filter-persistence.svelte.js";
 
 	let { data } = $props();
-	let filterForm;
+	let filterForm = $state();
 	let searchTimer;
 
 	rememberFilters("events");

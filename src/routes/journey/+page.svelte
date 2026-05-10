@@ -4,7 +4,7 @@
 	import { rememberFilters, clearRememberedFilters } from "$lib/utils/filter-persistence.svelte.js";
 
 	let { data, form } = $props();
-	let filterForm;
+	let filterForm = $state();
 	let searchTimer;
 
 	function groupHref(value) {
