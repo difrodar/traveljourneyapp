@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { categories } from "$lib/constants.js";
 import { storedEventMedia, storedLocationMedia } from "$lib/media.js";
 import { getCollections } from "../db.js";
 import {
@@ -21,6 +22,10 @@ import {
 	uploadedImagesFields,
 	userOid
 } from "./shared.js";
+
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+const timeRegex = /^\d{2}:\d{2}$/;
+const allowedCategories = new Set(categories);
 
 async function hydrateEvents(events, userId) {
 	const collections = await getCollections();
@@ -177,6 +182,37 @@ export function validateEventForm(form) {
 
 	for (const [field, message] of Object.entries(requiredFields)) {
 		if (!clean(form.get(field))) fieldErrors[field] = message;
+	}
+
+	const dateValue = clean(form.get("date"));
+	if (dateValue && !dateRegex.test(dateValue)) {
+		fieldErrors.date = "Date must be in YYYY-MM-DD format.";
+	}
+
+	const timeValue = clean(form.get("time"));
+	if (timeValue && !timeRegex.test(timeValue)) {
+		fieldErrors.time = "Time must be in HH:MM format.";
+	}
+
+	const categoryValue = clean(form.get("category"));
+	if (categoryValue && !allowedCategories.has(categoryValue)) {
+		fieldErrors.category = "Please choose a category from the list.";
+	}
+
+	const latRaw = clean(form.get("lat"));
+	if (latRaw) {
+		const lat = Number(latRaw);
+		if (!Number.isFinite(lat) || lat < -90 || lat > 90) {
+			fieldErrors.lat = "Latitude must be between -90 and 90.";
+		}
+	}
+
+	const lngRaw = clean(form.get("lng"));
+	if (lngRaw) {
+		const lng = Number(lngRaw);
+		if (!Number.isFinite(lng) || lng < -180 || lng > 180) {
+			fieldErrors.lng = "Longitude must be between -180 and 180.";
+		}
 	}
 
 	const repeatFrequency = clean(form.get("repeatFrequency")) || "none";
