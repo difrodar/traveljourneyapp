@@ -1,7 +1,6 @@
 import { createHash, randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import { dev } from "$app/environment";
-import { redirect } from "@sveltejs/kit";
 import { ObjectId } from "mongodb";
 import { getCollections } from "./db.js";
 import { initializeUserData } from "./repository.js";
@@ -186,9 +185,4 @@ export function clearSessionCookie(cookies) {
 
 export function getSessionCookie(cookies) {
 	return cookies.get(sessionCookie);
-}
-
-export function requireUser(locals) {
-	if (!locals.user) throw redirect(303, "/login");
-	return locals.user;
 }

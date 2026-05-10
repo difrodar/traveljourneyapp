@@ -209,9 +209,7 @@ export const categoryMedia = {
 	sightseeing: locationMedia.travel
 };
 
-export const categoryMediaKeys = Object.keys(categoryMedia);
-
-export const eventMedia = {
+const eventMedia = {
 	"taco tuesday in pacific beach": categoryMedia.food,
 	"gaslamp rooftop night": categoryMedia.party,
 	"weekend trip to los angeles": locationMedia["griffith observatory"],
