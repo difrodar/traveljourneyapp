@@ -366,7 +366,7 @@ export async function deleteEvent(userId, id) {
 	if (!eventId) throw new Error("Event not found.");
 	const result = await collections.events.deleteOne({ userId: ownerId, _id: eventId });
 	if (!result.deletedCount) throw new Error("Event not found.");
-	await collections.journeyEntries.deleteMany({ eventId });
+	await collections.journeyEntries.deleteMany({ userId: ownerId, eventId });
 }
 
 export async function deleteEventSeries(userId, id) {
@@ -387,7 +387,7 @@ export async function deleteEventSeries(userId, id) {
 	const eventIds = seriesEvents.map((seriesEvent) => seriesEvent._id);
 	await Promise.all([
 		collections.events.deleteMany({ userId: ownerId, recurrenceGroupId: event.recurrenceGroupId }),
-		collections.journeyEntries.deleteMany({ eventId: { $in: eventIds } })
+		collections.journeyEntries.deleteMany({ userId: ownerId, eventId: { $in: eventIds } })
 	]);
 }
 
