@@ -4,9 +4,11 @@
 
 	let { data } = $props();
 	let filterForm = $state();
-	let searchTimer;
+	let searchTimer = 0;
 
 	rememberFilters("events");
+
+	$effect(() => () => clearTimeout(searchTimer));
 
 	function submitFilters() {
 		filterForm?.requestSubmit();

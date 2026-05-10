@@ -5,7 +5,9 @@
 
 	let { data, form } = $props();
 	let filterForm = $state();
-	let searchTimer;
+	let searchTimer = 0;
+
+	$effect(() => () => clearTimeout(searchTimer));
 
 	function groupHref(value) {
 		const params = new URLSearchParams(page.url.searchParams);
