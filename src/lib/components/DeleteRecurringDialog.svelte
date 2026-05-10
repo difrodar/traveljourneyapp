@@ -1,15 +1,39 @@
 <script>
+	import { tick } from "svelte";
+
 	let { open, event, onClose } = $props();
 	let deleteScope = $state("single");
+	let dialogRef = $state();
+	let previouslyFocused = null;
 
 	function closeOnBackdrop(pointerEvent) {
 		if (pointerEvent.target === pointerEvent.currentTarget) onClose();
 	}
+
+	$effect(() => {
+		if (!open) return;
+		previouslyFocused = document.activeElement;
+		tick().then(() => {
+			const firstRadio = dialogRef?.querySelector('input[type="radio"]');
+			firstRadio?.focus();
+		});
+		function onKeyDown(domEvent) {
+			if (domEvent.key === "Escape") {
+				domEvent.preventDefault();
+				onClose();
+			}
+		}
+		document.addEventListener("keydown", onKeyDown);
+		return () => {
+			document.removeEventListener("keydown", onKeyDown);
+			if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus();
+		};
+	});
 </script>
 
 {#if open}
 	<div class="dialog-backdrop" role="presentation" onclick={closeOnBackdrop}>
-		<div class="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title">
+		<div bind:this={dialogRef} class="delete-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title">
 			<div>
 				<p class="eyebrow">Delete recurring event</p>
 				<h2 id="delete-dialog-title">Delete this event or the whole series?</h2>
