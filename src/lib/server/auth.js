@@ -2,6 +2,7 @@ import { createHash, randomBytes, scrypt as scryptCallback, timingSafeEqual } fr
 import { promisify } from "node:util";
 import { dev } from "$app/environment";
 import { ObjectId } from "mongodb";
+import { AVATAR_MAX_BYTES, AVATAR_ALLOWED_MIME_TYPES } from "$lib/constants.js";
 import { getCollections } from "./db.js";
 import { initializeUserData } from "./repository.js";
 
@@ -58,9 +59,11 @@ async function runAuthSetup() {
 		collections.sessions.createIndex({ tokenHash: 1 }, { unique: true }),
 		collections.sessions.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 })
 	]);
-	const difrodar = await ensureUser("difrodar", "difrodar");
-	await ensureUser("dummy", "dummy");
-	await initializeUserData(difrodar._id);
+	if (dev) {
+		const difrodar = await ensureUser("difrodar", "difrodar");
+		await ensureUser("dummy", "dummy");
+		await initializeUserData(difrodar._id);
+	}
 }
 
 export async function ensureAuthSetup() {
@@ -73,14 +76,11 @@ export async function ensureAuthSetup() {
 	return setupPromise;
 }
 
-const AVATAR_MAX_BYTES = 1 * 1024 * 1024;
-const AVATAR_ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp"]);
-
 export async function updateUserAvatar(userId, file) {
 	if (!file || typeof file.arrayBuffer !== "function" || !file.size) {
 		throw new Error("Please choose an image to upload.");
 	}
-	if (!AVATAR_ALLOWED_MIME.has(file.type)) {
+	if (!AVATAR_ALLOWED_MIME_TYPES.includes(file.type)) {
 		throw new Error("Avatar must be a JPG, PNG or WebP image.");
 	}
 	if (file.size > AVATAR_MAX_BYTES) {

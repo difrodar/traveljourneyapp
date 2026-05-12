@@ -2,6 +2,7 @@
 	import { onMount } from "svelte";
 	import "leaflet/dist/leaflet.css";
 	import PlaceholderIcon from "$lib/components/PlaceholderIcon.svelte";
+	import { MAP_TILE_URL, MAP_TILE_MAX_ZOOM, MAP_TILE_ATTRIBUTION } from "$lib/constants.js";
 
 	let { event } = $props();
 	let mapEl = $state();
@@ -21,9 +22,9 @@
 					zoomControl: true
 				}).setView([coordinates.lat, coordinates.lng], 13);
 
-				L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-					maxZoom: 19,
-					attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				L.tileLayer(MAP_TILE_URL, {
+					maxZoom: MAP_TILE_MAX_ZOOM,
+					attribution: MAP_TILE_ATTRIBUTION
 				}).addTo(map);
 
 				const icon = L.divIcon({

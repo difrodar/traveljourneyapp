@@ -1,6 +1,7 @@
 <script>
 	import EventCard from "$lib/components/EventCard.svelte";
 	import { rememberFilters, clearRememberedFilters } from "$lib/utils/filter-persistence.svelte.js";
+	import { SEARCH_DEBOUNCE_MS } from "$lib/constants.js";
 
 	let { data } = $props();
 	let filterForm = $state();
@@ -16,7 +17,7 @@
 
 	function submitSearch() {
 		clearTimeout(searchTimer);
-		searchTimer = setTimeout(submitFilters, 350);
+		searchTimer = setTimeout(submitFilters, SEARCH_DEBOUNCE_MS);
 	}
 
 	function handleClearFilters() {

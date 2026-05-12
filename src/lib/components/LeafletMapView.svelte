@@ -4,6 +4,7 @@
 	import "leaflet.markercluster/dist/MarkerCluster.css";
 	import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 	import LocationPinGrid from "./LocationPinGrid.svelte";
+	import { MAP_TILE_URL, MAP_TILE_MAX_ZOOM, MAP_TILE_ATTRIBUTION } from "$lib/constants.js";
 
 	let { locations = [], highlightedEventId = "", defaultWorldView = false } = $props();
 	let mapEl = $state();
@@ -83,9 +84,9 @@
 					map.setView(bounds[0], 12);
 				}
 
-				L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-					maxZoom: 19,
-					attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				L.tileLayer(MAP_TILE_URL, {
+					maxZoom: MAP_TILE_MAX_ZOOM,
+					attribution: MAP_TILE_ATTRIBUTION
 				}).addTo(map);
 
 				const clusters = L.markerClusterGroup({
