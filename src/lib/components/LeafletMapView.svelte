@@ -62,8 +62,15 @@
 		if (locations.length === 0) return;
 
 		let map;
-		Promise.all([import("leaflet"), import("leaflet.markercluster")])
-			.then(([{ default: L }]) => {
+		// leaflet.markercluster is a UMD plugin that reads `L` from global scope.
+		// Load Leaflet first, expose it on window, then load the plugin.
+		(async () => {
+			const { default: L } = await import("leaflet");
+			window.L = L;
+			await import("leaflet.markercluster");
+			return L;
+		})()
+			.then((L) => {
 				const highlightedLocation = locations.find((location) => location.id === highlightedLocationId && location.coordinates);
 				const mappedLocations = locations.filter((location) => location.coordinates);
 				if (mappedLocations.length === 0) {
@@ -123,7 +130,8 @@
 				}
 				map.addLayer(clusters);
 			})
-			.catch(() => {
+			.catch((error) => {
+				console.warn("LeafletMapView falling back to pinpoints:", error);
 				failed = true;
 			});
 
