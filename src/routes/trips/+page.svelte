@@ -125,7 +125,7 @@
 
 	.trip-card:hover {
 		transform: translateY(-2px);
-		border-color: #e9b77e;
+		border-color: var(--ghost-hover-border);
 	}
 
 	.trip-card-header {
@@ -135,7 +135,7 @@
 
 	.trip-card-header strong {
 		font-size: 1.12rem;
-		color: #402a1e;
+		color: var(--ink-strong);
 	}
 
 	.trip-card-header span {
@@ -146,7 +146,7 @@
 
 	.trip-description-text {
 		margin: 0;
-		color: #51453d;
+		color: var(--ink);
 		font-size: 0.95rem;
 		line-height: 1.4;
 	}

@@ -240,8 +240,8 @@
 		min-height: 100vh;
 		display: grid;
 		grid-template-columns: 240px minmax(0, 1fr);
-		background: #fffaf4;
-		color: #262321;
+		background: var(--paper);
+		color: var(--ink);
 	}
 
 	.event-sidebar {
@@ -251,8 +251,8 @@
 		display: grid;
 		grid-template-rows: auto 1fr auto;
 		gap: 28px;
-		border-right: 1px solid #e5d7c8;
-		background: rgba(255, 255, 255, 0.94);
+		border-right: 1px solid var(--line);
+		background: color-mix(in srgb, var(--panel) 94%, transparent);
 		padding: 42px 28px;
 	}
 
@@ -260,7 +260,7 @@
 		display: grid;
 		gap: 2px;
 		font-weight: 900;
-		color: #2d2927;
+		color: var(--ink-strong);
 	}
 
 	.side-brand b {
@@ -268,7 +268,7 @@
 	}
 
 	.side-brand small {
-		color: #8b8279;
+		color: var(--muted);
 		font-size: 0.78rem;
 	}
 
@@ -284,29 +284,29 @@
 		border: 0;
 		border-radius: 999px;
 		background: transparent;
-		color: #514c48;
+		color: var(--ink);
 		font-weight: 850;
 		text-align: left;
 		padding: 12px 16px;
 	}
 
 	.event-sidebar nav a.active {
-		background: #eadcf8;
-		color: #463460;
+		background: color-mix(in srgb, var(--cat-culture) 22%, transparent);
+		color: var(--cat-culture);
 	}
 
 	.event-sidebar nav a:hover,
 	.danger-link:hover {
-		background: #f3eee9;
+		background: var(--ghost-hover-bg);
 	}
 
 	.event-sidebar nav a.muted-link {
-		color: #a7a09a;
-		background: #f0eeee;
+		color: var(--muted);
+		background: var(--surface-raised);
 	}
 
 	.danger-link {
-		color: #b42318;
+		color: var(--danger-fg);
 	}
 
 	.event-detail {
@@ -427,7 +427,7 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.55fr);
 		gap: 24px;
-		background: #fff;
+		background: var(--panel);
 		padding: 28px;
 		border-radius: 0 0 8px 8px;
 		box-shadow: var(--shadow);
@@ -446,14 +446,14 @@
 	.after-panel,
 	.share-section,
 	.edit-section {
-		border: 1px solid #e5d7c8;
+		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #fffdf9;
+		background: var(--surface-input);
 		padding: 22px;
 	}
 
 	.lead-text {
-		color: #51453d;
+		color: var(--ink);
 		line-height: 1.7;
 		font-size: 1.04rem;
 	}
@@ -467,7 +467,7 @@
 
 	.detail-grid div {
 		border-radius: 8px;
-		background: #fff5e7;
+		background: var(--category-bg);
 		padding: 13px;
 	}
 
@@ -484,7 +484,7 @@
 	.detail-grid strong {
 		display: block;
 		margin-top: 5px;
-		color: #2d2927;
+		color: var(--ink-strong);
 	}
 
 	.friend-strip {
@@ -501,8 +501,8 @@
 
 	.friend-strip strong {
 		border-radius: 999px;
-		background: #eadcf8;
-		color: #463460;
+		background: color-mix(in srgb, var(--cat-culture) 22%, transparent);
+		color: var(--cat-culture);
 		padding: 8px 12px;
 	}
 
@@ -527,7 +527,7 @@
 		margin: 0;
 		border-radius: 8px;
 		overflow: hidden;
-		background: #f2e7dc;
+		background: var(--surface-raised);
 		scroll-snap-align: center;
 	}
 
@@ -569,18 +569,18 @@
 	}
 
 	.status.invited {
-		background: #fff0dc;
-		border-color: #f4c28e;
-		color: #a94724;
+		background: var(--category-bg);
+		border-color: var(--category-border);
+		color: var(--category-fg);
 	}
 
 	.reminder-badge {
 		display: inline-flex;
 		align-items: center;
-		border: 1px solid #b7dff0;
+		border: 1px solid var(--status-planned-border);
 		border-radius: 999px;
-		background: #eaf6fb;
-		color: #176b91;
+		background: var(--status-planned-bg);
+		color: var(--status-planned-fg);
 		font-size: 0.8rem;
 		font-weight: 900;
 		padding: 5px 10px;
@@ -589,10 +589,10 @@
 	.trip-badge {
 		display: inline-flex;
 		align-items: center;
-		border: 1px solid #efd5b6;
+		border: 1px solid var(--category-border);
 		border-radius: 999px;
-		background: #fff1dc;
-		color: #7a3f1d;
+		background: var(--category-bg);
+		color: var(--category-fg);
 		font-size: 0.8rem;
 		font-weight: 900;
 		padding: 5px 10px;
@@ -600,24 +600,24 @@
 	}
 
 	.trip-badge:hover {
-		border-color: #e9b77e;
-		background: #ffe5c2;
+		border-color: var(--ghost-hover-border);
+		background: var(--ghost-hover-bg);
 	}
 
 	.series-badge {
 		display: inline-flex;
 		align-items: center;
-		border: 1px solid #b8dfad;
+		border: 1px solid var(--status-completed-border);
 		border-radius: 999px;
-		background: #eef6e8;
-		color: #3c6f35;
+		background: var(--status-completed-bg);
+		color: var(--status-completed-fg);
 		font-size: 0.8rem;
 		font-weight: 900;
 		padding: 5px 10px;
 	}
 
 	.invitation-panel {
-		background: #fff7ec;
+		background: var(--surface-raised);
 	}
 
 	.invitation-actions {

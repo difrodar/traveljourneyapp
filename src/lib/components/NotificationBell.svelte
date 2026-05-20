@@ -157,7 +157,7 @@
 		height: 38px;
 		padding: 0 10px;
 		border-radius: 999px;
-		background: #fff7ec;
+		background: var(--surface-raised);
 		border: 1px solid var(--line);
 		color: var(--muted);
 		cursor: pointer;
@@ -165,8 +165,8 @@
 
 	.bell-button:hover,
 	.bell-button[aria-expanded="true"] {
-		border-color: #e9b77e;
-		background: #fff1dc;
+		border-color: var(--ghost-hover-border);
+		background: var(--ghost-hover-bg);
 		color: var(--ink);
 	}
 
@@ -189,7 +189,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		box-shadow: 0 0 0 2px rgba(255, 247, 236, 0.92);
+		box-shadow: 0 0 0 2px var(--paper);
 	}
 
 	.panel {
@@ -199,10 +199,10 @@
 		width: min(320px, calc(100vw - 32px));
 		max-height: 70vh;
 		overflow-y: auto;
-		background: #fffaf4;
+		background: var(--panel);
 		border: 1px solid var(--line);
 		border-radius: 12px;
-		box-shadow: 0 12px 32px rgba(126, 75, 38, 0.18);
+		box-shadow: var(--shadow-soft);
 		padding: 8px;
 		z-index: 30;
 	}
@@ -236,7 +236,7 @@
 
 	.row:hover,
 	.row:focus-visible {
-		background: #fff1dc;
+		background: var(--ghost-hover-bg);
 		outline: none;
 	}
 

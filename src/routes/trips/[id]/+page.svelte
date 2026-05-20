@@ -180,8 +180,8 @@
 	}
 
 	.danger:hover {
-		border-color: #b9442e;
-		color: #b9442e;
+		border-color: var(--danger-fg);
+		color: var(--danger-fg);
 	}
 
 	.trip-edit {
@@ -212,7 +212,7 @@
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		padding: 14px;
-		background: rgba(255, 250, 242, 0.82);
+		background: var(--empty-bg);
 		box-shadow: var(--shadow-soft);
 	}
 
@@ -268,7 +268,7 @@
 		padding: 12px 14px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #fff7ec;
+		background: var(--surface-raised);
 	}
 
 	.event-info,
@@ -286,24 +286,24 @@
 	}
 
 	.muted {
-		color: #9a7356;
+		color: var(--muted);
 	}
 
 	.status-pill {
 		display: inline-block;
 		border-radius: 999px;
-		border: 1px solid #b7dff0;
-		background: #eaf6fb;
-		color: #176b91;
+		border: 1px solid var(--status-planned-border);
+		background: var(--status-planned-bg);
+		color: var(--status-planned-fg);
 		padding: 1px 8px;
 		font-size: 0.78rem;
 		font-weight: 800;
 	}
 
 	.status-pill.completed {
-		border-color: #b8dfad;
-		background: #edf8e9;
-		color: #2f6f35;
+		border-color: var(--status-completed-border);
+		background: var(--status-completed-bg);
+		color: var(--status-completed-fg);
 	}
 
 	@media (max-width: 720px) {

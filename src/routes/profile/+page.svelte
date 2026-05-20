@@ -292,7 +292,7 @@
 		gap: 12px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #fff7ec;
+		background: var(--surface-raised);
 		padding: 12px 14px;
 	}
 
@@ -340,7 +340,7 @@
 		gap: 12px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #fff7ec;
+		background: var(--surface-raised);
 		padding: 13px;
 		transition:
 			transform 0.15s ease,
@@ -356,23 +356,23 @@
 	.action-card:hover,
 	.recent-row:hover {
 		transform: translateY(-1px);
-		border-color: #e9b77e;
-		background: #fff1dc;
+		border-color: var(--ghost-hover-border);
+		background: var(--ghost-hover-bg);
 	}
 
 	.recent-row small {
 		border-radius: 999px;
-		border: 1px solid #b7dff0;
-		background: #eaf6fb;
-		color: #176b91;
+		border: 1px solid var(--status-planned-border);
+		background: var(--status-planned-bg);
+		color: var(--status-planned-fg);
 		padding: 5px 10px;
 		font-weight: 900;
 	}
 
 	.recent-row small.completed {
-		border-color: #b8dfad;
-		background: #edf8e9;
-		color: #2f6f35;
+		border-color: var(--status-completed-border);
+		background: var(--status-completed-bg);
+		color: var(--status-completed-fg);
 	}
 
 	@media (max-width: 860px) {

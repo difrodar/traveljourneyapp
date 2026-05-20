@@ -112,7 +112,7 @@
 		display: inline-flex;
 		gap: 4px;
 		padding: 4px;
-		background: #fff7ec;
+		background: var(--surface-raised);
 		border: 1px solid var(--line);
 		border-radius: 999px;
 		width: fit-content;
@@ -143,7 +143,7 @@
 		color: white;
 		background:
 			linear-gradient(140deg, rgba(255, 255, 255, 0.18) 0 18%, transparent 18% 100%),
-			linear-gradient(145deg, #e75f43, #ef8f38 38%, #0f766e 100%);
+			linear-gradient(145deg, var(--coral), var(--accent) 38%, var(--brand) 100%);
 		box-shadow: var(--shadow);
 		position: relative;
 		overflow: hidden;
@@ -254,7 +254,7 @@
 	}
 
 	.share-feedback {
-		color: var(--palm, #2f6f35);
+		color: var(--palm);
 		font-weight: 800;
 	}
 </style>

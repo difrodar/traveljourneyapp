@@ -2,6 +2,7 @@
 	import { page } from "$app/state";
 	import Avatar from "$lib/components/Avatar.svelte";
 	import NotificationBell from "$lib/components/NotificationBell.svelte";
+	import ThemeToggle from "$lib/components/ThemeToggle.svelte";
 
 	let { user, notifications } = $props();
 
@@ -30,6 +31,7 @@
 			{#if notifications}
 				<NotificationBell {notifications} />
 			{/if}
+			<ThemeToggle current={user.themePreference} />
 			<a class="profile-link" class:active={page.url.pathname === "/profile"} href="/profile" aria-label="Open profile, signed in as {user.username}" title={user.username}>
 				<Avatar username={user.username} avatarUrl={user.avatarUrl} size={36} ariaHidden={true} />
 			</a>
@@ -50,17 +52,17 @@
 		justify-content: space-between;
 		gap: 18px;
 		padding: 13px max(16px, calc((100vw - 1180px) / 2));
-		background: rgba(255, 247, 236, 0.92);
+		background: color-mix(in srgb, var(--paper) 92%, transparent);
 		backdrop-filter: blur(16px);
-		border-bottom: 1px solid #edcfaa;
-		box-shadow: 0 8px 24px rgba(126, 75, 38, 0.08);
+		border-bottom: 1px solid var(--line);
+		box-shadow: var(--shadow-soft);
 	}
 
 	.brand {
 		display: grid;
 		gap: 1px;
 		font-weight: 900;
-		color: #43291a;
+		color: var(--ink-strong);
 	}
 
 	.brand b {
@@ -94,7 +96,7 @@
 	}
 
 	.logout-button {
-		background: #fff7ec;
+		background: var(--surface-raised);
 		border-color: var(--line);
 	}
 

@@ -16,7 +16,14 @@ function normalizeUsername(username) {
 }
 
 function publicUser(user) {
-	return user ? { id: user._id.toString(), username: user.username, avatarUrl: user.avatarUrl || null } : null;
+	return user
+		? {
+				id: user._id.toString(),
+				username: user.username,
+				avatarUrl: user.avatarUrl || null,
+				themePreference: user.themePreference === "dark" ? "dark" : "light"
+			}
+		: null;
 }
 
 function hashToken(token) {
@@ -46,6 +53,7 @@ async function ensureUser(username, password) {
 	await collections.users.insertOne({
 		username: normalizedUsername,
 		passwordHash: await hashPassword(password),
+		themePreference: "light",
 		createdAt: now,
 		updatedAt: now
 	});
@@ -104,6 +112,16 @@ export async function removeUserAvatar(userId) {
 	);
 }
 
+export async function setThemePreference(userId, theme) {
+	const normalized = theme === "dark" ? "dark" : "light";
+	const collections = await getCollections();
+	await collections.users.updateOne(
+		{ _id: ObjectId.isValid(userId) ? new ObjectId(userId) : userId },
+		{ $set: { themePreference: normalized, updatedAt: new Date() } }
+	);
+	return normalized;
+}
+
 export async function signup(username, password) {
 	const collections = await getCollections();
 	const normalizedUsername = normalizeUsername(username);
@@ -118,6 +136,7 @@ export async function signup(username, password) {
 		await collections.users.insertOne({
 			username: normalizedUsername,
 			passwordHash: await hashPassword(password),
+			themePreference: "light",
 			createdAt: now,
 			updatedAt: now
 		});

@@ -18,5 +18,8 @@ export async function handle({ event, resolve }) {
 		throw redirect(303, event.url.searchParams.get("redirectTo") || "/");
 	}
 
-	return resolve(event);
+	const theme = event.locals.user?.themePreference === "dark" ? "dark" : "light";
+	return resolve(event, {
+		transformPageChunk: ({ html }) => html.replace('data-theme="light"', `data-theme="${theme}"`)
+	});
 }

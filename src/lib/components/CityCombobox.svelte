@@ -106,10 +106,10 @@
 		gap: 4px;
 		max-height: 260px;
 		overflow-y: auto;
-		border: 1px solid rgba(36, 61, 72, 0.16);
+		border: 1px solid var(--line);
 		border-radius: 14px;
-		background: #fffaf1;
-		box-shadow: 0 18px 40px rgba(64, 47, 31, 0.16);
+		background: var(--panel);
+		box-shadow: var(--shadow-soft);
 		padding: 8px;
 	}
 
@@ -120,7 +120,7 @@
 		border: 0;
 		border-radius: 10px;
 		background: transparent;
-		color: #253044;
+		color: var(--ink);
 		text-align: left;
 		padding: 10px 12px;
 		cursor: pointer;
@@ -128,20 +128,20 @@
 
 	.city-menu button:hover,
 	.city-menu button:focus-visible {
-		background: rgba(248, 161, 126, 0.2);
+		background: var(--ghost-hover-bg);
 		outline: none;
 	}
 
 	.city-menu span {
-		color: #6b7280;
+		color: var(--muted);
 		font-size: 0.9rem;
 	}
 
 	.coordinate-note {
-		border: 1px dashed rgba(11, 111, 112, 0.28);
+		border: 1px dashed var(--empty-border);
 		border-radius: 12px;
-		background: rgba(255, 250, 241, 0.72);
-		color: #567;
+		background: var(--empty-bg);
+		color: var(--muted);
 		font-size: 0.92rem;
 		padding: 10px 12px;
 	}

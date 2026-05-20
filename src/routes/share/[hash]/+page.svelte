@@ -126,7 +126,7 @@
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		padding: 14px;
-		background: rgba(255, 250, 242, 0.82);
+		background: var(--empty-bg);
 		box-shadow: var(--shadow-soft);
 	}
 
@@ -187,7 +187,7 @@
 		gap: 18px;
 		border: 1px solid var(--line);
 		border-radius: 10px;
-		background: #fff;
+		background: var(--panel);
 		padding: 16px;
 		box-shadow: var(--shadow-soft);
 	}
@@ -230,7 +230,7 @@
 	}
 
 	.category {
-		background: #fff1dc;
+		background: var(--category-bg);
 		color: var(--brand-dark);
 		border-radius: 999px;
 		padding: 3px 10px;
@@ -238,7 +238,7 @@
 
 	.share-card h3 {
 		margin: 4px 0 2px;
-		color: #402a1e;
+		color: var(--ink-strong);
 	}
 
 	.memory {
@@ -271,7 +271,7 @@
 
 	.credit {
 		margin: 0;
-		color: #9a7356;
+		color: var(--muted);
 		font-size: 0.78rem;
 		font-weight: 700;
 	}

@@ -133,7 +133,7 @@
 		border: 1px solid var(--line);
 		border-radius: 999px;
 		padding: 6px 10px;
-		background: rgba(255, 247, 236, 0.8);
+		background: var(--surface-raised);
 		font-size: 0.86rem;
 	}
 

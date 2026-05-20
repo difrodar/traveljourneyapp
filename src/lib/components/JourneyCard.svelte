@@ -88,7 +88,7 @@
 		position: absolute;
 		right: 16px;
 		top: 16px;
-		color: rgba(122, 63, 29, 0.26);
+		color: color-mix(in srgb, var(--muted) 60%, transparent);
 		font-weight: 900;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
@@ -133,19 +133,19 @@
 	.media.food {
 		background:
 			linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 18%, transparent 18% 100%),
-			linear-gradient(135deg, var(--accent), #f97316);
+			linear-gradient(135deg, var(--accent), var(--coral));
 	}
 
 	.media.party {
 		background:
 			linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 18%, transparent 18% 100%),
-			linear-gradient(135deg, var(--rose), #7c3aed);
+			linear-gradient(135deg, var(--rose), var(--cat-culture));
 	}
 
 	.media.beach {
 		background:
 			linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 18%, transparent 18% 100%),
-			linear-gradient(135deg, var(--sky), #60a5fa);
+			linear-gradient(135deg, var(--sky), var(--brand));
 	}
 
 	.media.travel,
@@ -159,14 +159,14 @@
 	.media.culture {
 		background:
 			linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 18%, transparent 18% 100%),
-			linear-gradient(135deg, #8b5cf6, #c084fc);
+			linear-gradient(135deg, var(--cat-culture), var(--rose));
 	}
 
 	.media.education,
 	.media.study {
 		background:
 			linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0 18%, transparent 18% 100%),
-			linear-gradient(135deg, #2563eb, #38bdf8);
+			linear-gradient(135deg, var(--cat-education), var(--sky));
 	}
 
 	img {
@@ -191,13 +191,13 @@
 		display: grid;
 		gap: 3px;
 		border-radius: 8px;
-		background: #fff7ec;
-		border: 1px solid #efd5b6;
+		background: var(--surface-raised);
+		border: 1px solid var(--line);
 		padding: 10px;
 	}
 
 	.memory-list a:hover {
-		border-color: #e9b77e;
+		border-color: var(--ghost-hover-border);
 	}
 
 	.memory-list strong {
@@ -206,7 +206,7 @@
 	}
 
 	.memory-list span {
-		color: #51453d;
+		color: var(--ink);
 		line-height: 1.45;
 	}
 
@@ -222,7 +222,7 @@
 	.credit {
 		margin-top: 10px;
 		margin-bottom: 0;
-		color: #9a7356;
+		color: var(--muted);
 		font-size: 0.78rem;
 		font-weight: 700;
 	}

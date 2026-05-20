@@ -82,24 +82,24 @@
 	}
 
 	.status.invited {
-		background: #fff0dc;
-		border-color: #f4c28e;
-		color: #a94724;
+		background: var(--category-bg);
+		border-color: var(--category-border);
+		color: var(--category-fg);
 	}
 
 	.status.accepted {
-		background: #edf8e9;
-		border-color: #b8dfad;
-		color: #2f6f35;
+		background: var(--status-completed-bg);
+		border-color: var(--status-completed-border);
+		color: var(--status-completed-fg);
 	}
 
 	.event-card.culture::before {
-		background: #8b5cf6;
+		background: var(--cat-culture);
 	}
 
 	.event-card.education::before,
 	.event-card.study::before {
-		background: #2563eb;
+		background: var(--cat-education);
 	}
 
 	.event-card.outdoor::before {
@@ -187,8 +187,8 @@
 		width: fit-content;
 		margin-top: 10px;
 		border-radius: 999px;
-		background: #eef6e8;
-		color: #3c6f35;
+		background: var(--status-completed-bg);
+		color: var(--status-completed-fg);
 		font-size: 0.8rem;
 		font-weight: 900;
 		padding: 6px 10px;
@@ -197,8 +197,8 @@
 	.friends span {
 		border-radius: 999px;
 		padding: 5px 9px;
-		background: #fff1dc;
-		color: #7a3f1d;
+		background: var(--category-bg);
+		color: var(--category-fg);
 		font-weight: 800;
 		font-size: 0.8rem;
 	}

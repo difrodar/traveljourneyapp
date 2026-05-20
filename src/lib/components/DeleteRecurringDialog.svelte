@@ -72,7 +72,7 @@
 		z-index: 20;
 		display: grid;
 		place-items: center;
-		background: rgba(38, 35, 33, 0.48);
+		background: rgba(0, 0, 0, 0.55);
 		padding: 18px;
 	}
 
@@ -81,9 +81,9 @@
 		display: grid;
 		gap: 18px;
 		border-radius: 8px;
-		background: #fffdf9;
-		border: 1px solid #e5d7c8;
-		box-shadow: 0 24px 70px rgba(38, 35, 33, 0.24);
+		background: var(--panel);
+		border: 1px solid var(--line);
+		box-shadow: var(--shadow-hover);
 		padding: 24px;
 	}
 
@@ -102,9 +102,9 @@
 		grid-template-columns: auto 1fr;
 		gap: 10px;
 		align-items: start;
-		border: 1px solid #e5d7c8;
+		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #fff7ec;
+		background: var(--surface-raised);
 		padding: 12px;
 		cursor: pointer;
 	}
@@ -120,7 +120,7 @@
 	}
 
 	.delete-options strong {
-		color: #33251d;
+		color: var(--ink);
 	}
 
 	.delete-options small {

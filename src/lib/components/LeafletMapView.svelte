@@ -4,7 +4,13 @@
 	import "leaflet.markercluster/dist/MarkerCluster.css";
 	import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 	import LocationPinGrid from "./LocationPinGrid.svelte";
-	import { MAP_TILE_URL, MAP_TILE_MAX_ZOOM, MAP_TILE_ATTRIBUTION } from "$lib/constants.js";
+	import {
+		MAP_TILE_URL,
+		MAP_TILE_DARK_URL,
+		MAP_TILE_MAX_ZOOM,
+		MAP_TILE_ATTRIBUTION,
+		MAP_TILE_DARK_ATTRIBUTION
+	} from "$lib/constants.js";
 
 	let { locations = [], highlightedEventId = "", defaultWorldView = false } = $props();
 	let mapEl = $state();
@@ -62,6 +68,17 @@
 		if (locations.length === 0) return;
 
 		let map;
+		let tileLayer;
+		let themeObserver;
+
+		function buildTileLayer(L) {
+			const dark = document.documentElement.dataset.theme === "dark";
+			return L.tileLayer(dark ? MAP_TILE_DARK_URL : MAP_TILE_URL, {
+				maxZoom: MAP_TILE_MAX_ZOOM,
+				attribution: dark ? MAP_TILE_DARK_ATTRIBUTION : MAP_TILE_ATTRIBUTION
+			});
+		}
+
 		// leaflet.markercluster is a UMD plugin that reads `L` from global scope.
 		// Load Leaflet first, expose it on window, then load the plugin.
 		(async () => {
@@ -91,10 +108,14 @@
 					map.setView(bounds[0], 12);
 				}
 
-				L.tileLayer(MAP_TILE_URL, {
-					maxZoom: MAP_TILE_MAX_ZOOM,
-					attribution: MAP_TILE_ATTRIBUTION
-				}).addTo(map);
+				tileLayer = buildTileLayer(L).addTo(map);
+
+				themeObserver = new MutationObserver(() => {
+					if (!map) return;
+					map.removeLayer(tileLayer);
+					tileLayer = buildTileLayer(L).addTo(map);
+				});
+				themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
 				const clusters = L.markerClusterGroup({
 					showCoverageOnHover: false,
@@ -135,7 +156,10 @@
 				failed = true;
 			});
 
-		return () => map?.remove();
+		return () => {
+			themeObserver?.disconnect();
+			map?.remove();
+		};
 	});
 </script>
 
@@ -157,7 +181,7 @@
 		border: 1px solid var(--line);
 		box-shadow: var(--shadow);
 		overflow: hidden;
-		background: #dceee9;
+		background: var(--surface-raised);
 	}
 
 	:global(.triptales-pin) {
@@ -201,12 +225,12 @@
 	}
 
 	:global(.triptales-pin.culture) {
-		background: #8b5cf6;
+		background: var(--cat-culture);
 	}
 
 	:global(.triptales-pin.education),
 	:global(.triptales-pin.study) {
-		background: #2563eb;
+		background: var(--cat-education);
 	}
 
 	:global(.triptales-pin.outdoor) {
@@ -245,16 +269,16 @@
 		display: grid;
 		gap: 7px;
 		min-width: 220px;
-		color: #33251d;
+		color: var(--ink);
 	}
 
 	:global(.leaflet-popup-card > span) {
-		color: #7b6253;
+		color: var(--muted);
 		font-weight: 700;
 	}
 
 	:global(.leaflet-popup-card em) {
-		color: #a94724;
+		color: var(--category-fg);
 		font-size: 0.8rem;
 		font-style: normal;
 		font-weight: 800;
@@ -270,11 +294,11 @@
 		gap: 2px;
 		border-radius: 8px;
 		padding: 7px;
-		background: #fff7ec;
+		background: var(--surface-raised);
 	}
 
 	:global(.leaflet-popup-card a span) {
-		color: #7b6253;
+		color: var(--muted);
 		font-size: 0.8rem;
 	}
 

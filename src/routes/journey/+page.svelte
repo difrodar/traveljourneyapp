@@ -230,10 +230,10 @@
 	.share-warning {
 		margin: 12px 0;
 		padding: 10px 12px;
-		border: 1px solid #efd5b6;
-		background: #fff4e2;
+		border: 1px solid var(--notice-border);
+		background: var(--notice-bg);
 		border-radius: 8px;
-		color: #6a4324;
+		color: var(--notice-fg);
 		font-size: 0.9rem;
 	}
 
@@ -262,7 +262,7 @@
 
 	.share-error {
 		margin-top: 10px;
-		color: #b9442e;
+		color: var(--danger-fg);
 		font-weight: 800;
 	}
 
@@ -315,7 +315,7 @@
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		padding: 14px;
-		background: rgba(255, 250, 242, 0.82);
+		background: var(--empty-bg);
 		box-shadow: var(--shadow-soft);
 	}
 
@@ -368,7 +368,7 @@
 	}
 
 	.diary-highlight strong {
-		color: #402a1e;
+		color: var(--ink-strong);
 		font-size: 1.08rem;
 	}
 
@@ -381,7 +381,7 @@
 		gap: 4px;
 		margin-bottom: 14px;
 		padding: 4px;
-		background: #fff7ec;
+		background: var(--surface-raised);
 		border: 1px solid var(--line);
 		border-radius: 999px;
 	}

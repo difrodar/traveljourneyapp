@@ -35,8 +35,11 @@ export const AVATAR_MAX_BYTES = 1 * 1024 * 1024;
 export const AVATAR_ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export const MAP_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+export const MAP_TILE_DARK_URL = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 export const MAP_TILE_MAX_ZOOM = 19;
 export const MAP_TILE_ATTRIBUTION =
 	'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+export const MAP_TILE_DARK_ATTRIBUTION =
+	'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 export const SEARCH_DEBOUNCE_MS = 350;

@@ -193,15 +193,15 @@
 
 	.location-title h4 {
 		font-size: 1.08rem;
-		color: #402a1e;
+		color: var(--ink-strong);
 	}
 
 	.location-title > span {
 		flex: 0 0 auto;
 		border-radius: 999px;
 		padding: 5px 9px;
-		background: #fff0dc;
-		color: #a94724;
+		background: var(--category-bg);
+		color: var(--category-fg);
 		font-size: 0.78rem;
 		font-weight: 900;
 	}
@@ -219,12 +219,12 @@
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		padding: 10px;
-		background: rgba(255, 247, 236, 0.78);
+		background: var(--empty-bg);
 	}
 
 	.event-row.active {
 		border-color: var(--coral);
-		background: #fff0dc;
+		background: var(--category-bg);
 	}
 
 	.event-row strong,
@@ -244,7 +244,7 @@
 
 	.credit {
 		margin: 0;
-		color: #9a7356;
+		color: var(--muted);
 		font-size: 0.78rem;
 		font-weight: 700;
 	}

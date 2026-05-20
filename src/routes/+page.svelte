@@ -229,18 +229,18 @@
 		justify-content: center;
 		min-height: 34px;
 		margin-top: 10px;
-		border: 1px solid #b7dff0;
+		border: 1px solid var(--status-planned-border);
 		border-radius: 8px;
-		background: #eaf6fb;
-		color: #176b91;
+		background: var(--status-planned-bg);
+		color: var(--status-planned-fg);
 		font-size: 0.86rem;
 		font-weight: 900;
 		padding: 0 12px;
 	}
 
 	.current-month-button:hover {
-		border-color: #8ec8e0;
-		background: #dff1f8;
+		border-color: var(--sky);
+		background: color-mix(in srgb, var(--status-planned-bg) 80%, var(--sky));
 	}
 
 	.month-button {
@@ -250,15 +250,15 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		background: #fff7ec;
+		background: var(--surface-raised);
 		color: var(--ink);
 		font-weight: 900;
 		padding: 0 14px;
 	}
 
 	.month-button:hover {
-		border-color: #e9b77e;
-		background: #fff1dc;
+		border-color: var(--ghost-hover-border);
+		background: var(--ghost-hover-bg);
 	}
 
 	.weekday-row,
@@ -284,7 +284,7 @@
 		min-height: 154px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #fffdf8;
+		background: var(--surface-input);
 		display: grid;
 		align-content: start;
 		gap: 8px;
@@ -293,13 +293,13 @@
 	}
 
 	.calendar-day.outside {
-		background: rgba(255, 247, 236, 0.52);
-		color: #aa927e;
+		background: color-mix(in srgb, var(--surface-raised) 60%, transparent);
+		color: var(--muted);
 	}
 
 	.calendar-day.today {
 		border-color: var(--coral);
-		box-shadow: inset 0 0 0 2px rgba(231, 95, 67, 0.16);
+		box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--coral) 30%, transparent);
 	}
 
 	.day-heading {
@@ -323,8 +323,8 @@
 		min-width: 30px;
 		height: 30px;
 		border-radius: 999px;
-		background: #fff0dc;
-		color: #8a4a12;
+		background: var(--category-bg);
+		color: var(--category-fg);
 	}
 
 	.today .day-heading strong {
@@ -343,14 +343,14 @@
 		gap: 2px;
 		border-left: 4px solid var(--sky);
 		border-radius: 8px;
-		background: #eaf6fb;
+		background: var(--status-planned-bg);
 		padding: 7px;
 		min-width: 0;
 	}
 
 	.calendar-event.completed {
 		border-left-color: var(--palm);
-		background: #edf8e9;
+		background: var(--status-completed-bg);
 	}
 
 	.calendar-event strong,
@@ -359,7 +359,7 @@
 	}
 
 	.calendar-event strong {
-		color: #253044;
+		color: var(--ink-strong);
 		font-size: 0.88rem;
 		line-height: 1.2;
 	}
@@ -402,8 +402,8 @@
 		display: inline-block;
 		width: fit-content;
 		border-radius: 999px;
-		background: #fff0dc;
-		color: #8a4a12;
+		background: var(--category-bg);
+		color: var(--category-fg);
 		font-size: 0.74rem;
 		font-weight: 900;
 		text-transform: uppercase;
@@ -411,7 +411,7 @@
 	}
 
 	.memory-prompt-card strong {
-		color: #253044;
+		color: var(--ink-strong);
 		font-size: 1.02rem;
 		line-height: 1.25;
 		overflow-wrap: anywhere;
@@ -426,8 +426,8 @@
 	.memory-prompt-card .status-badge {
 		width: fit-content;
 		border-radius: 999px;
-		background: #fde7d6;
-		color: #a94724;
+		background: var(--category-bg);
+		color: var(--category-fg);
 		font-size: 0.72rem;
 		font-weight: 900;
 		text-transform: uppercase;
@@ -456,7 +456,7 @@
 		gap: 12px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #fff7ec;
+		background: var(--surface-raised);
 		padding: 13px;
 		transition:
 			transform 0.15s ease,
@@ -466,15 +466,15 @@
 
 	.reminder-row:hover {
 		transform: translateY(-1px);
-		border-color: #e9b77e;
-		background: #fff1dc;
+		border-color: var(--ghost-hover-border);
+		background: var(--ghost-hover-bg);
 	}
 
 	.reminder-date,
 	.reminder-badge {
 		border-radius: 8px;
-		background: #eaf6fb;
-		color: #176b91;
+		background: var(--status-planned-bg);
+		color: var(--status-planned-fg);
 		font-size: 0.82rem;
 		font-weight: 900;
 		padding: 8px 10px;
@@ -502,8 +502,8 @@
 	}
 
 	.reminder-badge {
-		background: #fff0dc;
-		color: #a94724;
+		background: var(--category-bg);
+		color: var(--category-fg);
 	}
 
 	@media (max-width: 900px) {

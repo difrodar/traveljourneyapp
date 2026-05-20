@@ -330,7 +330,7 @@
 
 	.field-label {
 		font-weight: 800;
-		color: #253044;
+		color: var(--ink-strong);
 	}
 
 	.media-fields {
@@ -369,7 +369,7 @@
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		padding: 8px;
-		background: #fffdf8;
+		background: var(--surface-input);
 		cursor: pointer;
 	}
 
@@ -381,8 +381,8 @@
 	}
 
 	.existing-image.marked-removed {
-		border-color: #ef4444;
-		background: #fff5f5;
+		border-color: var(--danger-fg);
+		background: var(--danger-bg);
 		opacity: 0.7;
 	}
 
@@ -419,14 +419,14 @@
 
 	.field-error {
 		margin: 0;
-		color: #b42318;
+		color: var(--danger-fg);
 		font-size: 0.88rem;
 		font-weight: 800;
 	}
 
 	input[aria-invalid="true"],
 	select[aria-invalid="true"] {
-		border-color: #ef4444;
-		background: #fff7f7;
+		border-color: var(--danger-fg);
+		background: var(--danger-bg);
 	}
 </style>

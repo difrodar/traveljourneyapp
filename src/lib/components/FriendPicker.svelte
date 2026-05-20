@@ -72,18 +72,18 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		border: 1px solid #d8bfa4;
+		border: 1px solid var(--category-border);
 		border-radius: 999px;
-		background: #fff7ec;
+		background: var(--surface-raised);
 		padding: 7px 11px;
-		color: #7a3f1d;
+		color: var(--category-fg);
 		font-weight: 900;
 	}
 
 	.user-option:has(input:checked) {
-		border-color: #b8dfad;
-		background: #edf8e9;
-		color: #2f6f35;
+		border-color: var(--status-completed-border);
+		background: var(--status-completed-bg);
+		color: var(--status-completed-fg);
 	}
 
 	.user-option input {
@@ -92,7 +92,7 @@
 
 	.field-error {
 		margin: 0;
-		color: #b42318;
+		color: var(--danger-fg);
 		font-size: 0.88rem;
 		font-weight: 800;
 	}

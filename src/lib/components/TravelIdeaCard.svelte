@@ -51,9 +51,9 @@
 	}
 
 	.topline strong {
-		color: #7a3f1d;
-		background: #fff1dc;
-		border: 1px solid #efc291;
+		color: var(--category-fg);
+		background: var(--category-bg);
+		border: 1px solid var(--category-border);
 		border-radius: 999px;
 		padding: 5px 10px;
 	}

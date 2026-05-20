@@ -111,9 +111,9 @@
 
 <style>
 	.after-panel {
-		border: 1px solid #e5d7c8;
+		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #fffdf9;
+		background: var(--panel);
 		padding: 22px;
 	}
 
@@ -125,15 +125,15 @@
 
 	.field-error {
 		margin: 0;
-		color: #b42318;
+		color: var(--danger-fg);
 		font-size: 0.88rem;
 		font-weight: 800;
 	}
 
 	input[aria-invalid="true"],
 	textarea[aria-invalid="true"] {
-		border-color: #ef4444;
-		background: #fff7f7;
+		border-color: var(--danger-fg);
+		background: var(--danger-bg);
 	}
 
 	.checkbox-field {
@@ -162,7 +162,7 @@
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		padding: 8px;
-		background: #fffdf8;
+		background: var(--surface-input);
 		cursor: pointer;
 	}
 
@@ -174,8 +174,8 @@
 	}
 
 	.existing-image.marked-removed {
-		border-color: #ef4444;
-		background: #fff5f5;
+		border-color: var(--danger-fg);
+		background: var(--danger-bg);
 		opacity: 0.7;
 	}
 
@@ -194,19 +194,19 @@
 	.memory-card {
 		margin-top: 16px;
 		border-radius: 8px;
-		background: #fff5e7;
-		border: 1px solid #efd5b6;
+		background: var(--category-bg);
+		border: 1px solid var(--category-border);
 		padding: 15px;
 	}
 
 	.memory-card span {
-		color: #a94724;
+		color: var(--category-fg);
 		font-weight: 900;
 	}
 
 	.memory-card p {
 		margin: 8px 0 0;
-		color: #51453d;
+		color: var(--ink);
 		line-height: 1.55;
 	}
 </style>
