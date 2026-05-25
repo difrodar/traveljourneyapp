@@ -327,8 +327,6 @@ async function main() {
 		})
 	);
 
-	await step("avatar upload", () => uploadAvatar(anna));
-
 	console.log("\n[3/4] demo_max creates an event and invites demo_anna");
 	await step("invited event: Vegas weekend (May 22)", () =>
 		createEvent(max, {
