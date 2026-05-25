@@ -52,7 +52,7 @@ Die Durchführung erfolgt phasenbasiert; dokumentieren Sie die wichtigsten Ergeb
 ### 3.3 Decide
 - **Gewählte Variante & Begründung:** Gewählt wurde eine Workflow-App mit klarer Navigation: Dashboard, Events, Journey, Map und Ideas. Diese Struktur erfüllt die Anforderungen an mehrere Pages, echte Workflows, Datenbankzugriff und Erweiterbarkeit.
 - **End-to-End-Ablauf:** Neues Event erstellen, Freunde hinzufügen, Location speichern, Event später bearbeiten, als completed markieren, Erinnerung und optionales Memory-Bild ergänzen, Journey ansehen, Ort auf Map prüfen. Reiseideen können separat gesammelt und in Events umgewandelt werden.
-- **Mockup:** [Figma Mockup öffnen](https://www.figma.com/proto/QjCqbU6N3ms9HmgKBY52by/Untitled?node-id=0-1&t=T9Gqfs193p5fLFTv-1). Das Figma-Mockup zeigt die initialen Wireframes für Dashboard, Event-Erstellung und Journey-Ansicht. Die finale UI folgt dieser Struktur und weicht in Detailebene auf Basis der Usability-Test-Erkenntnisse ab (siehe [§3.5](#35-validate)). Screenshots der fertigen App sind im Kapitel [§3.4](#34-prototype) sowie pro Erweiterung in [§4](#4-erweiterungen-optional) eingebettet.
+- **Mockup:** <a href="https://www.figma.com/proto/QjCqbU6N3ms9HmgKBY52by/Untitled?node-id=0-1&t=T9Gqfs193p5fLFTv-1" target="_blank" rel="noopener noreferrer">Figma Mockup öffnen ↗</a>. Das Figma-Mockup zeigt die initialen Wireframes für Dashboard, Event-Erstellung und Journey-Ansicht. Die finale UI folgt dieser Struktur und weicht in Detailebene auf Basis der Usability-Test-Erkenntnisse ab (siehe [§3.5](#35-validate)). Screenshots der fertigen App sind im Kapitel [§3.4](#34-prototype) sowie pro Erweiterung in [§4](#4-erweiterungen-optional) eingebettet.
 
 - **Entscheidungsmatrix Technologie & Datenhaltung:** Drei realistische Umsetzungsvarianten wurden gewichtet bewertet (Skala 0–3 pro Kriterium, Score = Wert × Gewicht).
 
@@ -155,15 +155,18 @@ flowchart TB
 
     subgraph SvelteKit["SvelteKit Server Layer"]
         Hooks["hooks.server.js<br/>Auth-Guard + Theme-SSR"]
-        Loads["+page.server.js<br/>load() & actions"]
-        API["+server.js Endpoints<br/>/api/theme, /share/[hash]"]
+        Loads["+page.server.js<br/>load() & form actions<br/>(inkl. /share/[hash])"]
+        API["+server.js Endpoints<br/>/api/theme, /logout,<br/>/events/[id]/ics"]
+        Auth["auth.js<br/>Sessions, Passwörter,<br/>Theme-Preference"]
     end
 
     subgraph Repos["Repository Layer (src/lib/server/repositories)"]
         Shared["shared.js<br/>Upload-Validation,<br/>Serializers"]
         Events["events.js<br/>CRUD, Recurrence,<br/>Invitations"]
-        Journey["journey.js<br/>Memories, Trips,<br/>Shares"]
+        Journey["journey.js<br/>Memories"]
+        Trips["trips.js<br/>Trip-Entitäten +<br/>Event-Zuordnung"]
         Ideas["ideas.js<br/>Travel Ideas +<br/>Convert-to-Event"]
+        Shares["shares.js<br/>Read-only<br/>Share-Links"]
         Seed["seed.js<br/>Demo + Sample Data"]
     end
 
@@ -181,22 +184,30 @@ flowchart TB
     Pages -->|Form Submit| Loads
     Pages -->|Fetch JSON| API
     Pages -->|Initial Load| Hooks
+    Hooks --> Auth
     Hooks --> Loads
     Loads --> Events
     Loads --> Journey
+    Loads --> Trips
     Loads --> Ideas
+    Loads --> Shares
+    API --> Auth
     API --> Events
     Events --> Shared
     Journey --> Shared
+    Trips --> Shared
     Ideas --> Shared
+    Shares --> Shared
+    Auth --> Users
+    Auth --> Sessions
     Events --> EventsC
     Events --> Locations
     Journey --> JourneyC
-    Journey --> TripsC
-    Journey --> SharesC
+    Trips --> TripsC
+    Trips --> EventsC
     Ideas --> IdeasC
-    Hooks --> Users
-    Hooks --> Sessions
+    Shares --> SharesC
+    Shares --> JourneyC
     Seed --> Users
     Seed --> EventsC
 
@@ -205,8 +216,8 @@ flowchart TB
     classDef repo fill:#e8f5e9,stroke:#2e7d32,color:#1b3c1e
     classDef db fill:#f3e5f5,stroke:#6a1b9a,color:#311b3b
     class Pages client
-    class Hooks,Loads,API server
-    class Shared,Events,Journey,Ideas,Seed repo
+    class Hooks,Loads,API,Auth server
+    class Shared,Events,Journey,Trips,Ideas,Shares,Seed repo
     class Users,Sessions,EventsC,Locations,JourneyC,TripsC,IdeasC,SharesC db
 ```
 
