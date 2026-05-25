@@ -39,17 +39,33 @@ Beschreibt die Lösungsidee.
 Die Durchführung erfolgt phasenbasiert; dokumentieren Sie die wichtigsten Ergebnisse je Phase.
 
 ### 3.1 Understand & Define
-- **Zielgruppenverständnis:** Proto-Persona: Austauschstudentin in San Diego, 22 Jahre, plant Aktivitäten mit wechselnden Freundesgruppen, möchte Orte und Erinnerungen nicht über mehrere Apps zusammensuchen. Problemraumanalyse: Planung, Location-Infos, soziale Abstimmung und persönliche Erinnerungen sind normalerweise getrennt.
+- **Zielgruppenverständnis:** Zwei priorisierte Personas leiten Feature-Entscheidungen — **Dario, 24, Wirtschaftsinformatik-Student vor Austauschsemester in San Diego** (Primary, definiert den MVP) und **Marco, 29, Berufseinsteiger mit Reise-Affinität** (Secondary, motiviert die Erweiterungen 4.1, 4.9 und 4.10). Detaillierte Persona-Profile mit Hintergrund, Zielen, Pain Points und Zitaten siehe [`docs/personas.md`](docs/personas.md).
+- **Problemraumanalyse:** Planung, Location-Infos, soziale Abstimmung und persönliche Erinnerungen sind normalerweise über Google Calendar, Maps, Instagram, Notion und WhatsApp verteilt. TripTales bündelt diese vier Bereiche in einer App. Die End-to-End-Lebenszyklus-Analyse mit As-Is- vs. To-Be-Mapping liegt unter [`docs/methods/user-journey-map.md`](docs/methods/user-journey-map.md); der Vergleich gegen existierende Lösungen (Polarsteps, Google Calendar, Notion, Wanderlog) unter [`docs/methods/competitive-analysis.md`](docs/methods/competitive-analysis.md).
 - **Wesentliche Erkenntnisse:** Zentrale Workflows müssen schnell erreichbar sein. Events brauchen Status, Freunde und Location. Erinnerungen sollen direkt nach dem Event ergänzt werden können. Eine visuelle Ortsübersicht erzeugt Mehrwert, darf aber den Prototyp nicht destabilisieren.
 
 ### 3.2 Sketch
 - **Variantenüberblick:** Variante A war dashboard-zentriert mit schnellen Kennzahlen. Variante B war map-zentriert mit Orten als Einstieg. Variante C war journey-zentriert mit Erinnerungen als Hauptnavigation. Entschieden wurde eine kombinierte App: Dashboard als Einstieg, Events als Arbeitsbereich, Journey und Map als Rückblick/Orientierung.
-- **Skizzen:** Platzhalter für Skizzen: `docs/sketch-dashboard.png`, `docs/sketch-event-flow.png`, `docs/sketch-map-journey.png`. Unterschiede: Dashboard priorisiert Überblick, Event-Flow priorisiert CRUD, Map/Journey priorisieren Erlebnisse nach Ort und Zeit.
+- **Methode Crazy-8s:** Als Ideenfindungstechnik wurde die Crazy-8s-Methode aus dem Design Sprint (Jake Knapp) verwendet — acht Skizzen einer Lösungsidee in acht Minuten. Ziel ist nicht Polish, sondern Variantenbreite. Die handgezeichneten Ergebnisse liegen unter [`docs/sketches/Crazy8s.pdf`](docs/sketches/Crazy8s.pdf).
+- **Inhalt der 8 Panels:** 1) Hamburger-Navigation mit Home/Map/Events/Create-New. 2) Dashboard mit vier grossen Einstiegs-Kacheln (Calendar, Map, Events, New). 3) Map-Ansicht mit Pinpoints und Datumsfilter. 4) Kalender-Tagesansicht mit Zeitslots. 5) Event-Erstellungs-Formular mit Typ (School/Private/Work), Beschreibung, Zeitraum und Zusatzinfo. 6) Event-Dokumentation als Life-/Travel-Journey mit Bildern. 7) Event-History mit Ortsfilter und Eventliste. 8) Einladungs-Flow direkt aus dem Event heraus. Bereits hier wurde die zentrale Designentscheidung sichtbar: Freunde-Einladung als integrierter Schritt des Event-Erstellens, nicht als separater Workflow.
+- **Übergang zum Mockup:** Aus den Crazy-8s entstand parallel eine KI-promptbasierte High-Fidelity-Variante (Seite 2 der PDF), die die Sketches in eine konkrete Bildsprache übersetzte und die Brücke zum [Figma-Mockup in §3.3](#33-decide) schlug.
 
 ### 3.3 Decide
 - **Gewählte Variante & Begründung:** Gewählt wurde eine Workflow-App mit klarer Navigation: Dashboard, Events, Journey, Map und Ideas. Diese Struktur erfüllt die Anforderungen an mehrere Pages, echte Workflows, Datenbankzugriff und Erweiterbarkeit.
 - **End-to-End-Ablauf:** Neues Event erstellen, Freunde hinzufügen, Location speichern, Event später bearbeiten, als completed markieren, Erinnerung und optionales Memory-Bild ergänzen, Journey ansehen, Ort auf Map prüfen. Reiseideen können separat gesammelt und in Events umgewandelt werden.
-- **Mockup:** Platzhalter Figma-Link: `[Figma-Link ergänzen]`. Platzhalter Screenshots: `docs/screenshot-dashboard.png`, `docs/screenshot-event-detail.png`, `docs/screenshot-journey.png`, `docs/screenshot-map.png`.
+- **Mockup:** [Figma Mockup öffnen](https://www.figma.com/proto/QjCqbU6N3ms9HmgKBY52by/Untitled?node-id=0-1&t=T9Gqfs193p5fLFTv-1). Das Figma-Mockup zeigt die initialen Wireframes für Dashboard, Event-Erstellung und Journey-Ansicht. Die finale UI folgt dieser Struktur und weicht in Detailebene auf Basis der Usability-Test-Erkenntnisse ab (siehe [§3.5](#35-validate)). Screenshots der fertigen App sind im Kapitel [§3.4](#34-prototype) sowie pro Erweiterung in [§4](#4-erweiterungen-optional) eingebettet.
+
+- **Entscheidungsmatrix Technologie & Datenhaltung:** Drei realistische Umsetzungsvarianten wurden gewichtet bewertet (Skala 0–3 pro Kriterium, Score = Wert × Gewicht).
+
+  | Kriterium (Gewicht) | A: Mock-App ohne Backend | B: SvelteKit + LocalStorage | C: SvelteKit + MongoDB |
+  |---|:---:|:---:|:---:|
+  | Datenpersistenz über Sessions (3) | 1 (3) | 2 (6) | 3 (9) |
+  | Multi-User-Fähigkeit für Friend-Invites (3) | 0 (0) | 0 (0) | 3 (9) |
+  | Erweiterbarkeit für 11 Erweiterungen (2) | 1 (2) | 2 (4) | 3 (6) |
+  | Time-to-MVP (2) | 3 (6) | 3 (6) | 2 (4) |
+  | Lernkurve / Setup-Aufwand (1) | 3 (3) | 2 (2) | 2 (2) |
+  | **Gewichteter Score** | **14** | **18** | **30** |
+
+  Variante C wurde gewählt, weil Multi-User-Fähigkeit (Friend-Invitations, Share-Links) und persistente Daten zentrale Anforderungen sind und Varianten A und B daran scheitern. Der höhere Setup-Aufwand wurde durch die echten Sessions, das Owner-Scoping pro `userId` und die freie Erweiterbarkeit kompensiert.
 
 - **Navigationsdiagramm:** Das folgende Mermaid-Diagramm beschreibt die zentrale Navigation und die wichtigsten Page-Wechsel.
 
@@ -91,6 +107,32 @@ Beschreibt die Gestaltung und Interaktion.
 - **Usability-Iteration:** Die Listenansichten wurden um klarere Filter- und Sortiermöglichkeiten erweitert. Events können nach Suche, Status, Kategorie und Zeitraum eingegrenzt sowie nach Datum oder letzter Bearbeitung sortiert werden. Journey-Memories können nach Suche, Kategorie und Zeitraum gefiltert sowie chronologisch gruppiert werden. Filteränderungen werden direkt angewendet; die Suche nutzt eine kurze Verzögerung, damit die Liste nicht bei jedem Tastendruck sofort neu lädt.
 - **Designentscheidungen:** Nach einem ersten Review wurde der zunächst eher kühle und funktionale Look in Richtung **Warm Travel** weiterentwickelt. Die Gestaltung nutzt San-Diego-inspirierte Sunset-, Sand-, Ocean- und Palm-Farben, wärmere Flächen, Kategorie-Akzente sowie Postcard-/Ticket-Anmutungen für Journey, Events und Reiseideen. In einer weiteren Designiteration wurde das Dashboard bildreicher gestaltet: Hero-Collage, visueller Journey-Streifen und ein dezenter statischer Map-/Postcard-Hintergrund machen die App emotionaler. San Diego bleibt der konkrete Semester-Kontext, die Sprache und Timeline sind aber bewusst globaler formuliert, damit Events weltweit möglich sind. Die Map wurde anschliessend von einer flachen Ortsliste zu einer strukturierten Reiseübersicht weiterentwickelt: Land, Stadt, konkrete Location und die zugehörigen Events sind nun gemeinsam sichtbar. Vergangene Events ohne gespeicherte Memory werden ab dem Folgetag in einer „Add memories"-Sektion oben auf dem Dashboard angeboten — sowohl noch nicht als besucht markierte als auch bereits abgeschlossene ohne Memory; ein Klick öffnet das Event mit fokussiertem Memory-Feld, und das Speichern markiert das Event in einem Schritt als besucht und legt die Memory an.
 
+- **Screenshots der fertigen App:** Die folgenden Screenshots zeigen die Kern-Workflows aus dem Mindestumfang. Erweiterungs-spezifische Screens sind jeweils in der entsprechenden Sektion in [§4](#4-erweiterungen-optional) eingebettet.
+
+  ![Login und Registrierung](docs/screenshots/01-login.png)
+  **Login & Registrierung.** Hinter dem Hero-Visual stehen zwei parallele Formulare. Anmeldungen prüfen Username und Passwort gegen scrypt-Hashes, neue Accounts werden mit minimaler Validierung (3–32 Zeichen Username, 8+ Zeichen Passwort) angelegt. Sessions werden als HttpOnly-Cookies geführt.
+
+  ![Dashboard mit Kalender](docs/screenshots/02-dashboard_1.png)
+  **Dashboard — oberer Bereich.** Einstiegsseite nach dem Login. Der orange Streifen "You have 1 pending invitation →" weist auf eine offene Einladung hin. Der Monatskalender (May 2026) zeigt alle Events des aktuellen Monats farblich nach Kategorie inklusive Status, Titel und Ort. Über "Next/Prev" navigiert man zwischen Monaten.
+
+  ![Dashboard mit Memory- und Upcoming-Bereich](docs/screenshots/02-dashboard_2.png)
+  **Dashboard — Aktionsbereich.** Direkt unter dem Kalender erinnert „Add memories" an vergangene Events ohne gespeicherte Erinnerung, „Upcoming soon" zeigt die nächsten geplanten Termine, und „Journey highlights" die zuletzt festgehaltenen Memories mit Vorschau-Bild und Auszug.
+
+  ![Event-Formular mit Wiederholungen](docs/screenshots/03-event-form.png)
+  **Event erstellen — Formular mit Wiederholungen.** Pflichtfelder Titel, Kategorie und Datum stehen oben. Die City-Combobox liefert echte Koordinaten für die Kartenpins. Im aufgeklappten Wiederholungs-Block lässt sich z. B. eine wöchentliche Serie über 4 Termine anlegen, die beim Speichern als verknüpfte Einzeltermine entstehen (Erweiterung [§4.9](#49-wiederkehrende-events)).
+
+  ![Event-Liste mit Filtern](docs/screenshots/04-events-list.png)
+  **Event-Liste mit Filtern.** Volltextsuche, Status- und Kategorie-Dropdown sowie Datumsbereich filtern die Karten live. Jede Karte zeigt Cover, Kategorie-Badge, Datum, Ort und Status; ein Klick führt zur Detailansicht.
+
+  ![Event-Detail mit Hero-Bild](docs/screenshots/05-event-detail.png)
+  **Event-Detail mit Hero-Bild und Aktionen.** Der Hero zeigt das erste Foto in voller Breite. Darunter befinden sich Status- und Kategorie-Badges, Titel, Datum und Ort, ein Beschreibungsblock sowie Aktionen für Bearbeiten, Teilen und Kalender-Export. Bei mehreren Bildern erscheint eine Galerie als horizontaler Swipe-Streifen.
+
+  ![Memory-Formular nach Event](docs/screenshots/08-memory-form.png)
+  **Memory-Formular nach abgeschlossenem Event.** Im Bereich „After the event" trägt man Erinnerungstext und bis zu fünf weitere Fotos ein. Beim Speichern wechselt der Event-Status auf „Completed" und der Eintrag wird Teil der persönlichen Journey.
+
+  ![Journey-Timeline](docs/screenshots/09-journey.png)
+  **Journey-Timeline mit Memory-Cards.** Alle abgeschlossenen Events mit Erinnerungen erscheinen als visuelle Zeitleiste — wahlweise nach Monat oder nach Reise gruppiert. Such-, Kategorie- und Datumsfilter wirken hier identisch zur Event-Liste.
+
 #### 3.4.2. Umsetzung (Technik)
 Fasst die technische Realisierung zusammen.
 - **Technologie-Stack:** SvelteKit mit Svelte 5, JavaScript/TypeScript-nahe Modulstruktur, MongoDB Atlas mit offiziellem Node.js Driver, Netlify Adapter, Leaflet mit OpenStreetMap-Kartenkacheln.
@@ -102,6 +144,73 @@ Fasst die technische Realisierung zusammen.
 - **Deployment:** Netlify URL: https://triptales-difrodar.netlify.app/. Benötigte Netlify Environment Variables: `MONGODB_URI`, `MONGODB_DB=triptales`. Lokal kann dieselbe Verbindung über eine nicht versionierte `.env` gesetzt werden; `.env.example` dokumentiert die benötigten Variablen.
 - **Dark Mode & Theming:** Die App nutzt eine Token-basierte Theming-Strategie. Sämtliche Farben sind in `src/app.css` als CSS-Custom-Properties unter `:root` definiert; ein paralleler `:root[data-theme="dark"]`-Block überschreibt sie für den dunklen Modus. Das `data-theme`-Attribut sitzt am `<html>`-Element (`src/app.html`) und wird serverseitig in `src/hooks.server.js` per `transformPageChunk` aus dem User-Feld `themePreference` injiziert — dadurch entsteht beim ersten Paint kein Flash. Persistiert wird die Wahl pro Account in der `users`-Collection; der Toggle (`ThemeToggle.svelte`) ruft den POST-Endpoint `/api/theme` auf und aktualisiert die DOM-Wurzel optimistisch. Die Leaflet-Karte wechselt im dunklen Modus auf einen passenden CARTO-Tile-Layer und beobachtet das `data-theme`-Attribut per `MutationObserver`.
 - **Besondere Entscheidungen:** Der MongoDB Connection String wird nicht im Repository gespeichert. Die Map nutzt Leaflet und OpenStreetMap, damit keine Google-Maps-Lizenz oder kein API-Key notwendig ist. Die Map gruppiert Orte nach Land und Stadt und zeigt darunter die verknüpften Events, damit konkrete Locations wie Golden Gate Bridge oder Griffith Observatory klarer sind als reine Stadtmarker. Überlappende Pins werden über `leaflet.markercluster` zu einem Cluster mit Anzahl-Badge zusammengefasst, der beim Klick aufklappt; Filteränderungen passen den Kartenausschnitt automatisch an die gefilterten Events an. Beim ersten Serverstart werden die Prototype-Accounts `difrodar`/`difrodar` und `dummy`/`dummy` angelegt; bestehende Daten ohne `userId` werden `difrodar` zugewiesen, während `dummy` leer startet. Falls die Datenbank leer ist, werden Demo-Daten nur für `difrodar` erzeugt. Bestehende MongoDB-Daten können non-destruktiv per Upsert-Script ergänzt oder präzisiert werden. Für Bilder nutzt die App einerseits echte, lizenzierte Wikimedia-Commons-Fotos als Fallback und andererseits eigene Uploads für Event-Cover und Journey-Memories. Uploads sind bewusst auf JPG, PNG, WebP oder GIF bis 2 MB pro Bild begrenzt; pro Event/Memory können bis zu 5 Bilder mit insgesamt höchstens 9 MB hinzugefügt werden, damit die Dokumente sicher unter dem MongoDB BSON-Limit von 16 MB bleiben. Falls für einen unbekannten Ort kein spezifisches Bild vorhanden ist, nutzt die App einen neutralen Travel-/Roadtrip-Fallback statt ein falsches Stadtbild. Auch Kategorie-Fallbacks wie `Sightseeing` sind bewusst neutral gehalten, damit konvertierte Travel Ideas nicht fälschlich ein San-Francisco-/Golden-Gate-Bild erhalten.
+
+- **Architektur-Übersicht:** Das folgende Diagramm zeigt die Schichten der Anwendung und wie Routes, Form Actions, Repository-Funktionen und MongoDB-Collections zusammenspielen. Server-Code (`src/lib/server/**`) ist strikt vom Client getrennt; die Repositories kapseln jede Datenoperation hinter `userId`-Scoping.
+
+```mermaid
+flowchart TB
+    subgraph Client["Browser / Client"]
+        Pages["+page.svelte / Components<br/><br/>EventForm, EventCard,<br/>FriendPicker, LeafletMapView,<br/>SharePreview, ThemeToggle"]
+    end
+
+    subgraph SvelteKit["SvelteKit Server Layer"]
+        Hooks["hooks.server.js<br/>Auth-Guard + Theme-SSR"]
+        Loads["+page.server.js<br/>load() & actions"]
+        API["+server.js Endpoints<br/>/api/theme, /share/[hash]"]
+    end
+
+    subgraph Repos["Repository Layer (src/lib/server/repositories)"]
+        Shared["shared.js<br/>Upload-Validation,<br/>Serializers"]
+        Events["events.js<br/>CRUD, Recurrence,<br/>Invitations"]
+        Journey["journey.js<br/>Memories, Trips,<br/>Shares"]
+        Ideas["ideas.js<br/>Travel Ideas +<br/>Convert-to-Event"]
+        Seed["seed.js<br/>Demo + Sample Data"]
+    end
+
+    subgraph DB["MongoDB Atlas"]
+        Users["users"]
+        Sessions["sessions"]
+        EventsC["events"]
+        Locations["locations"]
+        JourneyC["journeyEntries"]
+        TripsC["trips"]
+        IdeasC["travelIdeas"]
+        SharesC["shares"]
+    end
+
+    Pages -->|Form Submit| Loads
+    Pages -->|Fetch JSON| API
+    Pages -->|Initial Load| Hooks
+    Hooks --> Loads
+    Loads --> Events
+    Loads --> Journey
+    Loads --> Ideas
+    API --> Events
+    Events --> Shared
+    Journey --> Shared
+    Ideas --> Shared
+    Events --> EventsC
+    Events --> Locations
+    Journey --> JourneyC
+    Journey --> TripsC
+    Journey --> SharesC
+    Ideas --> IdeasC
+    Hooks --> Users
+    Hooks --> Sessions
+    Seed --> Users
+    Seed --> EventsC
+
+    classDef client fill:#e0f2ff,stroke:#1d76db,color:#0a3a66
+    classDef server fill:#fff0dc,stroke:#e75f43,color:#33251d
+    classDef repo fill:#e8f5e9,stroke:#2e7d32,color:#1b3c1e
+    classDef db fill:#f3e5f5,stroke:#6a1b9a,color:#311b3b
+    class Pages client
+    class Hooks,Loads,API server
+    class Shared,Events,Journey,Ideas,Seed repo
+    class Users,Sessions,EventsC,Locations,JourneyC,TripsC,IdeasC,SharesC db
+```
+
+Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugreift und dass jede Repository-Funktion `userId` als Pflichtparameter führt. Form Actions liefern strukturierte Fehler-Envelopes zurück, die das Frontend feldnah anzeigt.
 
 ### 3.5 Validate
 - **URL der getesteten Version** (separat deployt): https://triptales-difrodar.netlify.app/
@@ -147,12 +256,23 @@ Dokumentiert Erweiterungen über den Mindestumfang hinaus.
 - **Wo umgesetzt:** Frontend und Actions in `/ideas`, Datenbank-Collection `travelIdeas`, Conversion über serverseitige Repository-Funktion.
 - **Referenz:** Siehe `/ideas` und Abschnitt 3.4.2.
 - **Aus Evaluation abgeleitet?:** Nein, initiale Erweiterung aus Projektidee.
+- **Screenshot:**
+
+  ![Travel-Ideas mit Convert-to-Event](docs/screenshots/12-ideas.png)
+  **Travel-Ideas mit Convert-to-Event.** Spontane Reiseideen werden mit Titel, Stadt, Kategorie, Priorität und Notizen gespeichert. Wenn die Idee konkret wird, übernimmt „Convert to event" alle bekannten Felder ins Event-Formular — nur das Datum muss noch ergänzt werden.
 
 ### 4.2 OpenStreetMap mit Pinpoint-Fallback
 - **Beschreibung & Nutzen:** Locations werden auf einer interaktiven Leaflet/OpenStreetMap-Karte angezeigt. Zusätzlich bleibt die Seite über eine gruppierte Pinpoint-/Event-Liste nutzbar. Die Map ist nach Land, Stadt, konkretem Ort und zugehörigen Events strukturiert.
 - **Wo umgesetzt:** `LeafletMapView`, `LocationPinGrid` und `EventMapPanel`, Daten aus `locations` und den verknüpften `events`.
 - **Referenz:** Siehe `/map`.
 - **Aus Evaluation abgeleitet?:** Nein, technische Absicherung für stabilen Prototyp.
+- **Screenshots:**
+
+  ![World Map mit Markern und Filtern](docs/screenshots/11-map_1.png)
+  **Karte mit Markern und Filtern.** Die Leaflet-Karte zeigt alle Orte mit Koordinaten als Pins; bei vielen Pins bündelt die App sie automatisch zu Clustern. Filter für Status, Kategorie und Datumsbereich wirken gleichzeitig auf Marker und Liste.
+
+  ![Pinpoint-Fallback-Liste](docs/screenshots/11-map_2.png)
+  **Pinpoint-Fallback-Liste.** Direkt unter der Karte zeigt eine hierarchische Liste alle Orte nach Land → Stadt → konkretem Ort gruppiert, jeweils mit Foto, Koordinaten und verknüpften Events. So bleibt die Seite auch dann navigierbar, wenn Kartenkacheln nicht laden.
 
 ### 4.3 Share-/Insta-Preview
 - **Beschreibung & Nutzen:** Event- und Journey-Daten werden als prototypische Social-Preview visualisiert. Die Vorschau lässt sich zwischen drei Format-Varianten umschalten — Postcard (4∶5), Story (9∶16) und Square (1∶1) — passend zu den gängigen Social-Surfaces. Über einen „Share story"-Button wird ein vorbereiteter Teilen-Text via Web Share API ausgespielt; ohne native Share-Unterstützung fällt der Button auf Clipboard-Kopie zurück. Zusätzlich kann eine schreibgeschützte öffentliche Link-Variante der Journey via `/share/[hash]` geteilt werden — ohne Account-Zugriff für Empfänger:innen. Beim Erstellen wählt man optional einen einzelnen Trip als Scope, sodass z. B. nur die Vietnam-Erinnerungen sichtbar werden statt der gesamten Journey.
@@ -160,6 +280,13 @@ Dokumentiert Erweiterungen über den Mindestumfang hinaus.
 - **Sicherheits-Hinweis:** Die öffentliche Route umgeht bewusst die `userId`-Bindung. Repo-Helfer `getPublicJourneyForShare` filtert über eine Whitelist und entfernt Owner-IDs, Friend-Listen und Invitation-Daten. Bei Trip-Scope wird zusätzlich nach `tripId` gefiltert, sodass nur Memories aus diesem Trip ausgespielt werden. Hashes sind 32 Hex-Zeichen (16 Random-Bytes via `crypto.randomBytes`), Rate-Limit 10 Shares/User/Tag, Widerrufung ist sofort wirksam. Beim Löschen eines Trips werden alle aktiven Trip-Shares automatisch widerrufen. Antworten setzen `Cache-Control: private, no-store`, `Referrer-Policy: no-referrer` und `X-Robots-Tag: noindex`.
 - **Referenz:** Siehe `/events/[id]`, `/journey`, `/profile` und `/share/[hash]`.
 - **Aus Evaluation abgeleitet?:** Nein, Erweiterung mit erkennbarem Storytelling-Mehrwert (UX-Audit B5).
+- **Screenshots:**
+
+  ![Share-Preview im Postcard-Format](docs/screenshots/14-share-preview_1.png)
+  **Share-Preview — Postcard-Format (4:5).** Die Vorschau zeigt das gewählte Event als Karten-Snapshot mit Cover-Bild, Titel, Memory-Auszug, Ort und Kategorie-Badge. Über den Format-Toggle oben lässt sich live zwischen Postcard, Story und Square umschalten.
+
+  ![Share-Preview im Story-Format mit Web-Share-Dialog](docs/screenshots/14-share-preview_2.png)
+  **Share-Preview — Story-Format (9:16) mit nativem Teilen-Dialog.** Im Hochkant-Format passt sich das Layout an Instagram-/Stories-Proportionen an. Ein Klick auf „Share story" ruft die native Web-Share-API auf (im Bild: Windows-Freigeben-Dialog); Browser ohne Web-Share-Unterstützung kopieren stattdessen den vorbereiteten Text in die Zwischenablage.
 
 ### 4.4 Bildwelt für Events und Orte
 - **Beschreibung & Nutzen:** Event-, Journey- und Location-Cards zeigen passende Bilder, damit Aktivitäten wie “Balboa Park Museum Day” sofort visuell erkennbar sind.
@@ -184,12 +311,26 @@ Dokumentiert Erweiterungen über den Mindestumfang hinaus.
 - **Wo umgesetzt:** `/profile` mit serverseitigem Load aus bestehenden Events, Locations und Travel Ideas; Navigation über die klickbare User-Pill.
 - **Referenz:** Siehe `/profile` und Abschnitt 3.4.2.
 - **Aus Evaluation abgeleitet?:** Nein, Umsetzung von GitHub Issue #2 als optionale Erweiterung.
+- **Screenshots:**
+
+  ![Profile mit Stats-Grid](docs/screenshots/15-profile_1.png)
+  **Profile — Account und Stats-Grid.** Oben Account-Karte mit Avatar, Username und optionalem Avatar-Upload. Daneben sechs Kennzahlen-Kacheln (Events, Invites, Planned, Memories, Places, Ideas) als ruhige Reise-Statistik.
+
+  ![Profile mit Recent Activity und Invitations](docs/screenshots/15-profile_2.png)
+  **Profile — Quick Actions, Activity und Einladungen.** Direkt-Links zu „Create event", „Open journey", „View map" und „Add idea", daneben die zuletzt bearbeiteten Events. Darunter Sektionen „Events you are invited to" und „Active share links" zur Verwaltung von Einladungen und öffentlichen Journey-Links.
 
 ### 4.8 Friend Management über Login-User
 - **Beschreibung & Nutzen:** Events können nur noch echte TripTales-Accounts einladen. Dadurch entstehen keine Freitext-Friends oder unechten Demo-Personen mehr, und Einladungen bleiben technisch nachvollziehbar. Eingeladene Accounts sehen diese Events in `/events` und auf dem Dashboard mit Status `invited`, können die Detailseite öffnen und die Einladung annehmen oder ablehnen. Angenommene Einladungen bleiben als `accepted` sichtbar; abgelehnte Einladungen entfernen den User aus dem Event. Sobald ein angenommenes Event abgeschlossen ist, kann der eingeladene User eine eigene Journey Memory speichern.
 - **Wo umgesetzt:** Event-Formular mit User-Auswahl, serverseitige Validierung gegen `users`, Event-Felder `invitedUserIds` und `invitations`, Event-Liste und Profile-Sektion für eingeladene Events; Legacy-Friends können mit `npm run cleanup:legacy-friends` non-destruktiv entfernt werden.
 - **Referenz:** Siehe `/events/new`, `/events/[id]`, `/profile` und Abschnitt 3.4.2.
 - **Aus Evaluation abgeleitet?:** Nein, Umsetzung von GitHub Issue #3 zur besseren Datenqualität.
+- **Screenshots:**
+
+  ![Friend-Picker im Event-Formular](docs/screenshots/06-friend-invite.png)
+  **Friend-Picker im Event-Formular.** Nur echte TripTales-Accounts können eingeladen werden — die Picker-Komponente filtert nach Username ab dem ersten Buchstaben. Eingeladene User erhalten die Einladung sichtbar in ihrer eigenen Event-Liste mit Status „invited".
+
+  ![Pending-Invitations-Streifen auf dem Dashboard](docs/screenshots/07-pending-invitations.png)
+  **Pending-Invitations-Streifen.** Sobald eine offene Einladung vorhanden ist, erscheint oben auf dem Dashboard ein orangener Hinweisstreifen „You have 1 pending invitation →". Ein Klick öffnet die gefilterte Event-Liste, wo Akzeptieren oder Ablehnen erfolgt.
 
 ### 4.9 Wiederkehrende Events
 - **Beschreibung & Nutzen:** Wiederkehrende Events unterstützen regelmässige Termine wie Lectures oder Studienwochen. Nutzerinnen und Nutzer wählen beim Erstellen eine Wiederholfrequenz (`daily`, `weekly`, `monthly`) und die Anzahl der Termine bis maximal 52. Die App erzeugt daraus normale Einzel-Events, sodass Kalender, Event-Liste, Map, Einladungen und einzelne Bearbeitung stabil bleiben. In der Journey werden gespeicherte Memories derselben Serie gebündelt, damit die Timeline nicht mit fast identischen Karten überfüllt wird.
@@ -203,6 +344,16 @@ Dokumentiert Erweiterungen über den Mindestumfang hinaus.
 - **Migrationspfad:** `npm run migrate:trips` legt Indexe für `trips` und einen sparse Index `events.tripId` an. Schema ist rein additiv — bestehende Events ohne `tripId` bleiben funktional unverändert. Beim Löschen eines Trips wird `tripId` von allen zugeordneten Events entfernt; die Events selbst bleiben erhalten.
 - **Referenz:** Siehe `/trips`, `/trips/[id]`, `/journey?groupBy=trip` und `/events/new` (Trip-Auswahl).
 - **Aus Evaluation abgeleitet?:** Nein, Erweiterung mit erkennbarem Storytelling-Mehrwert (UX-Audit B1).
+- **Screenshots:**
+
+  ![Trip-Detail mit Stats und Mini-Map](docs/screenshots/13-trip-detail_1.png)
+  **Trip-Detail — Header, Statistik und Mini-Map.** Die Trip-Detailseite („Italy April 2026") zeigt Datumsbereich, Beschreibung sowie eine Statistik-Reihe (Events, Memories, besuchte Länder, Top-Kategorie). Direkt darunter eine kompakte Karte aller Orte der Reise.
+
+  ![Trip-Detail mit zugeordneten Events](docs/screenshots/13-trip-detail_2.png)
+  **Trip-Detail — Event-Karten und Event-Zuordnung.** Unter der Karte werden alle Orte der Reise als Pinpoint-Cards angezeigt. Die Sektion „What's in this trip" listet alle zugeordneten Events mit Status und Datum; „Assign existing events to this trip" erlaubt das nachträgliche Anhängen weiterer Events.
+
+  ![Journey gruppiert nach Trip](docs/screenshots/10-journey-by-trip.png)
+  **Journey gruppiert nach Trip.** Mit dem Toggle „By trip" erscheint die ganze Reise als ein zusammenhängender Block statt verstreut über mehrere Monatsüberschriften — macht längere Reisen erzählerisch runder.
 
 ### 4.11 Dark Mode
 - **Beschreibung & Nutzen:** Eingeloggte Nutzerinnen und Nutzer können in der Navigation jederzeit zwischen einem hellen Warm-Travel-Look und einem dunklen Modus umschalten. Dark Mode verbessert die Lesbarkeit in dunklen Umgebungen, schont OLED-Displays und folgt der Erwartung an moderne Apps. Die Auswahl wird pro Account in MongoDB gespeichert und ist damit gerätübergreifend verfügbar; neue Accounts starten standardmässig im hellen Modus. Login-Seite und öffentliche Share-Links bleiben bewusst hell, da sie für nicht eingeloggte Besucher:innen einen konsistenten Markenauftritt zeigen sollen.
@@ -210,6 +361,13 @@ Dokumentiert Erweiterungen über den Mindestumfang hinaus.
 - **Migrationspfad:** Schema-Änderung ist rein additiv — bestehende User-Dokumente ohne `themePreference` werden über `publicUser` als `"light"` interpretiert. Kein Migrations-Skript notwendig.
 - **Referenz:** Siehe Toggle in der Navigation auf allen geschützten Routen, sowie Abschnitt 3.4.2.
 - **Aus Evaluation abgeleitet?:** Nein, Umsetzung als Usability-/Accessibility-Erweiterung.
+- **Screenshots:**
+
+  ![Dark Mode auf dem Dashboard](docs/screenshots/16-darkmode_1.png)
+  **Dark Mode — Dashboard.** Identisches Layout wie im hellen Modus, aber mit dunklen Surface-Tokens. Sämtliche Farben (Buttons, Badges, Cards, Status-Indikatoren) wechseln gemeinsam — keine hartcodierten Farbreste.
+
+  ![Dark Mode auf der Karte](docs/screenshots/16-darkmode_2.png)
+  **Dark Mode — Karte mit CARTO-Dark-Matter-Layer.** Auch die Leaflet-Kacheln wechseln zu einem dunklen Layer (CARTO Dark Matter). Ein `MutationObserver` beobachtet das `data-theme`-Attribut am `<html>`-Element und tauscht den Tile-Layer ohne Reload.
 
 ## 5. Projektorganisation [Optional]
 Die Stadt- und Koordinatenauswahl wurde als lokale `CityCombobox` umgesetzt. Sie nutzt eine kuratierte globale Staedte-Liste mit leichtem USA-/San-Diego-Ranking, speichert `city`, `country`, `lat` und `lng` und verhindert falsche Fallback-Pins, indem unbekannte Orte ohne Koordinaten nicht als Kartenmarker erscheinen.
@@ -218,6 +376,12 @@ Beispiele:
 - **NPM-Scripts:** `npm run dev` startet den lokalen Server, `npm run build` erzeugt das Produktions-Build, `npm run smoke` prüft die zentralen Workflows (Login, Event erstellen, Memory speichern, Journey, Löschen) gegen einen lokalen Dev-Server, `npm run seed` legt Demo-Daten an, `npm run upsert:samples` ergänzt Beispiel-Events non-destruktiv, `npm run normalize:idea-media` korrigiert konvertierte Reiseideen, `npm run normalize:city-coordinates` ergänzt fehlende Koordinaten, `npm run cleanup:legacy-friends` entfernt alte Freitext-Friends und `npm run cleanup:journey-ratings` entfernt nicht mehr genutzte Journey-Ratings.
 - **Issue-Management:** Vorgeschlagene Issues: Setup, MongoDB Data Layer, Auth/Login, Event Workflow, Journey, Map, Ideas, Profile, Friend Management, README, Deployment, Validate. GitHub Issue #2 wurde als kleine Profile-Page umgesetzt; GitHub Issue #3 stellt Friend Management auf echte Login-User um; GitHub Issue #12 ergänzt wiederkehrende Events inklusive `Education`-Kategorie, Journey-Bündelung und Serienlöschung.
 - **Commit-Praxis:** Sprechende Commits nach Bereichen, z. B. `feat: implement event planning workflows`, `feat: add journey memory workflow`, `docs: complete project documentation`.
+- **Methodische Artefakte über den Unterrichtsumfang hinaus:** Für die in der Rubrik Teil B genannten "zusätzlichen Methoden" wurden folgende Artefakte erstellt, jeweils mit Begründung warum die Methode für TripTales relevant ist:
+  - **Personas** ([`docs/personas.md`](docs/personas.md)) — Lena und Marco als Filter für Feature-Entscheidungen (was MVP, was Erweiterung).
+  - **Crazy-8s Sketches** ([`docs/sketches/Crazy8s.pdf`](docs/sketches/Crazy8s.pdf)) — acht handgezeichnete Lösungs-Varianten nach der Design-Sprint-Technik (Jake Knapp).
+  - **Competitive Analysis** ([`docs/methods/competitive-analysis.md`](docs/methods/competitive-analysis.md)) — Feature-Matrix gegen Polarsteps, Google Calendar, Notion und Wanderlog; schärft das Differenzierungs-Argument.
+  - **User Journey Map** ([`docs/methods/user-journey-map.md`](docs/methods/user-journey-map.md)) — End-to-End-Lifecycle "Planen → Erleben → Erinnern" als As-Is- vs. To-Be-Gegenüberstellung; verankert jedes TripTales-Feature an einem konkreten Pain Point.
+  - **KI-Workflow-Methodik** ([`docs/prompts/promptsammlung.md`](docs/prompts/promptsammlung.md)) — versionierte Prompt-Rezepte plus Methodik-Sektion (Tool-Stack, Workflow-Patterns, MCP-Integrationen, Verantwortung & Grenzen) als Antwort auf das Rubrik-Beispiel "Anpassung eines KI-Agenten-Workflows in VS Code".
 
 ## 6. KI-Deklaration
 Die folgende Deklaration ist verpflichtend und beschreibt den Einsatz von KI im Projekt.
@@ -229,6 +393,10 @@ Die folgende Deklaration ist verpflichtend und beschreibt den Einsatz von KI im 
 
 ### 6.2 Prompt-Vorgehen
 Es wurde mit ausführlichen Kontext-Prompts gearbeitet: Projektidee, Bewertungskriterien, gewünschte Pages, Datenmodell, Workflows, README-Vorgaben und technische Entscheidungen wurden explizit beschrieben. Anschliessend wurde zuerst ein Plan erstellt und danach iterativ umgesetzt. Sensible Daten werden nicht in Dateien übernommen. Die aktuellen Arbeitsregeln für Claude Code sind in [`CLAUDE.md`](CLAUDE.md) dokumentiert; die historischen Codex-Regeln sind unter [`docs/legacy/codex_custom_instructions.md`](docs/legacy/codex_custom_instructions.md) archiviert.
+
+Eine vollständige, kommentierte Sammlung der wichtigsten Einstiegs-Prompts liegt unter [`docs/prompts/promptsammlung.md`](docs/prompts/promptsammlung.md). Jeder Prompt ist mit Kontext, erzieltem Resultat und einer kurzen Interpretation versehen, sodass das Prompt-Vorgehen für Dozierende nachvollziehbar bleibt.
+
+**Co-Authoring-Policy:** Substantielle KI-unterstützte Commits führen ab der Prototype-Phase den `Co-Authored-By: Claude`-Trailer. Frühere Commits werden nicht retroaktiv umgeschrieben — das Git-Log soll den realen Entstehungsprozess abbilden. Bei Commits, die mehr als triviale Formatierung enthalten und KI-assistiert sind, wird der Trailer ergänzt; rein menschliche Commits bleiben ohne Trailer.
 
 ### 6.3 Reflexion
 KI beschleunigt Strukturierung, Boilerplate, Dokumentation und das Finden technischer Risiken. Grenzen bestehen bei fachlicher Bewertung, tatsächlicher Nutzer-Evaluation, Secret-Handling und finaler Qualitätssicherung. Deshalb werden Build-Checks, manuelle Tests, Deployment-Prüfung und echte Evaluation separat durchgeführt.

@@ -27,10 +27,11 @@
 	</section>
 
 	<section class="auth-grid" aria-label="Account access">
-		<form class="panel auth-form" method="POST" action="?/login">
+		<form class="panel auth-form auth-form--primary" method="POST" action="?/login">
 			<div>
-				<p class="eyebrow">Login</p>
+				<p class="eyebrow">Returning user · Sign in</p>
 				<h2>Open your account</h2>
+				<p class="muted auth-sub">Use the credentials you created last time.</p>
 			</div>
 			{#if form?.loginError}
 				<div class="message error">{form.loginError}</div>
@@ -43,13 +44,14 @@
 				<span>Password</span>
 				<input name="password" type="password" autocomplete="current-password" required />
 			</label>
-			<button class="button" type="submit">Login</button>
+			<button class="button" type="submit">Sign in</button>
 		</form>
 
-		<form class="panel auth-form" method="POST" action="?/signup">
+		<form class="panel auth-form auth-form--secondary" method="POST" action="?/signup">
 			<div>
-				<p class="eyebrow">Signup</p>
+				<p class="eyebrow">First visit · Create account</p>
 				<h2>Create a new account</h2>
+				<p class="muted auth-sub">No account yet? Set one up in under a minute.</p>
 			</div>
 			{#if form?.signupError}
 				<div class="message error">{form.signupError}</div>
@@ -148,11 +150,25 @@
 	.auth-form {
 		display: grid;
 		gap: 14px;
+		position: relative;
 	}
 
 	.auth-form .button,
 	.auth-form .ghost-button {
 		width: 100%;
+	}
+
+	.auth-form--primary {
+		border-top: 4px solid var(--brand);
+	}
+
+	.auth-form--secondary {
+		border-top: 4px solid var(--sky);
+	}
+
+	.auth-sub {
+		margin: 4px 0 0;
+		font-size: 0.92rem;
 	}
 
 	@media (max-width: 820px) {

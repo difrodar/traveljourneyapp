@@ -9,7 +9,8 @@ export const categories = [
 	"Study",
 	"Education",
 	"Culture",
-	"Outdoor"
+	"Outdoor",
+	"Other"
 ];
 
 export const repeatFrequencies = [

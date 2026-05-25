@@ -213,13 +213,13 @@
 					{#if untilError}
 						<p class="field-error">{untilError}</p>
 					{:else if untilDate && computedCount > 0}
-						<p class="muted">→ {computedCount} occurrence{computedCount === 1 ? "" : "s"}{computedCount === 52 ? " (max — pick an earlier date for fewer)" : ""}</p>
+						<p class="muted">→ {computedCount} date{computedCount === 1 ? "" : "s"}{computedCount === 52 ? " (max — pick an earlier date for fewer)" : ""}</p>
 					{/if}
 					{#if fieldErrors.repeatCount}
 						<p class="field-error">{fieldErrors.repeatCount}</p>
 					{/if}
 				{:else}
-					<label for="repeatCount">Occurrences</label>
+					<label for="repeatCount">Number of dates</label>
 					<input
 						id="repeatCount"
 						name="repeatCount"
