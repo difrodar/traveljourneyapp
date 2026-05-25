@@ -60,11 +60,11 @@ const imageByLocation = {
 		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Coronado_beach.jpg"
 	},
 	"geisel library": {
-		imageUrl: wikimedia("Geisel Library, UCSD 5.jpg"),
+		imageUrl: wikimedia("Geisel Library, UCSD.jpg"),
 		imageAlt: "Geisel Library at UC San Diego",
 		imageCredit: "Christian Cordova / Wikimedia Commons",
 		imageLicense: "CC BY 2.0",
-		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Geisel_Library,_UCSD_5.jpg"
+		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Geisel_Library,_UCSD.jpg"
 	},
 	colosseum: {
 		imageUrl: wikimedia("Colosseo 2020.jpg"),
