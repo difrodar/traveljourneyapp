@@ -235,14 +235,14 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 
 ![Issue Map nach zwei Usability-Tests](docs/validate/Usability-Test/Analyse/issue-map.png)
 
-- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **6 von 18 umgesetzt** (#31, #37, #38, #39, #40 und #48 — in der Tabelle mit ✅ markiert); die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
+- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **10 von 18 umgesetzt** (#31, #33, #34, #37, #38, #39, #40, #42, #46 und #48 — in der Tabelle mit ✅ markiert); Vorher-/Nachher-Belege der umgesetzten Fixes siehe [§3.5.1](#351-vorher-nachher-belege). Die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
 
 | Issue-ID | SG | Aufgabe(n) | Problem | Empfehlung (Kurz) | GitHub |
 |---|:---:|:---:|---|---|---|
 | ISSUE-14 | 4 | 8 | Sharing fehlt als zentraler Bereich für Events, Trips und Journey | Zentralen Sharing-Bereich einführen; Kontextlinks aus Event/Trip/Journey | [#44](https://github.com/difrodar/traveljourneyapp/issues/44) |
-| ISSUE-16 | 4 | 8 | Ablaufdatum von zwei Wochen nicht möglich | Presets 7/14/30 Tage ergänzen | [#46](https://github.com/difrodar/traveljourneyapp/issues/46) |
+| ISSUE-16 | 4 | 8 | Ablaufdatum von zwei Wochen nicht möglich | Presets 7/14/30 Tage ergänzen — ✅ **umgesetzt** | [#46](https://github.com/difrodar/traveljourneyapp/issues/46) |
 | ISSUE-02 | 3 | 2 | Direkte Eventerstellung aus Kalender fehlt | Click-to-Create im Kalender; alternativ globaler Create-Button mit Datumsvorbelegung | [#32](https://github.com/difrodar/traveljourneyapp/issues/32) |
-| ISSUE-04 | 3 | 2, 3, 5 | Event-Formular wirkt überladen, Felder/Layout unklar | Formular in Abschnitte gliedern (Basics, Ort, Termin, Optionen); Pflichtfelder eindeutig | [#34](https://github.com/difrodar/traveljourneyapp/issues/34) |
+| ISSUE-04 | 3 | 2, 3, 5 | Event-Formular wirkt überladen, Felder/Layout unklar | Formular in Abschnitte gliedern (Basics, Ort, Termin, Optionen); Pflichtfelder eindeutig — ✅ **umgesetzt** | [#34](https://github.com/difrodar/traveljourneyapp/issues/34) |
 | ISSUE-05 | 3 | 3 | Ende bzw. Dauer fehlt | Von-bis-Feld oder optionales Ende-Feld ergänzen | [#35](https://github.com/difrodar/traveljourneyapp/issues/35) |
 | ISSUE-06 | 3 | 2 | Reminder/Benachrichtigung unklar oder nicht möglich | Native Reminder-Funktion innerhalb TripTales ergänzen | [#36](https://github.com/difrodar/traveljourneyapp/issues/36) |
 | ISSUE-09 | 3 | 4, 5, 7, 8 | Journey/Memory/Trip/Event/Idea-Beziehungen unklar | Kurzer Guide/Onboarding plus konsistente Microcopy — ✅ **umgesetzt** | [#39](https://github.com/difrodar/traveljourneyapp/issues/39) |
@@ -251,12 +251,92 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 | ISSUE-13 | 3 | 7 | Trip-Gruppierung funktioniert, aber Journey/Trip-Zusammenhang unklar | Guide aus ISSUE-09 anwenden; in-page Erklärung „planned activities" vs. „memories" | [#43](https://github.com/difrodar/traveljourneyapp/issues/43) |
 | ISSUE-15 | 3 | 8 | Share-Button/Benennung schlecht sichtbar und missverständlich | Präzise Labels („Share event/trip/journey") plus Scope-Vorschau | [#45](https://github.com/difrodar/traveljourneyapp/issues/45) |
 | ISSUE-17 | 3 | 8 | Sharing-Verständnis (Öffentlichkeit/Scope) nicht ausreichend validiert | Explizite Scope- und Ablaufanzeige vor Linkerstellung; in nächster Iteration explizit prüfen | [#47](https://github.com/difrodar/traveljourneyapp/issues/47) |
-| ISSUE-03 | 2 | 2, 3 | Suche/Filter werden mit Erstellung verwechselt | Create-Aktion visuell primär platzieren; Such-/Filterbereiche klarer abgrenzen | [#33](https://github.com/difrodar/traveljourneyapp/issues/33) |
+| ISSUE-03 | 2 | 2, 3 | Suche/Filter werden mit Erstellung verwechselt | Create-Aktion visuell primär platzieren; Such-/Filterbereiche klarer abgrenzen — ✅ **umgesetzt** | [#33](https://github.com/difrodar/traveljourneyapp/issues/33) |
 | ISSUE-07 | 2 | 2, 3 | Begriff „Occurrences" wird missverstanden | Label durch „Number of dates" / „Repeat count" ersetzen oder Tooltip ergänzen — ✅ **umgesetzt** | [#37](https://github.com/difrodar/traveljourneyapp/issues/37) |
 | ISSUE-08 | 2 | 3 | Kategorien zu starr bzw. unvollständig | Kategorie „Other" und optional eigene Kategorie hinzufügen — ✅ **umgesetzt** | [#38](https://github.com/difrodar/traveljourneyapp/issues/38) |
 | ISSUE-18 | 2 | 7, 8 | Testdaten/Bilder fehlen oder sind falsch | Seed-Daten bereinigen, Bilder validieren, Setup-Checkliste erweitern — ✅ **umgesetzt** | [#48](https://github.com/difrodar/traveljourneyapp/issues/48) |
 | ISSUE-01 | 1 | 1 | Login/Registrierung wird zunächst verwechselt | Register/Login visuell klarer trennen, primären CTA hervorheben — ✅ **umgesetzt** | [#31](https://github.com/difrodar/traveljourneyapp/issues/31) |
-| ISSUE-12 | 1 | 6 | Einladungsfeedback und Einladungstext ausbaufähig | Toast mit Empfänger, Status und optionaler Nachricht ergänzen | [#42](https://github.com/difrodar/traveljourneyapp/issues/42) |
+| ISSUE-12 | 1 | 6 | Einladungsfeedback und Einladungstext ausbaufähig | Toast mit Empfänger, Status und optionaler Nachricht ergänzen — ✅ **umgesetzt** | [#42](https://github.com/difrodar/traveljourneyapp/issues/42) |
+
+#### 3.5.1 Vorher-Nachher-Belege
+Für die umgesetzten Issues belegen die folgenden Vorher-/Nachher-Paare die konkrete Verbesserung. Der „Vorher"-Stand stammt aus einem separaten Deploy des Branches `pre_usability` (Stand vor allen Usability-Fixes), der „Nachher"-Stand aus der aktuellen Version. Sortiert nach Schweregrad absteigend.
+
+**ISSUE-16 · 14-Tage-Ablauf für Share-Links** (Schweregrad 4, [#46](https://github.com/difrodar/traveljourneyapp/issues/46))
+
+![ISSUE-16 vorher: Ablaufoptionen ohne 14 Tage](docs/validate/Usability-Test/before-after/issue-16-expiry-before.png)
+**Vorher:** Der Link-Ablauf bot nur 1/7/30 Tage und „Never" — der in Aufgabe 8 gewünschte 14-Tage-Ablauf war nicht möglich.
+
+![ISSUE-16 nachher: Option „14 days" ergänzt](docs/validate/Usability-Test/before-after/issue-16-expiry-after.png)
+**Nachher:** „14 days" steht jetzt als Preset zur Verfügung.
+
+**ISSUE-04 · Event-Formular in Abschnitte gliedern** (Schweregrad 3, [#34](https://github.com/difrodar/traveljourneyapp/issues/34))
+
+![ISSUE-04 vorher: flaches, überladenes Formular](docs/validate/Usability-Test/before-after/issue-04-eventform-before.png)
+**Vorher:** Alle Felder standen als eine einzige dichte Liste untereinander.
+
+![ISSUE-04 nachher: gegliederte Abschnitte als Cards](docs/validate/Usability-Test/before-after/issue-04-eventform-after.png)
+**Nachher:** Vier abgesetzte Abschnitte (Basics, Date & time, Location, Options) gruppieren die Felder mit klaren Überschriften und mehr Abstand.
+
+**ISSUE-09 · Begriffssystem Idea → Event → Memory → Journey erklären** (Schweregrad 3, [#39](https://github.com/difrodar/traveljourneyapp/issues/39))
+
+![ISSUE-09 vorher: keine Erklärung des Begriffssystems](docs/validate/Usability-Test/before-after/issue-09-conceptguide-before.png)
+**Vorher:** Der Zusammenhang von Idea, Event, Memory und Journey wurde nirgends erklärt.
+
+![ISSUE-09 nachher: einklappbarer Konzept-Guide](docs/validate/Usability-Test/before-after/issue-09-conceptguide-after.png)
+**Nachher:** Ein einklappbarer In-App-Konzept-Guide auf Journey und Ideas macht das Modell explizit.
+
+**ISSUE-10 · Ideas auffindbar machen** (Schweregrad 3, [#40](https://github.com/difrodar/traveljourneyapp/issues/40))
+
+![ISSUE-10 vorher: Ideas in der Navigation schwer auffindbar](docs/validate/Usability-Test/before-after/issue-10-nav-before.png)
+**Vorher:** Der Ideas-Bereich war schwer zu finden und wurde mit Trip/Event verwechselt.
+
+![ISSUE-10 nachher: Ideas an zweiter Stelle der Navigation](docs/validate/Usability-Test/before-after/issue-10-nav-after.png)
+**Nachher:** „Ideas" steht prominent an zweiter Stelle der Navigation (zusätzlich ein „Save as idea"-Einstieg im Event-Formular).
+
+**ISSUE-03 · Erstellen vs. Suchen/Filtern abgrenzen** (Schweregrad 2, [#33](https://github.com/difrodar/traveljourneyapp/issues/33))
+
+![ISSUE-03 vorher: unbeschriftete Filterleiste](docs/validate/Usability-Test/before-after/issue-03-events-before.png)
+**Vorher:** Die unbeschriftete Filterleiste wurde mit dem Erstellen verwechselt.
+
+![ISSUE-03 nachher: beschriftete Filterleiste, primärer Create-Button](docs/validate/Usability-Test/before-after/issue-03-events-after.png)
+**Nachher:** Die Überschrift „Find an event" grenzt Suche/Filter ab, „+ Create event" ist als Primäraktion erkennbar.
+
+**ISSUE-07 · Verständliches Label statt „Occurrences"** (Schweregrad 2, [#37](https://github.com/difrodar/traveljourneyapp/issues/37))
+
+![ISSUE-07 vorher: Label „Occurrences"](docs/validate/Usability-Test/before-after/issue-07-occurrences-before.png)
+**Vorher:** Der Begriff „Occurrences" wurde missverstanden.
+
+![ISSUE-07 nachher: Label „Number of dates"](docs/validate/Usability-Test/before-after/issue-07-occurrences-after.png)
+**Nachher:** Das Feld heißt jetzt „Number of dates".
+
+**ISSUE-08 · Kategorie „Other" ergänzen** (Schweregrad 2, [#38](https://github.com/difrodar/traveljourneyapp/issues/38))
+
+![ISSUE-08 vorher: Kategorienliste ohne „Other"](docs/validate/Usability-Test/before-after/issue-08-category-before.png)
+**Vorher:** Die Kategorien waren zu starr; nicht abgedeckte Fälle hatten keinen Platz.
+
+![ISSUE-08 nachher: Kategorienliste mit „Other"](docs/validate/Usability-Test/before-after/issue-08-category-after.png)
+**Nachher:** Die Liste enthält jetzt „Other".
+
+**ISSUE-01 · Login und Registrierung trennen** (Schweregrad 1, [#31](https://github.com/difrodar/traveljourneyapp/issues/31))
+
+![ISSUE-01 vorher: Login/Registrierung schwer zu unterscheiden](docs/validate/Usability-Test/before-after/issue-01-login-before.png)
+**Vorher:** Login und Registrierung wurden zunächst verwechselt.
+
+![ISSUE-01 nachher: klar getrennte Login-/Signup-Bereiche](docs/validate/Usability-Test/before-after/issue-01-login-after.png)
+**Nachher:** Beide Bereiche sind visuell klar getrennt, der primäre CTA ist hervorgehoben.
+
+**ISSUE-12 · Einladungsfeedback mit Status** (Schweregrad 1, [#42](https://github.com/difrodar/traveljourneyapp/issues/42))
+
+![ISSUE-12 vorher: keine Rückmeldung nach dem Einladen](docs/validate/Usability-Test/before-after/issue-12-invite-before.png)
+**Vorher:** Nach dem Einladen gab es keine Rückmeldung und keinen sichtbaren Status.
+
+![ISSUE-12 nachher: Bestätigungs-Banner mit Empfängern](docs/validate/Usability-Test/before-after/issue-12-invite-after_1.png)
+**Nachher (Banner):** Ein Banner bestätigt die Einladung mit Empfängernamen.
+
+![ISSUE-12 nachher: Status-Badges in der Eingeladenenliste](docs/validate/Usability-Test/before-after/issue-12-invite-after_2.png)
+**Nachher (Status):** Die Eingeladenenliste zeigt pro Person den Status („Pending"/„Going").
+
+**ISSUE-18 · Testdaten und Bilder bereinigt** (Schweregrad 2, [#48](https://github.com/difrodar/traveljourneyapp/issues/48)) — *ohne Bildpaar:* Die Seed-Daten wurden bereinigt und alle Bildreferenzen gegen echte, lizenzierte Wikimedia-Commons-Dateien validiert (u. a. Korrektur einer fehlerhaften Geisel-Library-Referenz). Als reine Datenbereinigung ohne aussagekräftigen visuellen Vergleich.
 
 ## 4. Erweiterungen [Optional]
 Dokumentiert Erweiterungen über den Mindestumfang hinaus.
@@ -399,7 +479,7 @@ Die folgende Deklaration ist verpflichtend und beschreibt den Einsatz von KI im 
 
 ### 6.1 KI-Tools
 - **Eingesetzte Tools**: Aktuell Anthropic Claude Code in Visual Studio Code; zuvor OpenAI Codex/ChatGPT in Visual Studio Code.
-- **Zweck & Umfang**: KI wurde für Projektplanung, technische Architektur, Codevorschläge, SvelteKit-Komponenten, MongoDB-Datenzugriff, README-Strukturierung und Qualitätssicherung eingesetzt. Teile der Implementierung und Dokumentation entstanden KI-unterstützt. Erweiterung 4.11 (Dark Mode) — Token-Migration in `src/app.css`, SSR-Injektion in `hooks.server.js`, `ThemeToggle.svelte`, `/api/theme`-Endpoint und CARTO-Tile-Wechsel im `LeafletMapView` — wurde mit Claude Code geplant und umgesetzt.
+- **Zweck & Umfang**: KI wurde für Projektplanung, technische Architektur, Codevorschläge, SvelteKit-Komponenten, MongoDB-Datenzugriff, README-Strukturierung und Qualitätssicherung eingesetzt. Teile der Implementierung und Dokumentation entstanden KI-unterstützt. Erweiterung 4.11 (Dark Mode) — Token-Migration in `src/app.css`, SSR-Injektion in `hooks.server.js`, `ThemeToggle.svelte`, `/api/theme`-Endpoint und CARTO-Tile-Wechsel im `LeafletMapView` — wurde mit Claude Code geplant und umgesetzt. Ebenso wurde eine Usability-Iteration mit Claude Code umgesetzt: vier offene Befunde aus dem Usability-Test (#33, #34, #42, #46) sowie die Vorher-/Nachher-Dokumentation in §3.5.1 wurden KI-unterstützt geplant, implementiert und mit Build- und Smoke-Tests verifiziert.
 - **Eigene Leistung (Abgrenzung):** Projektidee, fachliche Anforderungen, Vorgaben, Deployment-Ziel, MongoDB-Entscheid und finale Kontrolle liegen beim Projektverfasser. KI-Vorschläge müssen geprüft, angepasst, getestet und dokumentiert werden.
 
 ### 6.2 Prompt-Vorgehen
