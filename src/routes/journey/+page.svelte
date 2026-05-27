@@ -72,6 +72,7 @@
 					<select name="expiresIn">
 						<option value="1d">1 day</option>
 						<option value="7d" selected>7 days</option>
+						<option value="14d">14 days</option>
 						<option value="30d">30 days</option>
 						<option value="never">Never</option>
 					</select>

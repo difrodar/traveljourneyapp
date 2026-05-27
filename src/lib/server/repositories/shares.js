@@ -7,6 +7,7 @@ const RATE_LIMIT_PER_DAY = 10;
 const EXPIRY_OPTIONS = {
 	"1d": 86_400_000,
 	"7d": 7 * 86_400_000,
+	"14d": 14 * 86_400_000,
 	"30d": 30 * 86_400_000,
 	never: null
 };
