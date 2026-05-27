@@ -17,7 +17,8 @@
 		form = null,
 		inviteableUsers = [],
 		trips = [],
-		showRecurrence = false
+		showRecurrence = false,
+		showSaveAsIdea = false
 	} = $props();
 	const location = $derived(event?.location || {});
 	const values = $derived(form?.values || {});
@@ -77,6 +78,12 @@
 	let repeatMode = $state("count");
 	let untilDate = $state("");
 
+	// Carry the typed title to the Ideas page for the date-less "Save as idea" flow (issue #40 / U10).
+	let titleValue = $state(fieldValue("title", event?.title || ""));
+	const saveAsIdeaHref = $derived(
+		"/ideas" + (titleValue.trim() ? `?title=${encodeURIComponent(titleValue.trim())}` : "")
+	);
+
 	const computedCount = $derived(computeOccurrenceCount(startDate, untilDate, repeatFrequencyValue));
 	const computedHidden = $derived(Math.max(1, computedCount));
 	const untilError = $derived(
@@ -123,7 +130,7 @@
 	<div class="form-grid">
 		<div class="field">
 			<label for="title">Title</label>
-			<input id="title" name="title" value={fieldValue("title", event?.title || "")} aria-invalid={Boolean(fieldErrors.title)} required />
+			<input id="title" name="title" bind:value={titleValue} aria-invalid={Boolean(fieldErrors.title)} required />
 			{#if fieldErrors.title}
 				<p class="field-error">{fieldErrors.title}</p>
 			{/if}
@@ -145,6 +152,9 @@
 			<input id="date" name="date" type="date" bind:value={startDate} aria-invalid={Boolean(fieldErrors.date)} required />
 			{#if fieldErrors.date}
 				<p class="field-error">{fieldErrors.date}</p>
+			{/if}
+			{#if showSaveAsIdea}
+				<p class="field-hint">No date yet? <a href={saveAsIdeaHref}>Save it as an idea instead →</a></p>
 			{/if}
 		</div>
 		<div class="field">
@@ -331,6 +341,12 @@
 	.field-label {
 		font-weight: 800;
 		color: var(--ink-strong);
+	}
+
+	.field-hint {
+		margin: 6px 0 0;
+		font-size: 0.88rem;
+		color: var(--muted);
 	}
 
 	.media-fields {

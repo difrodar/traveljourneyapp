@@ -24,5 +24,6 @@
 		inviteableUsers={data.inviteableUsers}
 		trips={data.trips}
 		showRecurrence
+		showSaveAsIdea
 	/>
 </main>

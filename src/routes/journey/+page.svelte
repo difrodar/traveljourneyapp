@@ -1,5 +1,6 @@
 <script>
 	import JourneyCard from "$lib/components/JourneyCard.svelte";
+	import ConceptGuide from "$lib/components/ConceptGuide.svelte";
 	import { page } from "$app/state";
 	import { rememberFilters, clearRememberedFilters } from "$lib/utils/filter-persistence.svelte.js";
 	import { SEARCH_DEBOUNCE_MS } from "$lib/constants.js";
@@ -42,6 +43,8 @@
 			<p class="lead">Completed events become memories with locations, photos and personal notes, from San Diego to every next stop.</p>
 		</div>
 	</header>
+
+	<ConceptGuide open />
 
 	{#if data.setupError}
 		<div class="message error">{data.setupError}</div>

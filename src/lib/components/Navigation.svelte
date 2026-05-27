@@ -8,11 +8,11 @@
 
 	const links = [
 		{ href: "/", label: "Dashboard" },
+		{ href: "/ideas", label: "Ideas" },
 		{ href: "/events", label: "Events" },
 		{ href: "/trips", label: "Trips" },
 		{ href: "/journey", label: "Journey" },
-		{ href: "/map", label: "Map" },
-		{ href: "/ideas", label: "Ideas" }
+		{ href: "/map", label: "Map" }
 	];
 </script>
 

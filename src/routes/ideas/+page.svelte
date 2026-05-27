@@ -1,8 +1,13 @@
 <script>
 	import CityCombobox from "$lib/components/CityCombobox.svelte";
 	import TravelIdeaCard from "$lib/components/TravelIdeaCard.svelte";
+	import ConceptGuide from "$lib/components/ConceptGuide.svelte";
+	import { page } from "$app/state";
 
 	let { data, form } = $props();
+
+	// Prefill the title when arriving from the event form's "Save as idea" link (issue #40 / U10).
+	let titleValue = $state(page.url.searchParams.get("title") || "");
 </script>
 
 <main class="page-shell">
@@ -13,6 +18,8 @@
 			<p class="lead">Collect trip ideas, rank them and turn them into planned events when they become concrete.</p>
 		</div>
 	</header>
+
+	<ConceptGuide />
 
 	{#if data.setupError}
 		<div class="message error">{data.setupError}</div>
@@ -27,7 +34,7 @@
 			<div class="form-grid">
 				<div class="field">
 					<label for="title">Title</label>
-					<input id="title" name="title" required />
+					<input id="title" name="title" bind:value={titleValue} required />
 				</div>
 				<div class="field">
 					<label for="location">Location</label>
