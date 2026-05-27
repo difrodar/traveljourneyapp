@@ -64,6 +64,9 @@ export const actions = {
 			}
 			return fail(400, { error: error.message, values });
 		}
-		throw redirect(303, `/events/${id}`);
+		// Confirm invitations on the detail page (issue #42 / U12): the count flags the success
+		// banner, the recipient names come from the freshly loaded event.friends there.
+		const invitedCount = values.invitedUserIds.filter(Boolean).length;
+		throw redirect(303, invitedCount > 0 ? `/events/${id}?invited=${invitedCount}` : `/events/${id}`);
 	}
 };

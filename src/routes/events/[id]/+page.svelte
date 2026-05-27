@@ -19,6 +19,18 @@
 	const canSaveMemory = $derived(isOwner || (event.invitationStatus === "accepted" && event.status === "completed"));
 	const displayDate = $derived(formatEventDate(event.date, event.time));
 	const gallery = $derived.by(() => buildGallery(event));
+	// Invitation confirmation after creating (?invited=N) or editing (form.newlyInvited) with invitees (issue #42 / U12).
+	const createdInviteCount = $derived(Number(page.url.searchParams.get("invited")) || 0);
+	const newlyInvitedCount = $derived(form?.newlyInvited || 0);
+	const pendingNames = $derived(friends.filter((friend) => friend.status === "invited").map((friend) => friend.name));
+	let inviteNoticeDismissed = $state(false);
+	// Re-arm the notice whenever a fresh invitation happens (create load or edit action).
+	$effect(() => {
+		void createdInviteCount;
+		void newlyInvitedCount;
+		inviteNoticeDismissed = false;
+	});
+	const showInviteNotice = $derived((createdInviteCount > 0 || newlyInvitedCount > 0) && !inviteNoticeDismissed);
 
 	onMount(() => {
 		if (!browser) return;
@@ -62,6 +74,21 @@
 			<div class="message error" role="alert">{form.error}</div>
 		{:else if form?.message}
 			<div class="message" role="status">{form.message}</div>
+		{/if}
+
+		{#if showInviteNotice}
+			<div class="message invite-notice" role="status">
+				<span>
+					{#if pendingNames.length}
+						Invitation sent to <strong>{pendingNames.join(", ")}</strong>. They'll see this event in their list — status pending.
+					{:else}
+						Invitation sent. The invitee will see this event in their list (pending).
+					{/if}
+				</span>
+				<button type="button" class="notice-dismiss" aria-label="Dismiss notification" onclick={() => (inviteNoticeDismissed = true)}>
+					×
+				</button>
+			</div>
 		{/if}
 
 		<section class="photo-hero">
@@ -164,7 +191,7 @@
 						<span>Invited TripTales users</span>
 						<div>
 							{#each friends as friend}
-								<strong>{friend.name}</strong>
+								<span class="friend-chip">{friend.name}<span class="friend-status" class:going={friend.status === "accepted"}>{friend.status === "accepted" ? "Going" : "Pending"}</span></span>
 							{:else}
 								<p class="muted">No users invited yet.</p>
 							{/each}
@@ -499,11 +526,29 @@
 		gap: 8px;
 	}
 
-	.friend-strip strong {
+	.friend-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
 		border-radius: 999px;
 		background: color-mix(in srgb, var(--cat-culture) 22%, transparent);
 		color: var(--cat-culture);
-		padding: 8px 12px;
+		padding: 6px 8px 6px 13px;
+		font-weight: 800;
+	}
+
+	.friend-status {
+		border-radius: 999px;
+		padding: 2px 9px;
+		font-size: 0.72rem;
+		font-weight: 900;
+		background: var(--status-planned-bg);
+		color: var(--status-planned-fg);
+	}
+
+	.friend-status.going {
+		background: var(--status-completed-bg);
+		color: var(--status-completed-fg);
 	}
 
 	.photo-panel {
@@ -636,6 +681,25 @@
 	.after-panel h2,
 	.after-panel p {
 		margin-bottom: 8px;
+	}
+
+	.invite-notice {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 12px;
+	}
+
+	.notice-dismiss {
+		flex: 0 0 auto;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		font-size: 1.25rem;
+		line-height: 1;
+		font-weight: 900;
+		cursor: pointer;
+		padding: 0 4px;
 	}
 
 	@media (max-width: 1080px) {

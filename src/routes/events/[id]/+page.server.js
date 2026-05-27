@@ -55,8 +55,9 @@ export const actions = {
 		if (!validation.valid) {
 			return fail(400, { error: validation.error, fieldErrors: validation.fieldErrors, values });
 		}
+		let result;
 		try {
-			await updateEventFromForm(locals.user.id, params.id, form);
+			result = await updateEventFromForm(locals.user.id, params.id, form);
 		} catch (error) {
 			if (String(error.message || "").startsWith("Event image:")) {
 				return fail(400, {
@@ -74,7 +75,8 @@ export const actions = {
 			}
 			return fail(400, { error: error.message, values });
 		}
-		return { message: "Event saved successfully." };
+		// Surface the invitation confirmation when this edit added new invitees (issue #42 / U12).
+		return { message: "Event saved successfully.", newlyInvited: result?.newlyInvited || 0 };
 	},
 	complete: async ({ locals, params, request }) => {
 		const form = await request.formData();

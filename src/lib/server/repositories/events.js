@@ -71,7 +71,14 @@ async function hydrateEvents(events, userId) {
 			location: location ? { ...location, media: storedLocationMedia(location) } : null,
 			media: storedEventMedia(serialized, location),
 			owner: ownerMap.get(event.userId?.toString()) || null,
-			friends: (event.invitedUserIds || []).map((id) => invitedUserMap.get(id.toString())).filter(Boolean),
+			friends: (event.invitedUserIds || [])
+				.map((id) => {
+					const base = invitedUserMap.get(id.toString());
+					if (!base) return null;
+					const invitation = (event.invitations || []).find((entry) => entry.userId?.toString() === id.toString());
+					return { ...base, status: invitation?.status || "invited" };
+				})
+				.filter(Boolean),
 			isOwner: event.userId?.toString() === ownerId.toString(),
 			invitationStatus,
 			recurrenceLabel: recurrenceLabel(serialized),
@@ -347,6 +354,8 @@ export async function updateEventFromForm(userId, id, form) {
 	const event = await collections.events.findOne({ userId: ownerId, _id: oid(id) });
 	if (!event) throw new Error("Event not found.");
 	const invitedUserIds = await resolveInvitedUserIds(ownerId, form);
+	const previouslyInvited = new Set((event.invitedUserIds || []).map((value) => value.toString()));
+	const newlyInvited = invitedUserIds.filter((value) => !previouslyInvited.has(value.toString())).length;
 	const locationId = await saveLocationFromForm(ownerId, form, event.recurrenceGroupId ? null : event.locationId?.toString());
 	const $unset = { friendIds: "", imageUrl: "", imageAlt: "", imageCredit: "", imageLicense: "", imageSourceUrl: "" };
 	if (!clean(form.get("tripId"))) $unset.tripId = "";
@@ -357,6 +366,7 @@ export async function updateEventFromForm(userId, id, form) {
 			$unset
 		}
 	);
+	return { invitedCount: invitedUserIds.length, newlyInvited };
 }
 
 export async function deleteEvent(userId, id) {
