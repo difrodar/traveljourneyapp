@@ -127,203 +127,224 @@
 </script>
 
 <form class="panel" method="POST" action={action} enctype="multipart/form-data">
-	<div class="form-grid">
-		<div class="field">
-			<label for="title">Title</label>
-			<input id="title" name="title" bind:value={titleValue} aria-invalid={Boolean(fieldErrors.title)} required />
-			{#if fieldErrors.title}
-				<p class="field-error">{fieldErrors.title}</p>
-			{/if}
-		</div>
-		<div class="field">
-			<label for="category">Category</label>
-			<select id="category" name="category" aria-invalid={Boolean(fieldErrors.category)} required>
-				<option value="">Choose category</option>
-				{#each categories as category}
-					<option value={category} selected={fieldValue("category", event?.category || "") === category}>{category}</option>
-				{/each}
-			</select>
-			{#if fieldErrors.category}
-				<p class="field-error">{fieldErrors.category}</p>
-			{/if}
-		</div>
-		<div class="field">
-			<label for="date">Date</label>
-			<input id="date" name="date" type="date" bind:value={startDate} aria-invalid={Boolean(fieldErrors.date)} required />
-			{#if fieldErrors.date}
-				<p class="field-error">{fieldErrors.date}</p>
-			{/if}
-			{#if showSaveAsIdea}
-				<p class="field-hint">No date yet? <a href={saveAsIdeaHref}>Save it as an idea instead →</a></p>
-			{/if}
-		</div>
-		<div class="field">
-			<label for="time">Time</label>
-			<input id="time" name="time" type="time" value={fieldValue("time", event?.time || "")} aria-invalid={Boolean(fieldErrors.time)} required />
-			{#if fieldErrors.time}
-				<p class="field-error">{fieldErrors.time}</p>
-			{/if}
-		</div>
-		<div class="field">
-			<label for="status">Status</label>
-			<select id="status" name="status">
-				<option value="planned" selected={fieldValue("status", event?.status || "planned") === "planned"}>Planned</option>
-				<option value="completed" selected={fieldValue("status", event?.status || "planned") === "completed"}>Completed</option>
-			</select>
-		</div>
-		<div class="field">
-			<label for="tripId">Trip (optional)</label>
-			<select id="tripId" name="tripId">
-				<option value="">No trip</option>
-				{#each trips as trip}
-					<option
-						value={trip.id}
-						selected={fieldValue("tripId", event?.tripId || "") === trip.id}>{trip.name}</option>
-				{/each}
-			</select>
-		</div>
-		{#if showRecurrence}
+	<fieldset class="form-section">
+		<legend>Basics</legend>
+		<div class="form-grid">
 			<div class="field">
-				<label for="repeatFrequency">Repeat</label>
-				<select id="repeatFrequency" name="repeatFrequency" bind:value={repeatFrequencyValue} aria-invalid={Boolean(fieldErrors.repeatFrequency)}>
-					{#each repeatFrequencies as frequency}
-						<option value={frequency.value}>{frequency.label}</option>
+				<label for="title">Title</label>
+				<input id="title" name="title" bind:value={titleValue} aria-invalid={Boolean(fieldErrors.title)} required />
+				{#if fieldErrors.title}
+					<p class="field-error">{fieldErrors.title}</p>
+				{/if}
+			</div>
+			<div class="field">
+				<label for="category">Category</label>
+				<select id="category" name="category" aria-invalid={Boolean(fieldErrors.category)} required>
+					<option value="">Choose category</option>
+					{#each categories as category}
+						<option value={category} selected={fieldValue("category", event?.category || "") === category}>{category}</option>
 					{/each}
 				</select>
-				{#if fieldErrors.repeatFrequency}
-					<p class="field-error">{fieldErrors.repeatFrequency}</p>
+				{#if fieldErrors.category}
+					<p class="field-error">{fieldErrors.category}</p>
 				{/if}
 			</div>
-			{#if repeatFrequencyValue !== "none"}
-				<div class="field">
-					<span class="field-label">How long?</span>
-					<div class="repeat-mode">
-						<label class="radio-option">
-							<input type="radio" value="count" bind:group={repeatMode} />
-							<span>Repeat N times</span>
-						</label>
-						<label class="radio-option">
-							<input type="radio" value="until" bind:group={repeatMode} />
-							<span>Repeat until date</span>
-						</label>
-					</div>
-				</div>
-			{/if}
+		</div>
+	</fieldset>
+
+	<fieldset class="form-section">
+		<legend>Date &amp; time</legend>
+		<div class="form-grid">
 			<div class="field">
-				{#if repeatMode === "until" && repeatFrequencyValue !== "none"}
-					<label for="repeatUntil">Until</label>
-					<input
-						id="repeatUntil"
-						type="date"
-						min={startDate || undefined}
-						bind:value={untilDate}
-						aria-invalid={Boolean(untilError || fieldErrors.repeatCount)}
-					/>
-					<input type="hidden" name="repeatCount" value={computedHidden} />
-					{#if untilError}
-						<p class="field-error">{untilError}</p>
-					{:else if untilDate && computedCount > 0}
-						<p class="muted">→ {computedCount} date{computedCount === 1 ? "" : "s"}{computedCount === 52 ? " (max — pick an earlier date for fewer)" : ""}</p>
-					{/if}
-					{#if fieldErrors.repeatCount}
-						<p class="field-error">{fieldErrors.repeatCount}</p>
-					{/if}
-				{:else}
-					<label for="repeatCount">Number of dates</label>
-					<input
-						id="repeatCount"
-						name="repeatCount"
-						type="number"
-						min="1"
-						max="52"
-						value={fieldValue("repeatCount", "1")}
-						aria-invalid={Boolean(fieldErrors.repeatCount)}
-					/>
-					{#if fieldErrors.repeatCount}
-						<p class="field-error">{fieldErrors.repeatCount}</p>
-					{/if}
+				<label for="date">Date</label>
+				<input id="date" name="date" type="date" bind:value={startDate} aria-invalid={Boolean(fieldErrors.date)} required />
+				{#if fieldErrors.date}
+					<p class="field-error">{fieldErrors.date}</p>
+				{/if}
+				{#if showSaveAsIdea}
+					<p class="field-hint">No date yet? <a href={saveAsIdeaHref}>Save it as an idea instead →</a></p>
 				{/if}
 			</div>
-		{/if}
-		<div class="field">
-			<label for="locationName">Location</label>
-			<input
-				id="locationName"
-				name="locationName"
-				value={fieldValue("locationName", location.name || "")}
-				aria-invalid={Boolean(fieldErrors.locationName)}
-				required
-			/>
-			{#if fieldErrors.locationName}
-				<p class="field-error">{fieldErrors.locationName}</p>
-			{/if}
-		</div>
-		<div class="field">
-			<label for="address">Address</label>
-			<input id="address" name="address" value={fieldValue("address", location.address || "")} />
-		</div>
-		<CityCombobox
-			cityValue={fieldValue("city", location.city || "")}
-			countryValue={fieldValue("country", location.country || "USA")}
-			latValue={fieldValue("lat", location.coordinates?.lat || "")}
-			lngValue={fieldValue("lng", location.coordinates?.lng || "")}
-			help="Pick the nearest city so the event appears at the right place on the map."
-		/>
-		<div class="field full">
-			<label for="description">Description</label>
-			<textarea id="description" name="description">{fieldValue("description", event?.description || "")}</textarea>
-		</div>
-		<div class="field full media-fields">
-			<h3>Event images optional</h3>
-			<p class="muted">Up to 5 photos per event, each JPG/PNG/WebP/GIF up to 2 MB.</p>
-		</div>
-		<div class="field full">
-			<label for="eventImageFiles">Event images</label>
-			<input
-				id="eventImageFiles"
-				name="eventImageFiles"
-				type="file"
-				accept="image/jpeg,image/png,image/webp,image/gif"
-				multiple
-				aria-invalid={Boolean(fieldErrors.eventImageFiles || clientImageError)}
-				onchange={handleImageChange}
-			/>
-			{#if clientImageError}
-				<p class="field-error">{clientImageError}</p>
-			{/if}
-			{#if fieldErrors.eventImageFiles}
-				<p class="field-error">{fieldErrors.eventImageFiles}</p>
-			{/if}
-			{#if existingImages.length > 0}
-				<div class="existing-images">
-					{#each existingImages as img, idx}
-						<label class="existing-image" class:marked-removed={removeIndices.has(idx)}>
-							<img src={img.url} alt={img.alt || ""} />
-							<span class="remove-control">
-								<input
-									type="checkbox"
-									name="removeEventImageIndex"
-									value={idx}
-									checked={removeIndices.has(idx)}
-									onchange={() => toggleRemoveImage(idx)}
-								/>
-								<small>{removeIndices.has(idx) ? "Will be removed" : "Remove"}</small>
-							</span>
-						</label>
+			<div class="field">
+				<label for="time">Time</label>
+				<input id="time" name="time" type="time" value={fieldValue("time", event?.time || "")} aria-invalid={Boolean(fieldErrors.time)} required />
+				{#if fieldErrors.time}
+					<p class="field-error">{fieldErrors.time}</p>
+				{/if}
+			</div>
+			<div class="field">
+				<label for="status">Status</label>
+				<select id="status" name="status">
+					<option value="planned" selected={fieldValue("status", event?.status || "planned") === "planned"}>Planned</option>
+					<option value="completed" selected={fieldValue("status", event?.status || "planned") === "completed"}>Completed</option>
+				</select>
+			</div>
+			<div class="field">
+				<label for="tripId">Trip (optional)</label>
+				<select id="tripId" name="tripId">
+					<option value="">No trip</option>
+					{#each trips as trip}
+						<option
+							value={trip.id}
+							selected={fieldValue("tripId", event?.tripId || "") === trip.id}>{trip.name}</option>
 					{/each}
+				</select>
+			</div>
+			{#if showRecurrence}
+				<div class="field">
+					<label for="repeatFrequency">Repeat</label>
+					<select id="repeatFrequency" name="repeatFrequency" bind:value={repeatFrequencyValue} aria-invalid={Boolean(fieldErrors.repeatFrequency)}>
+						{#each repeatFrequencies as frequency}
+							<option value={frequency.value}>{frequency.label}</option>
+						{/each}
+					</select>
+					{#if fieldErrors.repeatFrequency}
+						<p class="field-error">{fieldErrors.repeatFrequency}</p>
+					{/if}
+				</div>
+				{#if repeatFrequencyValue !== "none"}
+					<div class="field">
+						<span class="field-label">How long?</span>
+						<div class="repeat-mode">
+							<label class="radio-option">
+								<input type="radio" value="count" bind:group={repeatMode} />
+								<span>Repeat N times</span>
+							</label>
+							<label class="radio-option">
+								<input type="radio" value="until" bind:group={repeatMode} />
+								<span>Repeat until date</span>
+							</label>
+						</div>
+					</div>
+				{/if}
+				<div class="field">
+					{#if repeatMode === "until" && repeatFrequencyValue !== "none"}
+						<label for="repeatUntil">Until</label>
+						<input
+							id="repeatUntil"
+							type="date"
+							min={startDate || undefined}
+							bind:value={untilDate}
+							aria-invalid={Boolean(untilError || fieldErrors.repeatCount)}
+						/>
+						<input type="hidden" name="repeatCount" value={computedHidden} />
+						{#if untilError}
+							<p class="field-error">{untilError}</p>
+						{:else if untilDate && computedCount > 0}
+							<p class="muted">→ {computedCount} date{computedCount === 1 ? "" : "s"}{computedCount === 52 ? " (max — pick an earlier date for fewer)" : ""}</p>
+						{/if}
+						{#if fieldErrors.repeatCount}
+							<p class="field-error">{fieldErrors.repeatCount}</p>
+						{/if}
+					{:else}
+						<label for="repeatCount">Number of dates</label>
+						<input
+							id="repeatCount"
+							name="repeatCount"
+							type="number"
+							min="1"
+							max="52"
+							value={fieldValue("repeatCount", "1")}
+							aria-invalid={Boolean(fieldErrors.repeatCount)}
+						/>
+						{#if fieldErrors.repeatCount}
+							<p class="field-error">{fieldErrors.repeatCount}</p>
+						{/if}
+					{/if}
 				</div>
 			{/if}
 		</div>
-		<input type="hidden" name="locationImageUrl" value={location.imageUrl || ""} />
-		<input type="hidden" name="locationImageAlt" value={location.imageAlt || ""} />
-		<input type="hidden" name="locationImageCredit" value={location.imageCredit || ""} />
-		<input type="hidden" name="locationImageLicense" value={location.imageLicense || ""} />
-		<input type="hidden" name="locationImageSourceUrl" value={location.imageSourceUrl || ""} />
-		<div class="field full">
-			<span class="field-label">Invited TripTales users</span>
-			<FriendPicker users={inviteableUsers} selectedIds={selectedUserIds} error={fieldErrors.invitedUserIds} />
+	</fieldset>
+
+	<fieldset class="form-section">
+		<legend>Location</legend>
+		<div class="form-grid">
+			<div class="field">
+				<label for="locationName">Location</label>
+				<input
+					id="locationName"
+					name="locationName"
+					value={fieldValue("locationName", location.name || "")}
+					aria-invalid={Boolean(fieldErrors.locationName)}
+					required
+				/>
+				{#if fieldErrors.locationName}
+					<p class="field-error">{fieldErrors.locationName}</p>
+				{/if}
+			</div>
+			<div class="field">
+				<label for="address">Address</label>
+				<input id="address" name="address" value={fieldValue("address", location.address || "")} />
+			</div>
+			<CityCombobox
+				cityValue={fieldValue("city", location.city || "")}
+				countryValue={fieldValue("country", location.country || "USA")}
+				latValue={fieldValue("lat", location.coordinates?.lat || "")}
+				lngValue={fieldValue("lng", location.coordinates?.lng || "")}
+				help="Pick the nearest city so the event appears at the right place on the map."
+			/>
+			<input type="hidden" name="locationImageUrl" value={location.imageUrl || ""} />
+			<input type="hidden" name="locationImageAlt" value={location.imageAlt || ""} />
+			<input type="hidden" name="locationImageCredit" value={location.imageCredit || ""} />
+			<input type="hidden" name="locationImageLicense" value={location.imageLicense || ""} />
+			<input type="hidden" name="locationImageSourceUrl" value={location.imageSourceUrl || ""} />
 		</div>
-	</div>
+	</fieldset>
+
+	<fieldset class="form-section">
+		<legend>Options</legend>
+		<div class="form-grid">
+			<div class="field full">
+				<label for="description">Description</label>
+				<textarea id="description" name="description">{fieldValue("description", event?.description || "")}</textarea>
+			</div>
+			<div class="field full media-fields">
+				<h3>Event images optional</h3>
+				<p class="muted">Up to 5 photos per event, each JPG/PNG/WebP/GIF up to 2 MB.</p>
+			</div>
+			<div class="field full">
+				<label for="eventImageFiles">Event images</label>
+				<input
+					id="eventImageFiles"
+					name="eventImageFiles"
+					type="file"
+					accept="image/jpeg,image/png,image/webp,image/gif"
+					multiple
+					aria-invalid={Boolean(fieldErrors.eventImageFiles || clientImageError)}
+					onchange={handleImageChange}
+				/>
+				{#if clientImageError}
+					<p class="field-error">{clientImageError}</p>
+				{/if}
+				{#if fieldErrors.eventImageFiles}
+					<p class="field-error">{fieldErrors.eventImageFiles}</p>
+				{/if}
+				{#if existingImages.length > 0}
+					<div class="existing-images">
+						{#each existingImages as img, idx}
+							<label class="existing-image" class:marked-removed={removeIndices.has(idx)}>
+								<img src={img.url} alt={img.alt || ""} />
+								<span class="remove-control">
+									<input
+										type="checkbox"
+										name="removeEventImageIndex"
+										value={idx}
+										checked={removeIndices.has(idx)}
+										onchange={() => toggleRemoveImage(idx)}
+									/>
+									<small>{removeIndices.has(idx) ? "Will be removed" : "Remove"}</small>
+								</span>
+							</label>
+						{/each}
+					</div>
+				{/if}
+			</div>
+			<div class="field full">
+				<span class="field-label">Invited TripTales users</span>
+				<FriendPicker users={inviteableUsers} selectedIds={selectedUserIds} error={fieldErrors.invitedUserIds} />
+			</div>
+		</div>
+	</fieldset>
 	<div class="actions">
 		<button class="button" type="submit">{submitLabel}</button>
 		<a class="ghost-button" href="/events">Cancel</a>
@@ -331,6 +352,34 @@
 </form>
 
 <style>
+	.form-section {
+		min-width: 0;
+		margin: 0 0 18px;
+		padding: 16px 20px 20px;
+		border: 1px solid var(--category-border);
+		border-radius: 12px;
+		background: var(--category-bg);
+	}
+
+	.form-section:last-of-type {
+		margin-bottom: 0;
+	}
+
+	.form-section legend {
+		padding: 0;
+		margin-bottom: 16px;
+		font-weight: 900;
+		font-size: 0.95rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: var(--category-fg);
+	}
+
+	.form-section .form-grid {
+		gap: 18px 24px;
+		align-items: start;
+	}
+
 	.actions {
 		display: flex;
 		flex-wrap: wrap;
