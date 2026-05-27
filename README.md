@@ -235,7 +235,7 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 
 ![Issue Map nach zwei Usability-Tests](docs/validate/Usability-Test/Analyse/issue-map.png)
 
-- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **#39 und #40 umgesetzt** (Navigation neu geordnet, „Save as idea"-Einstieg im Erfassungsflow und einklappbarer In-App-Konzept-Guide ergänzt); übrige Issues **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
+- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **6 von 18 umgesetzt** (#31, #37, #38, #39, #40 und #48 — in der Tabelle mit ✅ markiert); die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
 
 | Issue-ID | SG | Aufgabe(n) | Problem | Empfehlung (Kurz) | GitHub |
 |---|:---:|:---:|---|---|---|
@@ -252,10 +252,10 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 | ISSUE-15 | 3 | 8 | Share-Button/Benennung schlecht sichtbar und missverständlich | Präzise Labels („Share event/trip/journey") plus Scope-Vorschau | [#45](https://github.com/difrodar/traveljourneyapp/issues/45) |
 | ISSUE-17 | 3 | 8 | Sharing-Verständnis (Öffentlichkeit/Scope) nicht ausreichend validiert | Explizite Scope- und Ablaufanzeige vor Linkerstellung; in nächster Iteration explizit prüfen | [#47](https://github.com/difrodar/traveljourneyapp/issues/47) |
 | ISSUE-03 | 2 | 2, 3 | Suche/Filter werden mit Erstellung verwechselt | Create-Aktion visuell primär platzieren; Such-/Filterbereiche klarer abgrenzen | [#33](https://github.com/difrodar/traveljourneyapp/issues/33) |
-| ISSUE-07 | 2 | 2, 3 | Begriff „Occurrences" wird missverstanden | Label durch „Number of dates" / „Repeat count" ersetzen oder Tooltip ergänzen | [#37](https://github.com/difrodar/traveljourneyapp/issues/37) |
-| ISSUE-08 | 2 | 3 | Kategorien zu starr bzw. unvollständig | Kategorie „Other" und optional eigene Kategorie hinzufügen | [#38](https://github.com/difrodar/traveljourneyapp/issues/38) |
-| ISSUE-18 | 2 | 7, 8 | Testdaten/Bilder fehlen oder sind falsch | Seed-Daten bereinigen, Bilder validieren, Setup-Checkliste erweitern | [#48](https://github.com/difrodar/traveljourneyapp/issues/48) |
-| ISSUE-01 | 1 | 1 | Login/Registrierung wird zunächst verwechselt | Register/Login visuell klarer trennen, primären CTA hervorheben | [#31](https://github.com/difrodar/traveljourneyapp/issues/31) |
+| ISSUE-07 | 2 | 2, 3 | Begriff „Occurrences" wird missverstanden | Label durch „Number of dates" / „Repeat count" ersetzen oder Tooltip ergänzen — ✅ **umgesetzt** | [#37](https://github.com/difrodar/traveljourneyapp/issues/37) |
+| ISSUE-08 | 2 | 3 | Kategorien zu starr bzw. unvollständig | Kategorie „Other" und optional eigene Kategorie hinzufügen — ✅ **umgesetzt** | [#38](https://github.com/difrodar/traveljourneyapp/issues/38) |
+| ISSUE-18 | 2 | 7, 8 | Testdaten/Bilder fehlen oder sind falsch | Seed-Daten bereinigen, Bilder validieren, Setup-Checkliste erweitern — ✅ **umgesetzt** | [#48](https://github.com/difrodar/traveljourneyapp/issues/48) |
+| ISSUE-01 | 1 | 1 | Login/Registrierung wird zunächst verwechselt | Register/Login visuell klarer trennen, primären CTA hervorheben — ✅ **umgesetzt** | [#31](https://github.com/difrodar/traveljourneyapp/issues/31) |
 | ISSUE-12 | 1 | 6 | Einladungsfeedback und Einladungstext ausbaufähig | Toast mit Empfänger, Status und optionaler Nachricht ergänzen | [#42](https://github.com/difrodar/traveljourneyapp/issues/42) |
 
 ## 4. Erweiterungen [Optional]
