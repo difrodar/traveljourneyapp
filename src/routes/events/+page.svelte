@@ -32,7 +32,7 @@
 			<h1>Plans and past adventures</h1>
 			<p class="lead">Filter by status, category or search term. Events can happen in San Diego or anywhere your journey goes.</p>
 		</div>
-		<a class="button" href="/events/new">Create event</a>
+		<a class="button" href="/events/new">+ Create event</a>
 	</header>
 
 	{#if data.setupError}
@@ -40,6 +40,10 @@
 	{/if}
 
 	<form class="panel filters" method="GET" bind:this={filterForm}>
+		<div class="filters-title">
+			<h2>Find an event</h2>
+			<p>Search or filter the events below — to add something new, use “+ Create event” above.</p>
+		</div>
 		<label class="filter-field filter-field--search">
 			<span>Search</span>
 			<input name="search" placeholder="Search event title" value={data.filters.search} oninput={submitSearch} />
@@ -111,6 +115,24 @@
 	.filters > .filter-field--search {
 		flex: 2 1 240px;
 		min-width: 240px;
+	}
+
+	.filters-title {
+		flex: 1 1 100%;
+		min-width: 0;
+		display: grid;
+		gap: 2px;
+	}
+
+	.filters-title h2 {
+		margin: 0;
+		font-size: 1.05rem;
+	}
+
+	.filters-title p {
+		margin: 0;
+		color: var(--muted);
+		font-size: 0.85rem;
 	}
 
 	.filter-field {
