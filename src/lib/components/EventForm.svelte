@@ -18,6 +18,7 @@
 		inviteableUsers = [],
 		trips = [],
 		initialDate = "",
+		fromIdeaId = "",
 		showRecurrence = false,
 		showSaveAsIdea = false
 	} = $props();
@@ -143,6 +144,9 @@
 </script>
 
 <form class="panel" method="POST" action={action} enctype="multipart/form-data">
+	{#if fromIdeaId}
+		<input type="hidden" name="fromIdeaId" value={fromIdeaId} />
+	{/if}
 	<fieldset class="form-section">
 		<legend>Basics</legend>
 		<div class="form-grid">
@@ -395,7 +399,7 @@
 	</fieldset>
 	<div class="actions">
 		<button class="button" type="submit">{submitLabel}</button>
-		<a class="ghost-button" href="/events">Cancel</a>
+		<a class="ghost-button" href={fromIdeaId ? "/ideas" : "/events"}>Cancel</a>
 	</div>
 </form>
 

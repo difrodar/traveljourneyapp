@@ -81,6 +81,11 @@
 		align-items: start;
 	}
 
+	.ideas-layout .form-grid {
+		align-items: start;
+		gap: 18px 24px;
+	}
+
 	.idea-list {
 		align-items: start;
 	}

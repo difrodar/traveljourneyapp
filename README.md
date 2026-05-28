@@ -235,7 +235,7 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 
 ![Issue Map nach zwei Usability-Tests](docs/validate/Usability-Test/Analyse/issue-map.png)
 
-- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **13 von 18 umgesetzt** (#31, #32, #33, #34, #35, #37, #38, #39, #40, #42, #43, #46 und #48 — in der Tabelle mit ✅ markiert); Vorher-/Nachher-Belege der umgesetzten Fixes siehe [§3.5.1](#351-vorher-nachher-belege). Die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
+- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **14 von 18 umgesetzt** (#31, #32, #33, #34, #35, #37, #38, #39, #40, #41, #42, #43, #46 und #48 — in der Tabelle mit ✅ markiert); Vorher-/Nachher-Belege der umgesetzten Fixes siehe [§3.5.1](#351-vorher-nachher-belege). Die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
 
 | Issue-ID | SG | Aufgabe(n) | Problem | Empfehlung (Kurz) | GitHub |
 |---|:---:|:---:|---|---|---|
@@ -247,7 +247,7 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 | ISSUE-06 | 3 | 2 | Reminder/Benachrichtigung unklar oder nicht möglich | Native Reminder-Funktion innerhalb TripTales ergänzen | [#36](https://github.com/difrodar/traveljourneyapp/issues/36) |
 | ISSUE-09 | 3 | 4, 5, 7, 8 | Journey/Memory/Trip/Event/Idea-Beziehungen unklar | Kurzer Guide/Onboarding plus konsistente Microcopy — ✅ **umgesetzt** | [#39](https://github.com/difrodar/traveljourneyapp/issues/39) |
 | ISSUE-10 | 3 | 5 | Idea-Bereich schwer auffindbar, mit Trip/Event verwechselt | Navigation neu ordnen; Save-as-Idea im Erfassungsflow — ✅ **umgesetzt** | [#40](https://github.com/difrodar/traveljourneyapp/issues/40) |
-| ISSUE-11 | 3 | 5 | Idea-Konvertierung erzeugt unerwartete Daten, nicht rückgängig | Review-Step und Undo; Idea archivieren statt löschen | [#41](https://github.com/difrodar/traveljourneyapp/issues/41) |
+| ISSUE-11 | 3 | 5 | Idea-Konvertierung erzeugt unerwartete Daten, nicht rückgängig | Review-Step und Undo; Idea archivieren statt löschen — ✅ **umgesetzt** | [#41](https://github.com/difrodar/traveljourneyapp/issues/41) |
 | ISSUE-13 | 3 | 7 | Trip-Gruppierung funktioniert, aber Journey/Trip-Zusammenhang unklar | Guide aus ISSUE-09 anwenden; in-page Erklärung „planned activities" vs. „memories" — ✅ **umgesetzt** | [#43](https://github.com/difrodar/traveljourneyapp/issues/43) |
 | ISSUE-15 | 3 | 8 | Share-Button/Benennung schlecht sichtbar und missverständlich | Präzise Labels („Share event/trip/journey") plus Scope-Vorschau | [#45](https://github.com/difrodar/traveljourneyapp/issues/45) |
 | ISSUE-17 | 3 | 8 | Sharing-Verständnis (Öffentlichkeit/Scope) nicht ausreichend validiert | Explizite Scope- und Ablaufanzeige vor Linkerstellung; in nächster Iteration explizit prüfen | [#47](https://github.com/difrodar/traveljourneyapp/issues/47) |
@@ -308,6 +308,20 @@ Für die umgesetzten Issues belegen die folgenden Vorher-/Nachher-Paare die konk
 
 ![ISSUE-10 nachher: Ideas an zweiter Stelle der Navigation](docs/validate/Usability-Test/before-after/issue-10-nav-after.png)
 **Nachher:** „Ideas" steht prominent an zweiter Stelle der Navigation (zusätzlich ein „Save as idea"-Einstieg im Event-Formular).
+
+**ISSUE-11 · Idea-Konvertierung mit Review-Step + Cancel-Möglichkeit** (Schweregrad 3, [#41](https://github.com/difrodar/traveljourneyapp/issues/41))
+
+![ISSUE-11 vorher: Country-Feld auf /ideas nicht bündig mit City](docs/validate/Usability-Test/before-after/issue-11-idea-before.png)
+**Vorher (Idea-Formular):** Im Idea-Formular war Country wegen `align-items: stretch` und dem zusätzlichen Help-Text unter City vertikal versetzt — analog zum Problem, das in Event-Form schon mit #34 behoben wurde.
+
+![ISSUE-11 nachher: City und Country bündig](docs/validate/Usability-Test/before-after/issue-11-idea-after.png)
+**Nachher (Idea-Formular):** Dieselbe Grid-Regel wie in der Event-Form (`align-items: start`, einheitliche Gaps) ist nun auch im Idea-Formular aktiv; City und Country stehen bündig.
+
+![ISSUE-11 vorher: „Convert to event" erstellt sofort ein Event mit Random-Defaults](docs/validate/Usability-Test/before-after/issue-11-idea-defaults-before.png)
+**Vorher (Konvertierungs-Flow):** Klick auf „Convert to event" → Server erstellt sofort ein Event mit stillen Defaults (Datum = heute+7, Time = 18:00, evtl. generisches Fallback-Bild). Die Idee verschwand aus der Liste, ohne dass der User die Werte je gesehen hatte; Cancel war nicht möglich.
+
+![ISSUE-11 nachher: Review-Step mit Cancel-Button auf /events/new?fromIdeaId=…](docs/validate/Usability-Test/before-after/issue-11-idea-defaults-after.png)
+**Nachher (Konvertierungs-Flow):** „Convert to event" navigiert nun zu `/events/new?fromIdeaId=<id>`. Die EventForm ist mit den Idea-Werten vorbefüllt (Titel, Kategorie, Ort, Beschreibung); Datum und Time sind **leer** und müssen vom User selbst gewählt werden. Ein „Cancel — back to ideas"-Button führt zurück zu `/ideas`, die Idee bleibt unverändert. Erst beim erfolgreichen Speichern wird die Idea als konvertiert markiert.
 
 **ISSUE-13 · Trip ↔ Journey-Beziehung im Concept-Guide** (Schweregrad 3, [#43](https://github.com/difrodar/traveljourneyapp/issues/43))
 

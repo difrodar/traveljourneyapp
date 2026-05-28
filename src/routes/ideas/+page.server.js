@@ -1,6 +1,6 @@
-import { fail, redirect } from "@sveltejs/kit";
+import { fail } from "@sveltejs/kit";
 import { categories, priorities } from "$lib/constants.js";
-import { convertIdeaToEvent, createIdeaFromForm, deleteIdea, listIdeas } from "$lib/server/repository.js";
+import { createIdeaFromForm, deleteIdea, listIdeas } from "$lib/server/repository.js";
 
 export async function load({ locals }) {
 	try {
@@ -21,10 +21,5 @@ export const actions = {
 		const form = await request.formData();
 		await deleteIdea(locals.user.id, form.get("id"));
 		return { message: "Travel idea deleted." };
-	},
-	convert: async ({ locals, request }) => {
-		const form = await request.formData();
-		const eventId = await convertIdeaToEvent(locals.user.id, form.get("id"));
-		throw redirect(303, `/events/${eventId}`);
 	}
 };

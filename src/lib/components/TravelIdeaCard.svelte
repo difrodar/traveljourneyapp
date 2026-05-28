@@ -14,10 +14,7 @@
 	{#if idea.convertedToEvent}
 		<a class="ghost-button" href="/events/{idea.convertedToEvent}">Open converted event</a>
 	{:else}
-		<form method="POST" action="?/convert">
-			<input type="hidden" name="id" value={idea.id} />
-			<button class="button" type="submit">Convert to event</button>
-		</form>
+		<a class="button" href="/events/new?fromIdeaId={idea.id}">Convert to event</a>
 	{/if}
 	<form method="POST" action="?/delete" class="delete">
 		<input type="hidden" name="id" value={idea.id} />

@@ -1,5 +1,12 @@
 import { fail, redirect } from "@sveltejs/kit";
-import { createEventFromForm, listInviteableUsers, listTrips, validateEventForm } from "$lib/server/repository.js";
+import {
+	createEventFromForm,
+	getIdea,
+	listInviteableUsers,
+	listTrips,
+	markIdeaArchived,
+	validateEventForm
+} from "$lib/server/repository.js";
 
 const eventFormFields = [
 	"title",
@@ -36,7 +43,33 @@ export async function load({ locals, url }) {
 	]);
 	const dateParam = url.searchParams.get("date") || "";
 	const initialDate = /^\d{4}-\d{2}-\d{2}$/.test(dateParam) ? dateParam : "";
-	return { inviteableUsers, trips, initialDate };
+
+	let initialEvent = null;
+	let fromIdeaId = "";
+	const fromIdeaParam = url.searchParams.get("fromIdeaId") || "";
+	if (fromIdeaParam) {
+		const idea = await getIdea(locals.user.id, fromIdeaParam);
+		if (idea && !idea.convertedToEvent) {
+			fromIdeaId = idea.id;
+			initialEvent = {
+				title: idea.title || "",
+				category: idea.category || "",
+				description: idea.notes || "",
+				location: {
+					name: idea.location || "",
+					address: "",
+					city: idea.city || "",
+					country: idea.country || "USA",
+					coordinates: {
+						lat: idea.lat !== null && idea.lat !== undefined ? String(idea.lat) : "",
+						lng: idea.lng !== null && idea.lng !== undefined ? String(idea.lng) : ""
+					}
+				}
+			};
+		}
+	}
+
+	return { inviteableUsers, trips, initialDate, initialEvent, fromIdeaId };
 }
 
 export const actions = {
@@ -66,6 +99,13 @@ export const actions = {
 				});
 			}
 			return fail(400, { error: error.message, values });
+		}
+		// If this event was created via "Convert to event" on an idea, mark the idea archived now
+		// (issue #41 / U11). Persistence happens here, not when the user clicked Convert — so a
+		// user who navigates away without saving leaves the idea untouched.
+		const fromIdeaId = String(form.get("fromIdeaId") || "").trim();
+		if (fromIdeaId) {
+			await markIdeaArchived(locals.user.id, fromIdeaId, id);
 		}
 		// Confirm invitations on the detail page (issue #42 / U12): the count flags the success
 		// banner, the recipient names come from the freshly loaded event.friends there.

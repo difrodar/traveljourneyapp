@@ -17,7 +17,7 @@ export {
 	validateEventForm
 } from "./repositories/events.js";
 export { getJourneyDiaryData, getJourneyTripGroups, listJourneyEntries } from "./repositories/journey.js";
-export { convertIdeaToEvent, createIdeaFromForm, deleteIdea, listIdeas } from "./repositories/ideas.js";
+export { createIdeaFromForm, deleteIdea, getIdea, listIdeas, markIdeaArchived } from "./repositories/ideas.js";
 export {
 	createShare,
 	findActiveShareByHash,
