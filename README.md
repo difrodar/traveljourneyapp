@@ -354,6 +354,16 @@ Für die umgesetzten Issues belegen die folgenden Vorher-/Nachher-Paare die konk
 
 **ISSUE-18 · Testdaten und Bilder bereinigt** (Schweregrad 2, [#48](https://github.com/difrodar/traveljourneyapp/issues/48)) — *ohne Bildpaar:* Die Seed-Daten wurden bereinigt und alle Bildreferenzen gegen echte, lizenzierte Wikimedia-Commons-Dateien validiert (u. a. Korrektur einer fehlerhaften Geisel-Library-Referenz). Als reine Datenbereinigung ohne aussagekräftigen visuellen Vergleich.
 
+#### 3.5.2 Video-Walkthrough
+Gemäss Aufgabenstellung wird ein kommentierter Walkthrough der Kernfunktionalität als separates Abgabeartefakt eingereicht.
+
+- **Datei:** `Walkthrough.mp4` (separate Moodle-Abgabe, nicht im Repository)
+- **Dauer:** ca. 8 Minuten
+- **Sprache:** Deutsch
+- **Inhalt:** Vollständige Demonstration der Workflows (Login/Registrierung, Event erstellen, Memory mit Foto, Idea, Einladung, Trip, Sharing, Journey/Map). Auf Vorgehen und Code wird gemäss Aufgabenstellung nicht eingegangen.
+
+> **Wichtig — Stand-Differenz zur aktuellen Version:** Das Video wurde **vor** den Usability-Test-Fixes aufgezeichnet und zeigt damit den Stand des Branches `pre_usability`. Die in der Tabelle in [§3.5](#35-validate) mit ✅ markierten und in [§3.5.1](#351-vorher-nachher-belege) bebilderten umgesetzten Issues sind im Video **nicht** sichtbar — die „Vorher"-Bilder in §3.5.1 entsprechen dem Video-Stand, die „Nachher"-Bilder dem aktuellen Deployment. Weitere offene Issues werden iterativ ergänzt; die Tabelle in §3.5 ist die laufend aktualisierte Quelle der Wahrheit.
+
 ## 4. Erweiterungen [Optional]
 Dokumentiert Erweiterungen über den Mindestumfang hinaus.
 > **Hinweis:** Jede Erweiterung ist separat nach dem folgenden Schema zu beschreiben.
