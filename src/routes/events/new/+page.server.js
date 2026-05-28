@@ -6,6 +6,7 @@ const eventFormFields = [
 	"category",
 	"date",
 	"time",
+	"endTime",
 	"status",
 	"tripId",
 	"locationName",
@@ -28,12 +29,14 @@ function eventValues(form) {
 	};
 }
 
-export async function load({ locals }) {
+export async function load({ locals, url }) {
 	const [inviteableUsers, trips] = await Promise.all([
 		listInviteableUsers(locals.user.id),
 		listTrips(locals.user.id)
 	]);
-	return { inviteableUsers, trips };
+	const dateParam = url.searchParams.get("date") || "";
+	const initialDate = /^\d{4}-\d{2}-\d{2}$/.test(dateParam) ? dateParam : "";
+	return { inviteableUsers, trips, initialDate };
 }
 
 export const actions = {

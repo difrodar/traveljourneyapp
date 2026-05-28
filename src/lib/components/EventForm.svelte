@@ -17,6 +17,7 @@
 		form = null,
 		inviteableUsers = [],
 		trips = [],
+		initialDate = "",
 		showRecurrence = false,
 		showSaveAsIdea = false
 	} = $props();
@@ -73,7 +74,7 @@
 		removeIndices = next;
 	}
 
-	let startDate = $state(fieldValue("date", event?.date || ""));
+	let startDate = $state(fieldValue("date", event?.date || initialDate));
 	let repeatFrequencyValue = $state(fieldValue("repeatFrequency", "none"));
 	let repeatMode = $state("count");
 	let untilDate = $state("");
@@ -124,6 +125,21 @@
 		}
 		return count;
 	}
+
+	// Auto-format HH:MM as the user types or pastes. Strips non-digits, caps at 4 digits, inserts ":"
+	// after the hour. On delete events we don't re-insert the colon so backspace past it works.
+	function formatTimeInput(domEvent) {
+		const input = domEvent.currentTarget;
+		const isDelete = String(domEvent.inputType || "").startsWith("delete");
+		const digits = input.value.replace(/\D/g, "").slice(0, 4);
+		if (digits.length >= 3) {
+			input.value = digits.slice(0, 2) + ":" + digits.slice(2);
+		} else if (digits.length === 2 && !isDelete) {
+			input.value = digits + ":";
+		} else {
+			input.value = digits;
+		}
+	}
 </script>
 
 <form class="panel" method="POST" action={action} enctype="multipart/form-data">
@@ -166,18 +182,50 @@
 				{/if}
 			</div>
 			<div class="field">
-				<label for="time">Time</label>
-				<input id="time" name="time" type="time" value={fieldValue("time", event?.time || "")} aria-invalid={Boolean(fieldErrors.time)} required />
-				{#if fieldErrors.time}
-					<p class="field-error">{fieldErrors.time}</p>
-				{/if}
-			</div>
-			<div class="field">
 				<label for="status">Status</label>
 				<select id="status" name="status">
 					<option value="planned" selected={fieldValue("status", event?.status || "planned") === "planned"}>Planned</option>
 					<option value="completed" selected={fieldValue("status", event?.status || "planned") === "completed"}>Completed</option>
 				</select>
+			</div>
+			<div class="field">
+				<label for="time">Start time</label>
+				<input
+					id="time"
+					name="time"
+					type="text"
+					inputmode="numeric"
+					pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
+					placeholder="HH:MM"
+					maxlength="5"
+					value={fieldValue("time", event?.time || "")}
+					oninput={formatTimeInput}
+					aria-invalid={Boolean(fieldErrors.time)}
+					title="24-hour time, e.g. 14:30"
+					required
+				/>
+				{#if fieldErrors.time}
+					<p class="field-error">{fieldErrors.time}</p>
+				{/if}
+			</div>
+			<div class="field">
+				<label for="endTime">End time (optional)</label>
+				<input
+					id="endTime"
+					name="endTime"
+					type="text"
+					inputmode="numeric"
+					pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
+					placeholder="HH:MM"
+					maxlength="5"
+					value={fieldValue("endTime", event?.endTime || "")}
+					oninput={formatTimeInput}
+					aria-invalid={Boolean(fieldErrors.endTime)}
+					title="24-hour time, e.g. 16:00"
+				/>
+				{#if fieldErrors.endTime}
+					<p class="field-error">{fieldErrors.endTime}</p>
+				{/if}
 			</div>
 			<div class="field">
 				<label for="tripId">Trip (optional)</label>

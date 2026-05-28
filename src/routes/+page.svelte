@@ -1,5 +1,6 @@
 <script>
 	import JourneyCard from "$lib/components/JourneyCard.svelte";
+	import { formatEventTimeRange } from "$lib/utils/event-format.js";
 
 	let { data } = $props();
 	const calendar = $derived(data.calendar);
@@ -58,7 +59,7 @@
 						<div class="day-events">
 							{#each day.events as event}
 								<a class="calendar-event {event.status}" href="/events/{event.id}">
-									<span class="event-time">{event.time || "All day"}</span>
+									<span class="event-time">{formatEventTimeRange(event.time, event.endTime)}</span>
 									<strong>{event.title}</strong>
 									<span class="event-meta">
 										{event.invitationStatus || event.status}
@@ -67,11 +68,18 @@
 										{/if}
 									</span>
 								</a>
-							{:else}
-								{#if day.isCurrentMonth}
-									<span class="quiet-slot">No events</span>
-								{/if}
 							{/each}
+							{#if day.isCurrentMonth}
+								{#if day.events.length === 0}
+									<a class="add-event-slot" href="/events/new?date={day.date}">+ Add event</a>
+								{:else}
+									<a
+										class="add-event-slot subtle"
+										href="/events/new?date={day.date}"
+										aria-label="Add another event on {day.date}"
+									>+ Add</a>
+								{/if}
+							{/if}
 						</div>
 					</article>
 				{/each}
@@ -128,7 +136,7 @@
 						<span class="reminder-content">
 							<strong>{event.title}</strong>
 							<small>
-								{event.date} at {event.time}
+								{event.date} at {formatEventTimeRange(event.time, event.endTime)}
 								{#if event.location?.name}
 									- {event.location.name}
 								{/if}
@@ -378,6 +386,32 @@
 
 	.quiet-slot {
 		opacity: 0.68;
+	}
+
+	.add-event-slot {
+		display: block;
+		border: 1px dashed var(--border);
+		border-radius: 8px;
+		padding: 7px;
+		color: var(--muted);
+		font-size: 0.78rem;
+		font-weight: 800;
+		text-align: center;
+		text-decoration: none;
+		opacity: 0.7;
+	}
+
+	.add-event-slot:hover,
+	.add-event-slot:focus-visible {
+		border-color: var(--sky);
+		color: var(--ink-strong);
+		opacity: 1;
+	}
+
+	.add-event-slot.subtle {
+		padding: 4px;
+		font-size: 0.72rem;
+		opacity: 0.55;
 	}
 
 	.calendar-empty {

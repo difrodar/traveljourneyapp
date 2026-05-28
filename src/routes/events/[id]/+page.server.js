@@ -16,6 +16,7 @@ const eventFormFields = [
 	"category",
 	"date",
 	"time",
+	"endTime",
 	"status",
 	"tripId",
 	"locationName",

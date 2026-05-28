@@ -201,6 +201,15 @@ export function validateEventForm(form) {
 		fieldErrors.time = "Time must be in HH:MM format.";
 	}
 
+	const endTimeValue = clean(form.get("endTime"));
+	if (endTimeValue) {
+		if (!timeRegex.test(endTimeValue)) {
+			fieldErrors.endTime = "End time must be in HH:MM format.";
+		} else if (timeValue && timeRegex.test(timeValue) && endTimeValue <= timeValue) {
+			fieldErrors.endTime = "End time must be after the start time.";
+		}
+	}
+
 	const categoryValue = clean(form.get("category"));
 	if (categoryValue && !allowedCategories.has(categoryValue)) {
 		fieldErrors.category = "Please choose a category from the list.";
@@ -297,11 +306,13 @@ async function eventPayloadFromForm(userId, form, locationId, invitedUserIds, ex
 		(await uploadedImagesFields(form, "eventImageFiles", "removeEventImageIndex", existing.images || [], title, "Event image"));
 	const tripIdValue = clean(form.get("tripId"));
 	const tripIdObject = tripIdValue ? oid(tripIdValue) : null;
+	const endTime = clean(form.get("endTime"));
 	return {
 		title,
 		userId: userOid(userId),
 		date: overrides.date || clean(form.get("date")),
 		time: clean(form.get("time")),
+		...(endTime ? { endTime } : { endTime: null }),
 		locationId,
 		category: clean(form.get("category")),
 		description: clean(form.get("description")),

@@ -23,7 +23,9 @@ export async function GET({ locals, params }) {
 	if (!event) throw error(404, "Event not found");
 
 	const dtStart = toDateTimeStamp(event.date, event.time, 0);
-	const dtEnd = toDateTimeStamp(event.date, event.time, 2);
+	const dtEnd = event.endTime
+		? toDateTimeStamp(event.date, event.endTime, 0)
+		: toDateTimeStamp(event.date, event.time, 2);
 	const dtStamp = toDateTimeStamp(new Date().toISOString().slice(0, 10), new Date().toISOString().slice(11, 16), 0);
 	const locationParts = [event.location?.name, event.location?.city, event.location?.country].filter(Boolean).join(", ");
 

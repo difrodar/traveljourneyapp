@@ -8,7 +8,7 @@
 	import MemoryForm from "$lib/components/MemoryForm.svelte";
 	import PlaceholderIcon from "$lib/components/PlaceholderIcon.svelte";
 	import SharePreview from "$lib/components/SharePreview.svelte";
-	import { buildGallery, formatEventDate } from "$lib/utils/event-format.js";
+	import { buildGallery, formatEventDate, formatEventTimeRange } from "$lib/utils/event-format.js";
 
 	let { data, form } = $props();
 	let showDeleteDialog = $state(false);
@@ -170,7 +170,7 @@
 						</div>
 						<div>
 							<span>Time</span>
-							<strong>{event.time}</strong>
+							<strong>{formatEventTimeRange(event.time, event.endTime)}</strong>
 						</div>
 						<div>
 							<span>Location</span>

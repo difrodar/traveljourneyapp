@@ -11,6 +11,12 @@ export function formatEventDate(date, time) {
 	}).format(eventDate);
 }
 
+export function formatEventTimeRange(time, endTime) {
+	if (!time) return "All day";
+	if (!endTime) return time;
+	return `${time}–${endTime}`;
+}
+
 function addPhoto(photos, url, alt, label, credit = "", license = "") {
 	if (!url || photos.some((photo) => photo.url === url)) return;
 	photos.push({ url, alt, label, credit, license });

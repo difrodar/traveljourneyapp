@@ -23,6 +23,7 @@
 		{form}
 		inviteableUsers={data.inviteableUsers}
 		trips={data.trips}
+		initialDate={data.initialDate}
 		showRecurrence
 		showSaveAsIdea
 	/>

@@ -235,15 +235,15 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 
 ![Issue Map nach zwei Usability-Tests](docs/validate/Usability-Test/Analyse/issue-map.png)
 
-- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **10 von 18 umgesetzt** (#31, #33, #34, #37, #38, #39, #40, #42, #46 und #48 — in der Tabelle mit ✅ markiert); Vorher-/Nachher-Belege der umgesetzten Fixes siehe [§3.5.1](#351-vorher-nachher-belege). Die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
+- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **12 von 18 umgesetzt** (#31, #32, #33, #34, #35, #37, #38, #39, #40, #42, #46 und #48 — in der Tabelle mit ✅ markiert); Vorher-/Nachher-Belege der umgesetzten Fixes siehe [§3.5.1](#351-vorher-nachher-belege). Die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
 
 | Issue-ID | SG | Aufgabe(n) | Problem | Empfehlung (Kurz) | GitHub |
 |---|:---:|:---:|---|---|---|
 | ISSUE-14 | 4 | 8 | Sharing fehlt als zentraler Bereich für Events, Trips und Journey | Zentralen Sharing-Bereich einführen; Kontextlinks aus Event/Trip/Journey | [#44](https://github.com/difrodar/traveljourneyapp/issues/44) |
 | ISSUE-16 | 4 | 8 | Ablaufdatum von zwei Wochen nicht möglich | Presets 7/14/30 Tage ergänzen — ✅ **umgesetzt** | [#46](https://github.com/difrodar/traveljourneyapp/issues/46) |
-| ISSUE-02 | 3 | 2 | Direkte Eventerstellung aus Kalender fehlt | Click-to-Create im Kalender; alternativ globaler Create-Button mit Datumsvorbelegung | [#32](https://github.com/difrodar/traveljourneyapp/issues/32) |
+| ISSUE-02 | 3 | 2 | Direkte Eventerstellung aus Kalender fehlt | Click-to-Create im Kalender; alternativ globaler Create-Button mit Datumsvorbelegung — ✅ **umgesetzt** | [#32](https://github.com/difrodar/traveljourneyapp/issues/32) |
 | ISSUE-04 | 3 | 2, 3, 5 | Event-Formular wirkt überladen, Felder/Layout unklar | Formular in Abschnitte gliedern (Basics, Ort, Termin, Optionen); Pflichtfelder eindeutig — ✅ **umgesetzt** | [#34](https://github.com/difrodar/traveljourneyapp/issues/34) |
-| ISSUE-05 | 3 | 3 | Ende bzw. Dauer fehlt | Von-bis-Feld oder optionales Ende-Feld ergänzen | [#35](https://github.com/difrodar/traveljourneyapp/issues/35) |
+| ISSUE-05 | 3 | 3 | Ende bzw. Dauer fehlt | Von-bis-Feld oder optionales Ende-Feld ergänzen — ✅ **umgesetzt** | [#35](https://github.com/difrodar/traveljourneyapp/issues/35) |
 | ISSUE-06 | 3 | 2 | Reminder/Benachrichtigung unklar oder nicht möglich | Native Reminder-Funktion innerhalb TripTales ergänzen | [#36](https://github.com/difrodar/traveljourneyapp/issues/36) |
 | ISSUE-09 | 3 | 4, 5, 7, 8 | Journey/Memory/Trip/Event/Idea-Beziehungen unklar | Kurzer Guide/Onboarding plus konsistente Microcopy — ✅ **umgesetzt** | [#39](https://github.com/difrodar/traveljourneyapp/issues/39) |
 | ISSUE-10 | 3 | 5 | Idea-Bereich schwer auffindbar, mit Trip/Event verwechselt | Navigation neu ordnen; Save-as-Idea im Erfassungsflow — ✅ **umgesetzt** | [#40](https://github.com/difrodar/traveljourneyapp/issues/40) |
@@ -269,6 +269,14 @@ Für die umgesetzten Issues belegen die folgenden Vorher-/Nachher-Paare die konk
 ![ISSUE-16 nachher: Option „14 days" ergänzt](docs/validate/Usability-Test/before-after/issue-16-expiry-after.png)
 **Nachher:** „14 days" steht jetzt als Preset zur Verfügung.
 
+**ISSUE-02 · Direkte Eventerstellung aus Kalender** (Schweregrad 3, [#32](https://github.com/difrodar/traveljourneyapp/issues/32))
+
+![ISSUE-02 vorher: Kalendertage ohne Erstellaktion](docs/validate/Usability-Test/before-after/issue-02-calendar-before.png)
+**Vorher:** Kalendertage auf dem Dashboard waren passive Anzeigeflächen — Events anlegen ging nur über den globalen „Create event"-Button im Header, das Datum musste danach manuell erneut eingegeben werden.
+
+![ISSUE-02 nachher: Kalendertage mit „+ Add event"-Link und Datumsvorbelegung](docs/validate/Usability-Test/before-after/issue-02-calendar-after.png)
+**Nachher:** Jeder Kalendertag des aktuellen Monats zeigt einen „+ Add event"-Link (volle Zeile bei leeren Tagen, dezenter „+ Add"-Knopf bei Tagen mit Events). Der Link führt zu `/events/new?date=YYYY-MM-DD` und füllt das Datumsfeld im Formular vor.
+
 **ISSUE-04 · Event-Formular in Abschnitte gliedern** (Schweregrad 3, [#34](https://github.com/difrodar/traveljourneyapp/issues/34))
 
 ![ISSUE-04 vorher: flaches, überladenes Formular](docs/validate/Usability-Test/before-after/issue-04-eventform-before.png)
@@ -276,6 +284,14 @@ Für die umgesetzten Issues belegen die folgenden Vorher-/Nachher-Paare die konk
 
 ![ISSUE-04 nachher: gegliederte Abschnitte als Cards](docs/validate/Usability-Test/before-after/issue-04-eventform-after.png)
 **Nachher:** Vier abgesetzte Abschnitte (Basics, Date & time, Location, Options) gruppieren die Felder mit klaren Überschriften und mehr Abstand.
+
+**ISSUE-05 · Ende-Zeit für Events** (Schweregrad 3, [#35](https://github.com/difrodar/traveljourneyapp/issues/35))
+
+![ISSUE-05 vorher: nur Start-Zeit, kein Ende](docs/validate/Usability-Test/before-after/issue-05-endtime-before.png)
+**Vorher:** Das Event-Formular kannte nur eine Start-Zeit; Dauer oder Endzeit waren nicht abbildbar. ICS-Exporte nahmen pauschal 2 Stunden Dauer an.
+
+![ISSUE-05 nachher: optionales „End time"-Feld neben der Startzeit](docs/validate/Usability-Test/before-after/issue-05-endtime-after.png)
+**Nachher:** Neben „Start time" steht jetzt ein optionales „End time"-Feld (24-Stunden, gleicher Eingabestil mit Auto-`:`). Kalender, Reminder-Liste und Event-Detail zeigen die Spanne als `HH:MM–HH:MM` an; der ICS-Export verwendet die echte Endzeit für `DTEND`, sofern gesetzt.
 
 **ISSUE-09 · Begriffssystem Idea → Event → Memory → Journey erklären** (Schweregrad 3, [#39](https://github.com/difrodar/traveljourneyapp/issues/39))
 
