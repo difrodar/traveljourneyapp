@@ -13,6 +13,7 @@
 		<li><strong>Journey</strong> — your timeline of all memories.</li>
 		<li><strong>Trip</strong> — groups related events together, e.g. one holiday.</li>
 	</ul>
+	<p class="concept-tip"><strong>Tip:</strong> planned events group into <strong>Trips</strong>; completed events become <strong>Memories</strong> in your <strong>Journey</strong>.</p>
 </details>
 
 <style>
@@ -35,6 +36,12 @@
 		padding-left: 20px;
 		display: grid;
 		gap: 6px;
+		font-size: 0.92rem;
+		line-height: 1.55;
+	}
+
+	.concept-tip {
+		margin: 10px 0 0;
 		font-size: 0.92rem;
 		line-height: 1.55;
 	}

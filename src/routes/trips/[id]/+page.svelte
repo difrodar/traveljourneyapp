@@ -1,4 +1,5 @@
 <script>
+	import ConceptGuide from "$lib/components/ConceptGuide.svelte";
 	import LeafletMapView from "$lib/components/LeafletMapView.svelte";
 
 	let { data, form } = $props();
@@ -64,6 +65,8 @@
 	{#if form?.message}
 		<div class="message success">{form.message}</div>
 	{/if}
+
+	<ConceptGuide />
 
 	{#if data.stats.eventCount > 0}
 		<section class="trip-stats" aria-label="Trip statistics">

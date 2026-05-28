@@ -235,7 +235,7 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 
 ![Issue Map nach zwei Usability-Tests](docs/validate/Usability-Test/Analyse/issue-map.png)
 
-- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **12 von 18 umgesetzt** (#31, #32, #33, #34, #35, #37, #38, #39, #40, #42, #46 und #48 — in der Tabelle mit ✅ markiert); Vorher-/Nachher-Belege der umgesetzten Fixes siehe [§3.5.1](#351-vorher-nachher-belege). Die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
+- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **13 von 18 umgesetzt** (#31, #32, #33, #34, #35, #37, #38, #39, #40, #42, #43, #46 und #48 — in der Tabelle mit ✅ markiert); Vorher-/Nachher-Belege der umgesetzten Fixes siehe [§3.5.1](#351-vorher-nachher-belege). Die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
 
 | Issue-ID | SG | Aufgabe(n) | Problem | Empfehlung (Kurz) | GitHub |
 |---|:---:|:---:|---|---|---|
@@ -248,7 +248,7 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 | ISSUE-09 | 3 | 4, 5, 7, 8 | Journey/Memory/Trip/Event/Idea-Beziehungen unklar | Kurzer Guide/Onboarding plus konsistente Microcopy — ✅ **umgesetzt** | [#39](https://github.com/difrodar/traveljourneyapp/issues/39) |
 | ISSUE-10 | 3 | 5 | Idea-Bereich schwer auffindbar, mit Trip/Event verwechselt | Navigation neu ordnen; Save-as-Idea im Erfassungsflow — ✅ **umgesetzt** | [#40](https://github.com/difrodar/traveljourneyapp/issues/40) |
 | ISSUE-11 | 3 | 5 | Idea-Konvertierung erzeugt unerwartete Daten, nicht rückgängig | Review-Step und Undo; Idea archivieren statt löschen | [#41](https://github.com/difrodar/traveljourneyapp/issues/41) |
-| ISSUE-13 | 3 | 7 | Trip-Gruppierung funktioniert, aber Journey/Trip-Zusammenhang unklar | Guide aus ISSUE-09 anwenden; in-page Erklärung „planned activities" vs. „memories" | [#43](https://github.com/difrodar/traveljourneyapp/issues/43) |
+| ISSUE-13 | 3 | 7 | Trip-Gruppierung funktioniert, aber Journey/Trip-Zusammenhang unklar | Guide aus ISSUE-09 anwenden; in-page Erklärung „planned activities" vs. „memories" — ✅ **umgesetzt** | [#43](https://github.com/difrodar/traveljourneyapp/issues/43) |
 | ISSUE-15 | 3 | 8 | Share-Button/Benennung schlecht sichtbar und missverständlich | Präzise Labels („Share event/trip/journey") plus Scope-Vorschau | [#45](https://github.com/difrodar/traveljourneyapp/issues/45) |
 | ISSUE-17 | 3 | 8 | Sharing-Verständnis (Öffentlichkeit/Scope) nicht ausreichend validiert | Explizite Scope- und Ablaufanzeige vor Linkerstellung; in nächster Iteration explizit prüfen | [#47](https://github.com/difrodar/traveljourneyapp/issues/47) |
 | ISSUE-03 | 2 | 2, 3 | Suche/Filter werden mit Erstellung verwechselt | Create-Aktion visuell primär platzieren; Such-/Filterbereiche klarer abgrenzen — ✅ **umgesetzt** | [#33](https://github.com/difrodar/traveljourneyapp/issues/33) |
@@ -308,6 +308,20 @@ Für die umgesetzten Issues belegen die folgenden Vorher-/Nachher-Paare die konk
 
 ![ISSUE-10 nachher: Ideas an zweiter Stelle der Navigation](docs/validate/Usability-Test/before-after/issue-10-nav-after.png)
 **Nachher:** „Ideas" steht prominent an zweiter Stelle der Navigation (zusätzlich ein „Save as idea"-Einstieg im Event-Formular).
+
+**ISSUE-13 · Trip ↔ Journey-Beziehung im Concept-Guide** (Schweregrad 3, [#43](https://github.com/difrodar/traveljourneyapp/issues/43))
+
+![ISSUE-13 vorher: Trip-Detail ohne Concept-Guide](docs/validate/Usability-Test/before-after/issue-13-conceptguide-before.png)
+**Vorher (Trip-Detail):** Auf der Trip-Detail-Seite gab es keinen Concept-Guide; der Zusammenhang Trip ↔ Journey ↔ Memory musste durch Trial-and-Error erschlossen werden.
+
+![ISSUE-13 nachher: Trip-Detail mit Concept-Guide und Tipp-Zeile](docs/validate/Usability-Test/before-after/issue-13-conceptguide-after.png)
+**Nachher (Trip-Detail):** Der bestehende Concept-Guide (aus ISSUE-09 / #39) wird nun auch oben auf der Trip-Detail-Seite eingebunden und um eine Tipp-Zeile ergänzt: „planned events group into Trips; completed events become Memories in your Journey." Dieselbe Zeile erscheint auch im Concept-Guide auf Journey und Ideas.
+
+![ISSUE-13 vorher: Concept-Guide auf Journey ohne Tipp-Zeile](docs/validate/Usability-Test/before-after/issue-13-conceptguide-journey-before.png)
+**Vorher (Journey):** Der Concept-Guide listete Idea / Event / Memory / Journey / Trip, erklärte aber nicht explizit die Trip ↔ Journey-Verbindung.
+
+![ISSUE-13 nachher: Concept-Guide auf Journey mit Tipp-Zeile](docs/validate/Usability-Test/before-after/issue-13-conceptguide-journey-after.png)
+**Nachher (Journey):** Die neue Tipp-Zeile macht die Beziehung explizit; der gleiche Guide trägt sie auf jeder Seite, auf der er eingebunden ist.
 
 **ISSUE-03 · Erstellen vs. Suchen/Filtern abgrenzen** (Schweregrad 2, [#33](https://github.com/difrodar/traveljourneyapp/issues/33))
 
