@@ -14,6 +14,11 @@
 	);
 
 	const items = $derived([
+		...(notifications?.reminders || []).map((event) => ({
+			href: `/events/${event.id}`,
+			kind: "reminder",
+			...event
+		})),
 		...(notifications?.invitations || []).map((event) => ({
 			href: "/events?status=invited",
 			kind: "invitation",
@@ -104,6 +109,23 @@
 			{#if totalCount === 0}
 				<p class="empty">All caught up.</p>
 			{:else}
+				{#if notifications.remindersCount > 0}
+					<p class="section-head">Reminders due ({notifications.remindersCount})</p>
+					{#each items.filter((item) => item.kind === "reminder") as item}
+						<a
+							class="row"
+							role="menuitem"
+							tabindex="-1"
+							href={item.href}
+							onclick={() => (open = false)}
+						>
+							<span class="row-title">{item.title}</span>
+							<span class="row-meta">
+								{item.dueLabel}{item.city ? ` · ${item.city}` : ""}
+							</span>
+						</a>
+					{/each}
+				{/if}
 				{#if notifications.invitationsCount > 0}
 					<p class="section-head">Invitations ({notifications.invitationsCount})</p>
 					{#each items.filter((item) => item.kind === "invitation") as item}

@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { categories } from "$lib/constants.js";
+import { categories, reminderLeadHoursAllowed } from "$lib/constants.js";
 import { storedEventMedia, storedLocationMedia } from "$lib/media.js";
 import { getCollections } from "../db.js";
 import {
@@ -16,6 +16,7 @@ import {
 	recurrenceFromForm,
 	recurrenceLabel,
 	reminderForEvent,
+	reminderStateForEvent,
 	repeatFrequencies,
 	serialize,
 	upcomingForEvent,
@@ -84,6 +85,8 @@ async function hydrateEvents(events, userId) {
 			recurrenceLabel: recurrenceLabel(serialized),
 			upcoming: upcomingForEvent(serialized),
 			reminder: reminderForEvent(serialized),
+			reminderLeadHours: typeof event.reminderLeadHours === "number" ? event.reminderLeadHours : null,
+			reminderState: reminderStateForEvent(serialized),
 			journeyEntry: journeyMap.get(event._id.toString()) || null
 		};
 	});
@@ -149,6 +152,16 @@ export async function listEventsAwaitingMemory(userId, limit = 5) {
 	const today = todayString();
 	return events
 		.filter((event) => event.date && event.date < today && !event.journeyEntry)
+		.slice(0, limit);
+}
+
+// Events whose per-event reminder lead-time window has been entered but which haven't started yet.
+// Includes owner-events and accepted-invitee events (declined/pending excluded — they haven't
+// committed). Drives the "Reminders due" section in the notification bell (issue #36 / U6).
+export async function listDueReminders(userId, limit = 5) {
+	const events = await listEvents(userId, { sort: "asc", includeInvitations: true });
+	return events
+		.filter((event) => event.reminderState?.due && (event.isOwner || event.invitationStatus === "accepted"))
 		.slice(0, limit);
 }
 
@@ -231,6 +244,14 @@ export function validateEventForm(form) {
 		}
 	}
 
+	const reminderLeadRaw = clean(form.get("reminderLeadHours"));
+	if (reminderLeadRaw) {
+		const leadHours = Number(reminderLeadRaw);
+		if (!Number.isInteger(leadHours) || !reminderLeadHoursAllowed.has(leadHours)) {
+			fieldErrors.reminderLeadHours = "Please choose a supported reminder option.";
+		}
+	}
+
 	const repeatFrequency = clean(form.get("repeatFrequency")) || "none";
 	if (!repeatFrequencies.has(repeatFrequency)) {
 		fieldErrors.repeatFrequency = "Please choose a supported repeat frequency.";
@@ -307,12 +328,17 @@ async function eventPayloadFromForm(userId, form, locationId, invitedUserIds, ex
 	const tripIdValue = clean(form.get("tripId"));
 	const tripIdObject = tripIdValue ? oid(tripIdValue) : null;
 	const endTime = clean(form.get("endTime"));
+	const reminderLeadRaw = clean(form.get("reminderLeadHours"));
+	const reminderLeadValue = reminderLeadRaw ? Number(reminderLeadRaw) : null;
+	const reminderLeadHours =
+		reminderLeadValue && reminderLeadHoursAllowed.has(reminderLeadValue) ? reminderLeadValue : null;
 	return {
 		title,
 		userId: userOid(userId),
 		date: overrides.date || clean(form.get("date")),
 		time: clean(form.get("time")),
 		...(endTime ? { endTime } : { endTime: null }),
+		reminderLeadHours,
 		locationId,
 		category: clean(form.get("category")),
 		description: clean(form.get("description")),

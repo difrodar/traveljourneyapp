@@ -27,7 +27,8 @@ const eventFormFields = [
 	"lng",
 	"backgroundType",
 	"description",
-	"invitedUserIds"
+	"invitedUserIds",
+	"reminderLeadHours"
 ];
 
 function eventValues(form) {

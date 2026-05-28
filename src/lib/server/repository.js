@@ -6,6 +6,7 @@ export {
 	deleteEventSeries,
 	getDashboardData,
 	getEvent,
+	listDueReminders,
 	listEvents,
 	listEventsAwaitingMemory,
 	listInviteableUsers,

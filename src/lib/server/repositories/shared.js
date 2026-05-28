@@ -145,6 +145,46 @@ export function reminderForEvent(event) {
 	return { ...upcoming, badge: "Upcoming soon" };
 }
 
+const reminderLeadLabels = {
+	1: "1 hour before",
+	3: "3 hours before",
+	12: "12 hours before",
+	24: "1 day before",
+	168: "1 week before"
+};
+
+// Per-event in-app reminder (issue #36 / U6). Returns the static label for the event-detail row,
+// plus a `due` flag + dynamic countdown label for the notification bell when the lead-time window
+// has been entered but the event hasn't started yet.
+export function reminderStateForEvent(event, now = new Date()) {
+	const leadHoursRaw = event?.reminderLeadHours;
+	const leadHours = typeof leadHoursRaw === "number" && Number.isFinite(leadHoursRaw) ? leadHoursRaw : null;
+	if (!leadHours || !isDateFilter(event?.date)) {
+		return { leadHours: null, label: "", due: false, dueLabel: "" };
+	}
+	const label = reminderLeadLabels[leadHours] || `${leadHours} hours before`;
+	const [year, month, day] = event.date.split("-").map(Number);
+	const [hour, minute] = String(event.time || "00:00").split(":").map((part) => Number(part) || 0);
+	const start = new Date(year, month - 1, day, hour, minute);
+	const msUntil = start.getTime() - now.getTime();
+	if (msUntil <= 0 || msUntil > leadHours * 60 * 60 * 1000) {
+		return { leadHours, label, due: false, dueLabel: "" };
+	}
+	const hoursUntil = msUntil / (60 * 60 * 1000);
+	let dueLabel;
+	if (hoursUntil < 1) {
+		const minutesUntil = Math.max(1, Math.round(msUntil / 60000));
+		dueLabel = `in ${minutesUntil} minute${minutesUntil === 1 ? "" : "s"}`;
+	} else if (hoursUntil < 24) {
+		const wholeHours = Math.round(hoursUntil);
+		dueLabel = `in ${wholeHours} hour${wholeHours === 1 ? "" : "s"}`;
+	} else {
+		const wholeDays = Math.round(hoursUntil / 24);
+		dueLabel = `in ${wholeDays} day${wholeDays === 1 ? "" : "s"}`;
+	}
+	return { leadHours, label, due: true, dueLabel };
+}
+
 export function recurrenceLabel(event) {
 	if (!event.recurrenceGroupId || !event.recurrenceFrequency || !event.recurrenceIndex || !event.recurrenceCount) return "";
 	const frequency = `${event.recurrenceFrequency.charAt(0).toUpperCase()}${event.recurrenceFrequency.slice(1)}`;

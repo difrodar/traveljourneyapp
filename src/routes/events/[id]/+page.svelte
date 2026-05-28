@@ -91,6 +91,12 @@
 			</div>
 		{/if}
 
+		{#if event.reminderState?.due}
+			<div class="message reminder-banner" role="status">
+				⏰ Coming up — this event starts {event.reminderState.dueLabel}.
+			</div>
+		{/if}
+
 		<section class="photo-hero">
 			{#if event.media?.images?.[0]?.url}
 				<img src={event.media.images[0].url} alt={event.media.images[0].alt || event.title} />
@@ -105,7 +111,7 @@
 					<a href="#edit-plan">Edit Event</a>
 				{/if}
 				<a href="#share-preview">Share</a>
-				<a href="/events/{event.id}/ics" download>Add to calendar</a>
+				<a href="/events/{event.id}/ics" download>Export to calendar app (.ics)</a>
 			</div>
 			<a class="close-button" href="/events" aria-label="Back to events">X</a>
 			<div class="hero-copy">
@@ -179,6 +185,10 @@
 						<div>
 							<span>Status</span>
 							<strong>{isInvitedViewer ? event.invitationStatus : event.status}</strong>
+						</div>
+						<div>
+							<span>Reminder</span>
+							<strong>{event.reminderState?.label || "No reminder set"}</strong>
 						</div>
 						{#if event.recurrenceLabel}
 							<div>

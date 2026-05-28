@@ -124,7 +124,7 @@
 		<div>
 			<div class="page-header slim">
 				<div>
-					<p class="eyebrow">Reminder</p>
+					<p class="eyebrow">Coming up</p>
 					<h2>Upcoming soon</h2>
 				</div>
 				<a class="ghost-button" href="/events">View all</a>

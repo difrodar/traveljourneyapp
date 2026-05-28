@@ -1,6 +1,7 @@
 <script>
 	import {
 		categories,
+		reminderLeadOptions,
 		repeatFrequencies,
 		UPLOAD_ALLOWED_MIME_TYPES,
 		UPLOAD_MAX_BYTES,
@@ -346,6 +347,25 @@
 	<fieldset class="form-section">
 		<legend>Options</legend>
 		<div class="form-grid">
+			<div class="field">
+				<label for="reminderLeadHours">Reminder</label>
+				<select id="reminderLeadHours" name="reminderLeadHours" aria-invalid={Boolean(fieldErrors.reminderLeadHours)}>
+					{#each reminderLeadOptions as option}
+						<option
+							value={option.value}
+							selected={fieldValue(
+								"reminderLeadHours",
+								event?.reminderLeadHours != null ? String(event.reminderLeadHours) : ""
+							) === option.value}
+						>{option.label}</option>
+					{/each}
+				</select>
+				{#if fieldErrors.reminderLeadHours}
+					<p class="field-error">{fieldErrors.reminderLeadHours}</p>
+				{:else}
+					<p class="muted">In-app notification when the event approaches.</p>
+				{/if}
+			</div>
 			<div class="field full">
 				<label for="description">Description</label>
 				<textarea id="description" name="description">{fieldValue("description", event?.description || "")}</textarea>

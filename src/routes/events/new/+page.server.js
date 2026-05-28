@@ -25,6 +25,7 @@ const eventFormFields = [
 	"backgroundType",
 	"description",
 	"invitedUserIds",
+	"reminderLeadHours",
 	"repeatFrequency",
 	"repeatCount"
 ];

@@ -22,6 +22,19 @@ export const repeatFrequencies = [
 
 export const priorities = ["Low", "Medium", "High"];
 
+// In-app reminder lead-time presets (issue #36 / U6). Empty value = no reminder; numeric values
+// are hours before event start when the reminder enters the "due" window for the notification bell.
+export const reminderLeadOptions = [
+	{ value: "", label: "No reminder" },
+	{ value: "1", label: "1 hour before" },
+	{ value: "3", label: "3 hours before" },
+	{ value: "12", label: "12 hours before" },
+	{ value: "24", label: "1 day before" },
+	{ value: "168", label: "1 week before" }
+];
+
+export const reminderLeadHoursAllowed = new Set([1, 3, 12, 24, 168]);
+
 export const statusLabels = {
 	planned: "Planned",
 	completed: "Completed"

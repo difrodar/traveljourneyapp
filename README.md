@@ -235,7 +235,7 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 
 ![Issue Map nach zwei Usability-Tests](docs/validate/Usability-Test/Analyse/issue-map.png)
 
-- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **14 von 18 umgesetzt** (#31, #32, #33, #34, #35, #37, #38, #39, #40, #41, #42, #43, #46 und #48 — in der Tabelle mit ✅ markiert); Vorher-/Nachher-Belege der umgesetzten Fixes siehe [§3.5.1](#351-vorher-nachher-belege). Die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
+- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **15 von 18 umgesetzt** (#31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #46 und #48 — in der Tabelle mit ✅ markiert); Vorher-/Nachher-Belege der umgesetzten Fixes siehe [§3.5.1](#351-vorher-nachher-belege). Die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
 
 | Issue-ID | SG | Aufgabe(n) | Problem | Empfehlung (Kurz) | GitHub |
 |---|:---:|:---:|---|---|---|
@@ -244,7 +244,7 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 | ISSUE-02 | 3 | 2 | Direkte Eventerstellung aus Kalender fehlt | Click-to-Create im Kalender; alternativ globaler Create-Button mit Datumsvorbelegung — ✅ **umgesetzt** | [#32](https://github.com/difrodar/traveljourneyapp/issues/32) |
 | ISSUE-04 | 3 | 2, 3, 5 | Event-Formular wirkt überladen, Felder/Layout unklar | Formular in Abschnitte gliedern (Basics, Ort, Termin, Optionen); Pflichtfelder eindeutig — ✅ **umgesetzt** | [#34](https://github.com/difrodar/traveljourneyapp/issues/34) |
 | ISSUE-05 | 3 | 3 | Ende bzw. Dauer fehlt | Von-bis-Feld oder optionales Ende-Feld ergänzen — ✅ **umgesetzt** | [#35](https://github.com/difrodar/traveljourneyapp/issues/35) |
-| ISSUE-06 | 3 | 2 | Reminder/Benachrichtigung unklar oder nicht möglich | Native Reminder-Funktion innerhalb TripTales ergänzen | [#36](https://github.com/difrodar/traveljourneyapp/issues/36) |
+| ISSUE-06 | 3 | 2 | Reminder/Benachrichtigung unklar oder nicht möglich | Native Reminder-Funktion innerhalb TripTales ergänzen — ✅ **umgesetzt** | [#36](https://github.com/difrodar/traveljourneyapp/issues/36) |
 | ISSUE-09 | 3 | 4, 5, 7, 8 | Journey/Memory/Trip/Event/Idea-Beziehungen unklar | Kurzer Guide/Onboarding plus konsistente Microcopy — ✅ **umgesetzt** | [#39](https://github.com/difrodar/traveljourneyapp/issues/39) |
 | ISSUE-10 | 3 | 5 | Idea-Bereich schwer auffindbar, mit Trip/Event verwechselt | Navigation neu ordnen; Save-as-Idea im Erfassungsflow — ✅ **umgesetzt** | [#40](https://github.com/difrodar/traveljourneyapp/issues/40) |
 | ISSUE-11 | 3 | 5 | Idea-Konvertierung erzeugt unerwartete Daten, nicht rückgängig | Review-Step und Undo; Idea archivieren statt löschen — ✅ **umgesetzt** | [#41](https://github.com/difrodar/traveljourneyapp/issues/41) |
@@ -292,6 +292,23 @@ Für die umgesetzten Issues belegen die folgenden Vorher-/Nachher-Paare die konk
 
 ![ISSUE-05 nachher: optionales „End time"-Feld neben der Startzeit](docs/validate/Usability-Test/before-after/issue-05-endtime-after.png)
 **Nachher:** Neben „Start time" steht jetzt ein optionales „End time"-Feld (24-Stunden, gleicher Eingabestil mit Auto-`:`). Kalender, Reminder-Liste und Event-Detail zeigen die Spanne als `HH:MM–HH:MM` an; der ICS-Export verwendet die echte Endzeit für `DTEND`, sofern gesetzt.
+
+**ISSUE-06 · Native In-App-Reminder mit konfigurierbarer Lead-Time** (Schweregrad 3, [#36](https://github.com/difrodar/traveljourneyapp/issues/36))
+
+![ISSUE-06 vorher: Event-Detail mit „Add to calendar" und ohne Reminder-Setting](docs/validate/Usability-Test/before-after/issue-06-reminder-before.png)
+**Vorher (Event-Detail):** Die einzige Reminder-Funktion war ein „Add to calendar"-Button, der eine `.ics`-Datei herunterlud — mehrdeutig zwischen „in-App-Reminder" und „Datei in mein Kalender-App importieren". Im Detail-Grid gab es keine Zeile zum Reminder-Status; eine Testperson fand die Funktion gar nicht.
+
+![ISSUE-06 nachher: Event-Detail mit Reminder-Zeile und relabeltem .ics-Export](docs/validate/Usability-Test/before-after/issue-06-reminder-after.png)
+**Nachher (Event-Detail):** Detail-Grid zeigt eine neue Zeile „Reminder: 1 day before" (bzw. „No reminder set"). Der ehemalige Button heisst jetzt **„Export to calendar app (.ics)"** und ist klar als sekundäre Export-Option gekennzeichnet. Wenn der Reminder-Zeitpunkt erreicht ist, erscheint zusätzlich ein „⏰ Coming up — this event starts …"-Banner oben.
+
+![ISSUE-06 vorher: EventForm Options-Fieldset ohne Reminder-Feld](docs/validate/Usability-Test/before-after/issue-06-reminder-form-before.png)
+**Vorher (EventForm):** Im Options-Fieldset existierten nur Description, Bild-Upload und Friends. Es gab keinen Weg, eine Lead-Time pro Event zu setzen — die ehemalige „Reminder"-Sektion auf dem Dashboard war eine hartcodierte 7-Tage-Box ohne Bezug zu einer User-Wahl.
+
+![ISSUE-06 nachher: EventForm mit neuem „Reminder"-Select (6 Optionen)](docs/validate/Usability-Test/before-after/issue-06-reminder-form-after.png)
+**Nachher (EventForm):** Neues „Reminder"-Select mit sechs Lead-Time-Presets (No reminder, 1h, 3h, 12h, 1 day, 1 week before). Default `No reminder` (opt-in). Server-seitig per Whitelist validiert; persistiert in einem neuen `reminderLeadHours`-Feld am Event-Dokument.
+
+![ISSUE-06 nachher: Notification-Bell mit neuer „Reminders due"-Section](docs/validate/Usability-Test/before-after/issue-06-reminder-bell-after.png)
+**Nachher (Notification-Bell):** Die Bell hat jetzt eine dritte Section „Reminders due" zusätzlich zu „Invitations" und „Add memories". Sie listet Events, deren Lead-Time-Fenster bereits begonnen hat und die noch nicht gestartet sind, mit einer dynamischen Countdown-Anzeige (z.B. „in 30 minutes", „in 2 hours", „in 3 days"). Klick führt direkt zum Event-Detail.
 
 **ISSUE-09 · Begriffssystem Idea → Event → Memory → Journey erklären** (Schweregrad 3, [#39](https://github.com/difrodar/traveljourneyapp/issues/39))
 
