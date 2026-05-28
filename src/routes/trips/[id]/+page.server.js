@@ -1,6 +1,7 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import {
 	addEventToTrip,
+	createShare,
 	deleteTrip,
 	getTripDetail,
 	listEvents,
@@ -58,5 +59,21 @@ export const actions = {
 			return fail(400, { error: err.message });
 		}
 		return { message: "Event removed from trip." };
+	},
+	share: async ({ locals, params, request, url }) => {
+		const form = await request.formData();
+		const expiresIn = String(form.get("expiresIn") || "7d");
+		try {
+			const { hash, expiresAt } = await createShare(locals.user.id, { expiresIn, tripId: params.id });
+			return {
+				shareCreated: {
+					hash,
+					shareUrl: `${url.origin}/share/${hash}`,
+					expiresAt: expiresAt ? expiresAt.toISOString() : null
+				}
+			};
+		} catch (err) {
+			return fail(400, { shareError: err.message });
+		}
 	}
 };

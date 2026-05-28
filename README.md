@@ -235,11 +235,11 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 
 ![Issue Map nach zwei Usability-Tests](docs/validate/Usability-Test/Analyse/issue-map.png)
 
-- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **15 von 18 umgesetzt** (#31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #46 und #48 — in der Tabelle mit ✅ markiert); Vorher-/Nachher-Belege der umgesetzten Fixes siehe [§3.5.1](#351-vorher-nachher-belege). Die übrigen Issues bleiben bewusst als priorisierter Validate-Backlog **ausstehend**. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
+- **Abgeleitete Verbesserungen:** Alle 18 Issues sind im Repository als GitHub-Issues mit Schweregrad, Aufgabenbezug, Originalzitaten der Testpersonen und konkreten Empfehlungen angelegt (Label [`usability-test`](https://github.com/difrodar/traveljourneyapp/issues?q=label%3Ausability-test)). Umsetzungsstatus: **18 von 18 umgesetzt** (#31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #41, #42, #43, #44, #45, #46, #47 und #48 — in der Tabelle mit ✅ markiert); Vorher-/Nachher-Belege der umgesetzten Fixes siehe [§3.5.1](#351-vorher-nachher-belege). Alle 18 Issues aus dem Usability-Test sind in der aktuellen Version umgesetzt. Übersicht sortiert nach Schweregrad absteigend, dann nach ID:
 
 | Issue-ID | SG | Aufgabe(n) | Problem | Empfehlung (Kurz) | GitHub |
 |---|:---:|:---:|---|---|---|
-| ISSUE-14 | 4 | 8 | Sharing fehlt als zentraler Bereich für Events, Trips und Journey | Zentralen Sharing-Bereich einführen; Kontextlinks aus Event/Trip/Journey | [#44](https://github.com/difrodar/traveljourneyapp/issues/44) |
+| ISSUE-14 | 4 | 8 | Sharing fehlt als zentraler Bereich für Events, Trips und Journey | Zentralen Sharing-Bereich einführen; Kontextlinks aus Event/Trip/Journey — ✅ **umgesetzt** | [#44](https://github.com/difrodar/traveljourneyapp/issues/44) |
 | ISSUE-16 | 4 | 8 | Ablaufdatum von zwei Wochen nicht möglich | Presets 7/14/30 Tage ergänzen — ✅ **umgesetzt** | [#46](https://github.com/difrodar/traveljourneyapp/issues/46) |
 | ISSUE-02 | 3 | 2 | Direkte Eventerstellung aus Kalender fehlt | Click-to-Create im Kalender; alternativ globaler Create-Button mit Datumsvorbelegung — ✅ **umgesetzt** | [#32](https://github.com/difrodar/traveljourneyapp/issues/32) |
 | ISSUE-04 | 3 | 2, 3, 5 | Event-Formular wirkt überladen, Felder/Layout unklar | Formular in Abschnitte gliedern (Basics, Ort, Termin, Optionen); Pflichtfelder eindeutig — ✅ **umgesetzt** | [#34](https://github.com/difrodar/traveljourneyapp/issues/34) |
@@ -249,8 +249,8 @@ Die strikte Schichtung garantiert, dass kein Client-Code direkt auf MongoDB zugr
 | ISSUE-10 | 3 | 5 | Idea-Bereich schwer auffindbar, mit Trip/Event verwechselt | Navigation neu ordnen; Save-as-Idea im Erfassungsflow — ✅ **umgesetzt** | [#40](https://github.com/difrodar/traveljourneyapp/issues/40) |
 | ISSUE-11 | 3 | 5 | Idea-Konvertierung erzeugt unerwartete Daten, nicht rückgängig | Review-Step und Undo; Idea archivieren statt löschen — ✅ **umgesetzt** | [#41](https://github.com/difrodar/traveljourneyapp/issues/41) |
 | ISSUE-13 | 3 | 7 | Trip-Gruppierung funktioniert, aber Journey/Trip-Zusammenhang unklar | Guide aus ISSUE-09 anwenden; in-page Erklärung „planned activities" vs. „memories" — ✅ **umgesetzt** | [#43](https://github.com/difrodar/traveljourneyapp/issues/43) |
-| ISSUE-15 | 3 | 8 | Share-Button/Benennung schlecht sichtbar und missverständlich | Präzise Labels („Share event/trip/journey") plus Scope-Vorschau | [#45](https://github.com/difrodar/traveljourneyapp/issues/45) |
-| ISSUE-17 | 3 | 8 | Sharing-Verständnis (Öffentlichkeit/Scope) nicht ausreichend validiert | Explizite Scope- und Ablaufanzeige vor Linkerstellung; in nächster Iteration explizit prüfen | [#47](https://github.com/difrodar/traveljourneyapp/issues/47) |
+| ISSUE-15 | 3 | 8 | Share-Button/Benennung schlecht sichtbar und missverständlich | Präzise Labels („Share event/trip/journey") plus Scope-Vorschau — ✅ **umgesetzt** | [#45](https://github.com/difrodar/traveljourneyapp/issues/45) |
+| ISSUE-17 | 3 | 8 | Sharing-Verständnis (Öffentlichkeit/Scope) nicht ausreichend validiert | Explizite Scope- und Ablaufanzeige vor Linkerstellung; in nächster Iteration explizit prüfen — ✅ **umgesetzt** | [#47](https://github.com/difrodar/traveljourneyapp/issues/47) |
 | ISSUE-03 | 2 | 2, 3 | Suche/Filter werden mit Erstellung verwechselt | Create-Aktion visuell primär platzieren; Such-/Filterbereiche klarer abgrenzen — ✅ **umgesetzt** | [#33](https://github.com/difrodar/traveljourneyapp/issues/33) |
 | ISSUE-07 | 2 | 2, 3 | Begriff „Occurrences" wird missverstanden | Label durch „Number of dates" / „Repeat count" ersetzen oder Tooltip ergänzen — ✅ **umgesetzt** | [#37](https://github.com/difrodar/traveljourneyapp/issues/37) |
 | ISSUE-08 | 2 | 3 | Kategorien zu starr bzw. unvollständig | Kategorie „Other" und optional eigene Kategorie hinzufügen — ✅ **umgesetzt** | [#38](https://github.com/difrodar/traveljourneyapp/issues/38) |
@@ -268,6 +268,26 @@ Für die umgesetzten Issues belegen die folgenden Vorher-/Nachher-Paare die konk
 
 ![ISSUE-16 nachher: Option „14 days" ergänzt](docs/validate/Usability-Test/before-after/issue-16-expiry-after.png)
 **Nachher:** „14 days" steht jetzt als Preset zur Verfügung.
+
+**ISSUE-14 + ISSUE-15 + ISSUE-17 · Sharing-Cluster** (Schweregrade 4 + 3 + 3, [#44](https://github.com/difrodar/traveljourneyapp/issues/44) + [#45](https://github.com/difrodar/traveljourneyapp/issues/45) + [#47](https://github.com/difrodar/traveljourneyapp/issues/47)) — *gemeinsam umgesetzt, weil die drei Issues sich gegenseitig bedingen.*
+
+![ISSUE-14 vorher: Trip-Detail ohne Share-Button](docs/validate/Usability-Test/before-after/issue-14-sharing-trip-before.png)
+**Vorher (Trip-Detail, ISSUE-14):** Auf der Trip-Detail-Seite gab es ausser „Edit trip" und „Delete trip" keinen Share-Einstieg. Sharing war nur über `/journey` zugänglich — Testpersonen suchten vergeblich auf der Trip-Seite.
+
+![ISSUE-14 nachher: Trip-Detail mit aufgeklappter „Share this trip…"-Sektion](docs/validate/Usability-Test/before-after/issue-14-sharing-trip-after.png)
+**Nachher (Trip-Detail, ISSUE-14):** Direkt unter dem ConceptGuide steht jetzt eine aufklappbare „Share this trip…"-Sektion. Der Trip ist durch den Route-Param fix; nur Ablaufzeit ist editierbar. Server-Action `?/share` ruft `createShare(userId, { tripId: params.id, expiresIn })` auf.
+
+![ISSUE-15 vorher: Event-Detail Hero-Action „Share" mehrdeutig](docs/validate/Usability-Test/before-after/issue-15-sharing-labels-before.png)
+**Vorher (Event-Detail, ISSUE-15):** Der „Share"-Link in den Hero-Actions scrollte nur zur SharePreview-Komponente (eine Social-Media-Karte zum Kopieren) — Testpersonen erwarteten dort einen Public-Link.
+
+![ISSUE-15 nachher: Hero-Actions mit „Share story" und „Share link"](docs/validate/Usability-Test/before-after/issue-15-sharing-labels-after.png)
+**Nachher (Event-Detail, ISSUE-15):** Zwei klar getrennte Buttons: **„Share story"** scrollt zur Social-Media-Karten-Vorschau (unverändert), **„Share link"** springt smart zur Share-Form — bei Events in einem Trip zu `/trips/<tripId>#share-section`, sonst zu `/journey#share-section`. Eindeutige Erwartung pro Klick.
+
+![ISSUE-17 vorher: Share-Form ohne Scope/Expiry-Vorschau](docs/validate/Usability-Test/before-after/issue-17-sharing-scope-before.png)
+**Vorher (Share-Form, ISSUE-17):** Die Share-Form auf `/journey` zeigte vor dem Klick nur die zwei Select-Controls — keine Vorab-Information über Scope, Sichtbarkeit oder das tatsächliche Ablaufdatum.
+
+![ISSUE-17 nachher: Share-Form mit ShareScopePreview](docs/validate/Usability-Test/before-after/issue-17-sharing-scope-after.png)
+**Nachher (Share-Form, ISSUE-17):** Die neue `ShareScopePreview`-Komponente zeigt live (reagiert auf Dropdown-Änderungen) was der Link teilen wird, an wen, und für wie lange — inklusive berechnetem konkreten Ablauf-Datum. Wird sowohl in der Journey- als auch der Trip-Share-Form eingesetzt.
 
 **ISSUE-02 · Direkte Eventerstellung aus Kalender** (Schweregrad 3, [#32](https://github.com/difrodar/traveljourneyapp/issues/32))
 

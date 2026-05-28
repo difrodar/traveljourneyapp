@@ -1,6 +1,7 @@
 <script>
 	import JourneyCard from "$lib/components/JourneyCard.svelte";
 	import ConceptGuide from "$lib/components/ConceptGuide.svelte";
+	import ShareScopePreview from "$lib/components/ShareScopePreview.svelte";
 	import { page } from "$app/state";
 	import { rememberFilters, clearRememberedFilters } from "$lib/utils/filter-persistence.svelte.js";
 	import { SEARCH_DEBOUNCE_MS } from "$lib/constants.js";
@@ -8,6 +9,9 @@
 	let { data, form } = $props();
 	let filterForm = $state();
 	let searchTimer = 0;
+	let shareTripId = $state("");
+	let shareExpiresIn = $state("7d");
+	const shareTripName = $derived(data.trips?.find((trip) => trip.id === shareTripId)?.name || "");
 
 	$effect(() => () => clearTimeout(searchTimer));
 
@@ -50,7 +54,7 @@
 		<div class="message error">{data.setupError}</div>
 	{/if}
 
-	<form class="panel share-form" method="POST" action="?/share">
+	<form id="share-section" class="panel share-form" method="POST" action="?/share">
 		<details open={Boolean(form?.shareError || form?.shareCreated)}>
 			<summary>Share this journey&hellip;</summary>
 			<p class="share-warning">
@@ -60,7 +64,7 @@
 			<div class="share-controls">
 				<label class="filter-field share-scope">
 					<span>What to share</span>
-					<select name="tripId">
+					<select name="tripId" bind:value={shareTripId}>
 						<option value="">Whole journey (all memories)</option>
 						{#each data.trips as trip}
 							<option value={trip.id}>Just trip: {trip.name}</option>
@@ -69,9 +73,9 @@
 				</label>
 				<label class="filter-field share-expiry">
 					<span>Link expires after</span>
-					<select name="expiresIn">
+					<select name="expiresIn" bind:value={shareExpiresIn}>
 						<option value="1d">1 day</option>
-						<option value="7d" selected>7 days</option>
+						<option value="7d">7 days</option>
 						<option value="14d">14 days</option>
 						<option value="30d">30 days</option>
 						<option value="never">Never</option>
@@ -79,6 +83,11 @@
 				</label>
 				<button class="button" type="submit">Create share link</button>
 			</div>
+			<ShareScopePreview
+				scope={shareTripId ? "trip" : "journey"}
+				tripName={shareTripName}
+				expiresIn={shareExpiresIn}
+			/>
 			{#if form?.shareCreated}
 				<div class="share-result">
 					<input
@@ -222,13 +231,17 @@
 <style>
 	.share-form {
 		margin-bottom: 16px;
-		padding: 14px 18px;
+		padding: 12px 14px;
+		border: 1px solid var(--notice-border);
+		background: var(--notice-bg);
+		color: var(--notice-fg);
+		border-radius: 8px;
 	}
 
 	.share-form summary {
 		cursor: pointer;
 		font-weight: 900;
-		color: var(--brand-dark);
+		color: var(--notice-fg);
 	}
 
 	.share-warning {

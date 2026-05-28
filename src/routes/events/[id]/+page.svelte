@@ -110,7 +110,8 @@
 				{#if isOwner}
 					<a href="#edit-plan">Edit Event</a>
 				{/if}
-				<a href="#share-preview">Share</a>
+				<a href="#share-preview">Share story</a>
+				<a href={data.trip ? `/trips/${data.trip.id}#share-section` : "/journey#share-section"}>Share link</a>
 				<a href="/events/{event.id}/ics" download>Export to calendar app (.ics)</a>
 			</div>
 			<a class="close-button" href="/events" aria-label="Back to events">X</a>

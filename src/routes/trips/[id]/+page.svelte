@@ -1,9 +1,11 @@
 <script>
 	import ConceptGuide from "$lib/components/ConceptGuide.svelte";
 	import LeafletMapView from "$lib/components/LeafletMapView.svelte";
+	import ShareScopePreview from "$lib/components/ShareScopePreview.svelte";
 
 	let { data, form } = $props();
 	let editing = $state(false);
+	let shareExpiresIn = $state("7d");
 </script>
 
 <main class="page-shell">
@@ -67,6 +69,49 @@
 	{/if}
 
 	<ConceptGuide />
+
+	<form id="share-section" class="panel share-form" method="POST" action="?/share">
+		<details open={Boolean(form?.shareError || form?.shareCreated)}>
+			<summary>Share this trip&hellip;</summary>
+			<p class="share-warning">
+				Photos, places and notes for the events in this trip will be visible to anyone with this link. Make sure you're comfortable
+				sharing them. You can revoke the link any time from <a href="/profile">your profile</a>.
+			</p>
+			<div class="share-controls">
+				<label class="filter-field share-expiry">
+					<span>Link expires after</span>
+					<select name="expiresIn" bind:value={shareExpiresIn}>
+						<option value="1d">1 day</option>
+						<option value="7d">7 days</option>
+						<option value="14d">14 days</option>
+						<option value="30d">30 days</option>
+						<option value="never">Never</option>
+					</select>
+				</label>
+				<button class="button" type="submit">Create share link</button>
+			</div>
+			<ShareScopePreview scope="trip" tripName={data.trip.name} expiresIn={shareExpiresIn} />
+			{#if form?.shareCreated}
+				<div class="share-result">
+					<input
+						type="text"
+						readonly
+						value={form.shareCreated.shareUrl}
+						aria-label="Public share URL"
+						onclick={(e) => e.currentTarget.select()}
+					/>
+					<small>
+						{form.shareCreated.expiresAt
+							? `Expires ${form.shareCreated.expiresAt.slice(0, 10)}.`
+							: "This link never expires unless you revoke it."}
+					</small>
+				</div>
+			{/if}
+			{#if form?.shareError}
+				<p class="share-error">{form.shareError}</p>
+			{/if}
+		</details>
+	</form>
 
 	{#if data.stats.eventCount > 0}
 		<section class="trip-stats" aria-label="Trip statistics">
@@ -307,6 +352,59 @@
 		border-color: var(--status-completed-border);
 		background: var(--status-completed-bg);
 		color: var(--status-completed-fg);
+	}
+
+	.share-form {
+		margin-bottom: 16px;
+		padding: 12px 14px;
+		border: 1px solid var(--notice-border);
+		background: var(--notice-bg);
+		color: var(--notice-fg);
+		border-radius: 8px;
+	}
+
+	.share-form summary {
+		cursor: pointer;
+		font-weight: 900;
+		color: var(--notice-fg);
+	}
+
+	.share-warning {
+		margin: 12px 0;
+		padding: 10px 12px;
+		border: 1px solid var(--notice-border);
+		background: var(--notice-bg);
+		border-radius: 8px;
+		color: var(--notice-fg);
+		font-size: 0.9rem;
+	}
+
+	.share-controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		align-items: end;
+	}
+
+	.share-expiry {
+		min-width: 200px;
+	}
+
+	.share-result {
+		margin-top: 12px;
+		display: grid;
+		gap: 6px;
+	}
+
+	.share-result input {
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.92rem;
+	}
+
+	.share-error {
+		margin-top: 10px;
+		color: var(--danger-fg);
+		font-weight: 800;
 	}
 
 	@media (max-width: 720px) {
