@@ -1,5 +1,7 @@
 # AUDIT_DEADCODE.md — Phase 3 Dead-Code-Audit
 
+> **STATUS (Stand 2026-05-30): abgeschlossen.** Historischer Audit-Stand bei Commit `661bf86`. Die identifizierten Dead-Code-Funde (D-01 bis D-04, u. a. `DashboardStats.svelte` sowie die ungenutzten Exporte `categoryMediaKeys`/`requireUser`) wurden entfernt; es verbleibt nur der harmlose SvelteKit-Konventions-Stub `src/lib/index.js` (D-05, optional löschbar). Dokument als Beleg der abgeschlossenen internen Code-Review-Phase erhalten (siehe README §5).
+
 **Datum:** 2026-05-10
 **Branch:** main @ `661bf86` (HEAD bei Audit-Start)
 **Methodik:** systematischer `Grep`-Pass über `src/`, `scripts/`, `static/` für jede exportierte Funktion / Konstante / Komponente. Belegkette pro Eintrag.

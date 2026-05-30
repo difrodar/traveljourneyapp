@@ -1,5 +1,7 @@
 # AUDIT_RECON.md — Phase 1 Reconnaissance
 
+> **STATUS (Stand 2026-05-30): abgeschlossen.** Rein faktische Bestandsaufnahme bei Commit `661bf86` als Grundlage der Phasen 2/3. Die daraus abgeleiteten Befunde sind in `AUDIT_BUGS.md` und `AUDIT_DEADCODE.md` dokumentiert und inzwischen behoben bzw. bewusst für den Prototyp-Scope zurückgestellt. Dokument als Beleg der abgeschlossenen internen Code-Review-Phase erhalten (siehe README §5).
+
 **Datum:** 2026-05-10
 **Branch:** main @ `661bf86` (HEAD bei Audit-Start)
 **Working tree:** clean (vor Phase-1-Output-Erstellung)

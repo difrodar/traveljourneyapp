@@ -1,5 +1,7 @@
 # AUDIT_BUGS.md — Phase 2 Bug-Audit
 
+> **STATUS (Stand 2026-05-30): abgeschlossen.** Dieses Dokument hält den historischen Audit-Stand bei Commit `661bf86` fest. **Alle 5 MEDIUM-Befunde (B-01 bis B-05) wurden in der nachfolgenden Fix-Serie behoben** — u. a. `bind:this` + `$state()` in den Listen-Routes, Escape/Focus-Management im `DeleteRecurringDialog`, `$effect`-Cleanup für den Debounce-Timer, server-seitige Format-/Whitelist-Validierung in `validateEventForm` und `userId`-Scoping beim Journey-Cleanup in `deleteEvent`; die zugehörigen Fix-Commits sind im `git log` nachvollziehbar. Die LOW/NIT-Punkte wurden triagiert und — wo im jeweiligen Eintrag als „für Prototyp akzeptabel" vermerkt — bewusst für den Prototyp-Scope zurückgestellt. Das Dokument bleibt als Beleg der abgeschlossenen internen Code-Review-Phase erhalten (siehe README §5). Die folgende Statistik beschreibt den Stand **bei Audit-Start**, nicht den aktuellen.
+
 **Datum:** 2026-05-10
 **Branch:** main @ `661bf86` (HEAD bei Audit-Start)
 **Scope:** alle `src/**/*.svelte`, `src/**/*.js`, `scripts/smoke.js`, Auth, Hooks, Form-Actions
