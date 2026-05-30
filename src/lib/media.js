@@ -20,7 +20,7 @@ export const locationMedia = {
 		imageUrl: wikimedia("La Jolla Cove, San Diego.jpg"),
 		imageAlt: "Ocean cliffs and water at La Jolla Cove in San Diego",
 		imageCredit: "Stephen Bay / Wikimedia Commons",
-		imageLicense: "CC BY",
+		imageLicense: "CC BY 4.0",
 		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:La_Jolla_Cove,_San_Diego.jpg"
 	},
 	"pacific beach": {
@@ -48,7 +48,7 @@ export const locationMedia = {
 		imageUrl: wikimedia("La Jolla Cove, San Diego.jpg"),
 		imageAlt: "Coastal cliffs and ocean near San Diego",
 		imageCredit: "Stephen Bay / Wikimedia Commons",
-		imageLicense: "CC BY",
+		imageLicense: "CC BY 4.0",
 		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:La_Jolla_Cove,_San_Diego.jpg"
 	},
 	"los angeles": {
@@ -135,41 +135,24 @@ export const locationMedia = {
 		imageLicense: "CC0 1.0",
 		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Iconic_Skyline_of_New_York_City.jpg"
 	},
-	tokyo: {
-		imageUrl: wikimedia("Students on campus.jpg"),
-		imageAlt: "Students walking on campus",
-		imageCredit: "Bathsofm / Wikimedia Commons",
-		imageLicense: "CC BY 3.0",
-		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Students_on_campus.jpg"
-	},
-	zurich: {
-		imageUrl: wikimedia("Bicycle on the Beach (49877305071).jpg"),
-		imageAlt: "Bicycle on a beach",
-		imageCredit: "Channel City Camera Club / Wikimedia Commons",
-		imageLicense: "CC BY 2.0",
-		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Bicycle_on_the_Beach_(49877305071).jpg"
-	},
-	"zürich": {
-		imageUrl: wikimedia("Bicycle on the Beach (49877305071).jpg"),
-		imageAlt: "Bicycle on a beach",
-		imageCredit: "Channel City Camera Club / Wikimedia Commons",
-		imageLicense: "CC BY 2.0",
-		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Bicycle_on_the_Beach_(49877305071).jpg"
-	},
-	london: {
-		imageUrl: wikimedia("Tulane Students Studying.jpg"),
-		imageAlt: "College students studying",
-		imageCredit: "Tulane public relations / Wikimedia Commons",
-		imageLicense: "CC BY 2.5",
-		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Tulane_Students_Studying.jpg"
-	},
-	paris: {
-		imageUrl: wikimedia("California Road Trip (16570143476).jpg"),
-		imageAlt: "Road trip scenery",
-		imageCredit: "moonjazz / Wikimedia Commons",
-		imageLicense: "CC BY-SA 2.0",
-		imageSourceUrl: "https://commons.wikimedia.org/wiki/File:California_Road_Trip_(16570143476).jpg"
-	}
+};
+
+// Kept as category fallback art after retiring the misleading city-named fallbacks
+// (tokyo/zurich/london/paris pointed at unrelated stock photos — see resolveLocationMedia).
+const studyMedia = {
+	imageUrl: wikimedia("Tulane Students Studying.jpg"),
+	imageAlt: "College students studying",
+	imageCredit: "Tulane public relations / Wikimedia Commons",
+	imageLicense: "CC BY 2.5",
+	imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Tulane_Students_Studying.jpg"
+};
+
+const outdoorMedia = {
+	imageUrl: wikimedia("Bicycle on the Beach (49877305071).jpg"),
+	imageAlt: "Cyclist outdoors by the water",
+	imageCredit: "Channel City Camera Club / Wikimedia Commons",
+	imageLicense: "CC BY 2.0",
+	imageSourceUrl: "https://commons.wikimedia.org/wiki/File:Bicycle_on_the_Beach_(49877305071).jpg"
 };
 
 export const categoryMedia = {
@@ -202,10 +185,10 @@ export const categoryMedia = {
 	transit: locationMedia.travel,
 	travel: locationMedia.travel,
 	"weekend trip": locationMedia.travel,
-	study: locationMedia.london,
-	education: locationMedia.london,
+	study: studyMedia,
+	education: studyMedia,
 	culture: locationMedia["balboa park"],
-	outdoor: locationMedia.zurich,
+	outdoor: outdoorMedia,
 	sightseeing: locationMedia.travel
 };
 
