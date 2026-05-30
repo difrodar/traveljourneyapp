@@ -10,7 +10,7 @@ Diese Sammlung ist gleichzeitig **methodisches Artefakt im Sinne des Bewertungsr
 
 | Werkzeug | Modell / Version | Einsatzbereich |
 |---|---|---|
-| Claude Code (VS Code Extension) | Anthropic Claude Opus 4.7 (1M-Kontext) | Primäre Entwicklungs-Sessions ab Prototype-Phase: Planning, Code-Generierung, Refactoring, Audit, Verifikation |
+| Claude Code (VS Code Extension) | Anthropic Claude Opus 4.7, später 4.8 (1M-Kontext) | Primäre Entwicklungs-Sessions ab Prototype-Phase: Planning, Code-Generierung, Refactoring, Audit, Verifikation |
 | OpenAI Codex CLI / ChatGPT | GPT-Klasse | Frühphase Understand/Sketch/Decide; spezifische Recherche-Fragen ausserhalb von Code |
 | Microsoft Learn MCP Server | n/a | Nachschlagen offizieller SvelteKit- und Azure-Dokumentation direkt aus Claude Code heraus |
 
