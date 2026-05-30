@@ -7,6 +7,7 @@ import {
 	buildCalendarMonth,
 	buildInvitations,
 	clean,
+	escapeRegExp,
 	defaultCoordinates,
 	isDateFilter,
 	maxRepeatCount,
@@ -123,7 +124,7 @@ export async function listEvents(userId, filters = {}) {
 		if (!tripObjectId) return [];
 		query.tripId = tripObjectId;
 	}
-	if (filters.search) query.title = { $regex: filters.search, $options: "i" };
+	if (filters.search) query.title = { $regex: escapeRegExp(filters.search), $options: "i" };
 	if (filters.from || filters.to) {
 		query.date = {};
 		if (isDateFilter(filters.from)) query.date.$gte = filters.from;

@@ -55,6 +55,10 @@ export function clean(value) {
 	return String(value || "").trim();
 }
 
+export function escapeRegExp(value) {
+	return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function isDateFilter(value) {
 	return /^\d{4}-\d{2}-\d{2}$/.test(clean(value));
 }
