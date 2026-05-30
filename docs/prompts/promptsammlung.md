@@ -57,6 +57,7 @@ Bekannte Grenzen:
 5. [Prompt 5 — Usability-Test-Auswertung TripTales, Variante A](#prompt-5-usability-test-auswertung-triptales-variante-a)
 6. [Prompt 6 — Usability-Test-Auswertung TripTales, Variante B mit Platzhaltern](#prompt-6-usability-test-auswertung-triptales-variante-b-mit-platzhaltern)
 7. [Prompt 7 — Bug-Audit und Dead-Code-Bereinigung für Svelte-Projekt](#prompt-7-bug-audit-und-dead-code-bereinigung-für-svelte-projekt)
+8. [Prompt 8 — Finale Qualitätsprüfung vor der Abgabe (strenger Reviewer)](#prompt-8-finale-qualitätsprüfung-vor-der-abgabe-strenger-reviewer)
 
 ## Prompt 1 — Projektidee ausformulieren
 
@@ -1549,4 +1550,163 @@ Nach Abschluss von Phasen 1–3:
 ## Start
 
 Beginne jetzt mit **Phase 1**. Sag mir, sobald `AUDIT_RECON.md` fertig ist, bevor du Phase 2 startest. Ich will zwischen den Phasen reviewen können.
+~~~~
+
+## Prompt 8 — Finale Qualitätsprüfung vor der Abgabe (strenger Reviewer)
+
+**Kontext:** Schluss-Review unmittelbar vor der Modulabgabe. Der Prompt lässt eine KI als strengen, aber konstruktiven Reviewer das gesamte Projekt gegen Projektanforderungen, Bewertungsraster und Vorlesungsinhalte prüfen — über drei Ebenen (Bestehensrisiken, Qualität Teil A, Zusatzpunkte Teil B) und alle Artefakte (README, Code, Deployment, Datenhandling, Mockup, Evaluation, Video, Git/GitHub, KI-Deklaration).
+
+**Resultat:** Ein strukturierter Review-Bericht mit fester Gliederung (Gesamturteil, Ampelübersicht, detaillierte Checkliste, B-Punkte-Top-10, README-Review Abschnitt-für-Abschnitt, Video-Struktur, priorisierte To-do-Liste). Daraus abgeleitet wurden u. a. die Korrektur von Persona-Namens-Inkonsistenzen, das Entfernen widersprüchlicher Evaluations-Platzhalter, die Einordnung der internen Audit-Dateien, die Dokumentation des In-App-Reminders als eigene Erweiterung (§4.12), neue HMW-Fragen, ein Regex-Escape im Such-Filter und eine CC-Lizenz-Stichprobe.
+
+**Interpretation:** Dieser Prompt gehört ans Projektende als adversariales Self-Assessment. Er ist bewusst streng formuliert („bewerte nicht zu wohlwollend"; „keine Annahmen, markiere Fehlendes als nicht prüfbar"), damit Punkterisiken und verschenkte B-Punkte sichtbar werden, bevor die Dozierenden sie sehen. Die feste Ausgabestruktur macht die Befunde direkt abarbeitbar.
+
+**Originalprompt:**
+
+~~~~text
+Du bist ein strenger, aber konstruktiver Reviewer für ein ZHAW-Prototyping-Projekt. Prüfe mein Projekt final anhand der Projektanforderungen, des Bewertungsrasters und der Vorlesungsinhalte aus dem Modul Prototyping.
+
+Wichtiger Kontext:
+
+* Das Projekt ist ein Einzelprojekt im Modul Prototyping.
+* Der Mindestumfang gemäss Bewertungsteil A ist vom Umfang her bereits erfüllt. Prüfe A deshalb nicht primär darauf, ob der Umfang grundsätzlich reicht, sondern ob es qualitative Schwächen, Risiken oder fehlende Nachweise gibt, die Punkte kosten könnten.
+* Ziel ist eine finale Qualitätsprüfung vor der Abgabe, mit Fokus auf maximale Punkte in B) Erweiterungen und auf eine saubere, nachvollziehbare, prüfungssichere Abgabe.
+* Das Projekt besteht aus einer SvelteKit-App, einem GitHub-Repository, einer README.md nach Vorlage, einer online zugänglichen App, Evaluationsergebnissen und einem Walkthrough-Video.
+* KI-Einsatz ist erlaubt, muss aber vollständig und transparent deklariert sein.
+
+Prüfe folgende Artefakte, falls verfügbar:
+
+1. README.md / Projektdokumentation
+2. Sourcecode und Projektstruktur
+3. Deployment / online zugängliche App
+4. Datenbank- bzw. Datenhandling
+5. Mockup / Figma / Screenshots
+6. Evaluation: Testplanung, Aufgaben, Rohbeobachtungen, Kennzahlen, Issues, Auswertung, Verbesserungsvorschläge
+7. Video-Skript oder Video-Inhalt
+8. GitHub-Historie, Commits, Issues, Branches, Ablage der Artefakte
+9. KI-Deklaration und Prompt-Vorgehen
+
+Arbeite in drei Prüfebenen:
+
+Ebene 1: Bestehensrisiken / formale Muss-Kriterien
+Prüfe, ob irgendein Risiko besteht bei:
+
+* online zugänglicher App
+* vollständigem GitHub-Repository inkl. Code und README.md
+* SvelteKit als Technologie
+* Daten werden geladen, angezeigt, erstellt und/oder aktualisiert
+* mehrere Pages, Navigation und Workflows
+* Evaluation mit Nutzenden und Auswertung
+* Video zeigt sämtliche Workflows, ohne unnötig auf Code oder Entstehung einzugehen
+* rechtliche Rahmenbedingungen / Quellen / Assets / Copyright
+* transparente KI-Deklaration
+* README-Struktur gemäss Vorlage nicht verändert
+  Gib für jedes Risiko an: Status, Problem, Auswirkung, konkrete Korrektur.
+
+Ebene 2: Qualität von Bewertungsteil A
+Gehe davon aus, dass A vom Umfang her erfüllt ist, aber prüfe die Qualität anhand der Kriterien:
+
+* Kernfunktionalität & technische Qualität: Stabilität, nachvollziehbare Code-Struktur, saubere Komponenten/Routen, Datenlogik, Fehlermeldungen, leere Zustände, sinnvolle Validierung.
+* Nutzerzentrierung & Bedienbarkeit: klare zentrale Workflows, Konsistenz, hilfreiches Feedback, verständliche Navigation, UI-Klarheit, Bezug zum Mockup.
+* Vorgehen: Understand/Define, Sketch, Decide, Prototype, Validate sind nachvollziehbar dokumentiert; Entscheide sind begründet; Artefakte sind sichtbar.
+* Evaluation: Planung, Durchführung und Auswertung sind nachvollziehbar; Beobachtungen sind evidenzbasiert; Issues und Verbesserungsvorschläge sind konkret.
+* Dokumentation & Video: README ist vollständig, strukturiert und verständlich; Screenshots der fertigen App sind vorhanden; Video demonstriert alle Workflows; KI-Einsatz und Prompt-Vorgehen sind dokumentiert.
+
+Ebene 3: Bewertungsteil B / Zusatzpunkte
+Prüfe gezielt, wo ich zusätzliche Punkte holen kann:
+
+1. Hohe Qualität im Mindestumfang:
+
+   * Wo wirkt die Umsetzung robust, konsistent, hochwertig?
+   * Wo sollte ich Kleinigkeiten verbessern, damit A nicht nur erfüllt, sondern sehr gut erfüllt wirkt?
+2. Produkt-/Funktions-Erweiterungen:
+
+   * Welche bestehenden Zusatzfunktionen sind wirklich Mehrwert?
+   * Sind sie stabil, passend zum Projekt und im Video / README sichtbar?
+   * Fehlt eine kurze Begründung des Nutzens?
+3. Zusätzliche Methoden/Artefakte:
+
+   * Prüfe, ob zusätzliche Methoden sinnvoll dokumentiert sind, z. B. Proto-Personas, User Journey Map, HMW-Fragen, Crazy 8s, Storyboard, User Stories nach INVEST, Issue Map, Priorisierung, Testreport, Architekturdiagramm, Mermaid/draw.io-Diagramme.
+   * Prüfe, ob diese Artefakte nicht nur erwähnt, sondern mit Erkenntnissen und Entscheidungen verbunden sind.
+4. Projektorganisation:
+
+   * Prüfe Repository-Hygiene, Ordnerstruktur, sprechende Commits, Issues, README-Verlinkungen, Ablage von Artefakten, Nachvollziehbarkeit der Entwicklung.
+   * Gib konkrete Vorschläge, was noch schnell verbessert werden kann.
+
+Berücksichtige die Vorlesungsinhalte:
+
+* Design Sprint: Understand & Define, Sketch, Decide, Prototype, Validate.
+* Understand & Define soll Problem, Zielgruppe, Bedürfnisse, Ziele und Problemraum klären.
+* Sketch soll mehrere Varianten und wesentliche Unterschiede zeigen.
+* Decide soll Auswahlkriterien, gewählte Variante, Workflows, User Journey und Referenz-Mockup enthalten.
+* Prototype soll eine teilweise funktionsfähige Benutzeroberfläche sein, die für Evaluation und Usability Testing geeignet ist.
+* Validate soll mit Nutzenden prüfen, Beobachtungen und Kennzahlen erfassen und Verbesserungen ableiten.
+* Evaluation soll nicht nur Meinung sein, sondern auf Testzielen, realistischen Szenarien, Beobachtungen, Issues und Handlungsempfehlungen basieren.
+* User Stories sollen nach Möglichkeit wertorientiert und testbar formuliert sein.
+* KI-Einsatz soll transparent sein: Tools, Zweck, Umfang, eigene Leistung, Prompt-Vorgehen, Nutzen, Grenzen und Qualitätssicherung.
+
+Ausgabeformat:
+
+1. Kurzes Gesamturteil in 5–8 Sätzen:
+
+   * Wie abgabereif wirkt das Projekt?
+   * Wo liegen die grössten Punktechancen?
+   * Wo liegen die grössten Risiken?
+
+2. Ampelübersicht:
+
+   * Grün = passt
+   * Gelb = verbessern, aber nicht kritisch
+   * Rot = vor Abgabe zwingend korrigieren
+     Verwende die Kategorien: Formale Abgabe, App/Technik, UX/Bedienbarkeit, Methodik, Evaluation, Dokumentation, Video, KI-Deklaration, Erweiterungen, Projektorganisation.
+
+3. Detaillierte Checkliste:
+   Erstelle eine Tabelle mit:
+
+   * Bereich
+   * Kriterium
+   * Status
+   * Begründung
+   * konkrete Verbesserung
+   * geschätzter Aufwand: klein / mittel / gross
+   * Priorität: hoch / mittel / niedrig
+
+4. B-Punkte-Optimierung:
+   Liste die 10 wirkungsvollsten Verbesserungen, sortiert nach Nutzen pro Aufwand. Fokus auf Massnahmen, die realistisch kurz vor Abgabe noch möglich sind.
+
+5. README-Review:
+   Prüfe Abschnitt für Abschnitt:
+
+   * Ausgangslage
+   * Lösungsidee
+   * Understand & Define
+   * Sketch
+   * Decide
+   * Prototype: Design
+   * Prototype: Technik
+   * Validate
+   * Erweiterungen
+   * Projektorganisation
+   * KI-Deklaration
+   * Anhang
+     Gib konkrete Text- oder Strukturvorschläge, wo etwas fehlt oder unklar ist.
+
+6. Video-Review:
+   Erstelle eine empfohlene Video-Struktur für ca. 5 Minuten und prüfe, ob alle Workflows, Erweiterungen und Qualitätsmerkmale sichtbar werden.
+   Wichtig: Das Video soll die Funktionalität vollständig demonstrieren, aber nicht ausführlich auf Code oder Entstehung eingehen.
+
+7. Finale To-do-Liste:
+   Erstelle eine priorisierte Liste:
+
+   * Muss vor Abgabe
+   * Sollte vor Abgabe
+   * Nice to have
+     Formuliere jede Aufgabe so konkret, dass ich sie direkt abarbeiten kann.
+
+Arbeitsweise:
+
+* Sei kritisch und bewerte nicht zu wohlwollend.
+* Mache keine Annahmen, wenn ein Artefakt fehlt. Markiere es als “nicht prüfbar” und sage, was ich bereitstellen oder ergänzen soll.
+* Bevor du Änderungen am Code vorschlägst, erkläre zuerst das Problem und den erwarteten Bewertungseffekt.
+* Keine unnötigen grossen Umbauten kurz vor Abgabe empfehlen, ausser es gibt ein klares Bestehensrisiko.
+* Priorisiere Nachvollziehbarkeit, Stabilität, Dokumentation und sichtbaren Mehrwert.
 ~~~~
