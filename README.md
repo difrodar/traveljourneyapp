@@ -429,11 +429,11 @@ Für die umgesetzten Issues belegen die folgenden Vorher-/Nachher-Paare die konk
 Gemäss Aufgabenstellung wird ein kommentierter Walkthrough der Kernfunktionalität als separates Abgabeartefakt eingereicht.
 
 - **Datei:** `Walkthrough.mp4` (separate Moodle-Abgabe, nicht im Repository)
-- **Dauer:** ca. 8 Minuten
-- **Sprache:** Deutsch
-- **Inhalt:** Vollständige Demonstration der Workflows (Login/Registrierung, Event erstellen, Memory mit Foto, Idea, Einladung, Trip, Sharing, Journey/Map). Auf Vorgehen und Code wird gemäss Aufgabenstellung nicht eingegangen.
+- **Dauer:** ca. 8:40 Minuten (8 Min 40 s)
+- **Sprache:** Schweizerdeutsch
+- **Inhalt:** Kommentierter Walkthrough der **aktuellen (finalen) Version** mit allen Kern-Workflows und allen Erweiterungen aus [§4](#4-erweiterungen-optional): Login/Registrierung, Event erstellen (inkl. Pflichtfeld-Validierung, Endzeit, Reminder, Wiederholung und Einladen von Freunden), In-App-Reminder, Suche/Filter, Erinnerung mit Foto → Journey, Reiseidee → Event, Trip, Sharing inklusive öffentlichem Read-only-Link, Einladung annehmen, Karte sowie Profil und Dark Mode. Auf Vorgehen und Code wird gemäss Aufgabenstellung bewusst nicht eingegangen.
 
-> **Wichtig — Stand-Differenz zur aktuellen Version:** Das Video wurde **bewusst vor** den Usability-Test-Fixes aufgezeichnet und zeigt damit den Stand des Branches `pre_usability`. Dadurch lassen sich die Verbesserungen direkt am Video-Stand ablesen: Die „Vorher"-Bilder in [§3.5.1](#351-vorher-nachher-belege) entsprechen genau dem Video-Inhalt, die „Nachher"-Bilder dokumentieren die aktuelle Version. Alle 18 Issues aus dem Usability-Test sind in der aktuellen Version umgesetzt — die Tabelle in [§3.5](#35-validate) ist die kanonische Übersicht, die Bildpaare in §3.5.1 belegen jeden einzelnen Fix.
+> **Hinweis zum Stand:** Das Video zeigt die **aktuelle, finale Version** der App — also den Stand **nach** allen Usability-Test-Fixes (alle 18 Issues aus [§3.5](#35-validate) sind umgesetzt). Die Vorher-/Nachher-Belege in [§3.5.1](#351-vorher-nachher-belege) dokumentieren die Verbesserungen separat über einen eigenen `pre_usability`-Deploy und sind unabhängig vom Video.
 
 ## 4. Erweiterungen [Optional]
 
@@ -576,7 +576,7 @@ Dieser Abschnitt dokumentiert Repository-Struktur, NPM-Scripts, Issue-Management
   - `fix: …` für Bug-Fixes, `refactor: …` für strukturelle Umbauten.
   - Nach dem Usability-Test tragen die Issue-schliessenden Batch-Commits das Issue im Titel-Suffix (`… (#NN)`) und im Body einen `Closes #NN`-Trailer, sodass GitHub diese Issues beim Push automatisch schliesst; einige bereits vorab gelandete Einzelfixes wurden zusätzlich manuell geschlossen.
   - Substantielle KI-unterstützte Commits (siehe [§6](#6-ki-deklaration)) führen zusätzlich einen `Co-Authored-By: Claude`-Trailer.
-- **Branch-Strategie:** Solo-Entwicklung mit direkten Commits auf `main` nach grünem `npm run build` + `npm run smoke`. Längere Re-Arbeit am Code (z.B. der `pre_usability`-Branch als Snapshot vor dem Usability-Iterations-Zyklus, siehe §3.5.2) wurde als eigener Branch dokumentiert.
+- **Branch-Strategie:** Solo-Entwicklung mit direkten Commits auf `main` nach grünem `npm run build` + `npm run smoke`. Längere Re-Arbeit am Code (z.B. der `pre_usability`-Branch als Snapshot vor dem Usability-Iterations-Zyklus, siehe [§3.5.1](#351-vorher-nachher-belege)) wurde als eigener Branch dokumentiert.
 - **Methodische Artefakte über den Unterrichtsumfang hinaus:** Für die in der Rubrik Teil B genannten "zusätzlichen Methoden" wurden folgende Artefakte erstellt, jeweils mit Begründung warum die Methode für TripTales relevant ist:
   - **Personas** ([`docs/personas.md`](docs/personas.md)) — Dario und Marco als Filter für Feature-Entscheidungen (was MVP, was Erweiterung).
   - **Crazy-8s Sketches** ([`docs/sketches/Crazy8s.pdf`](docs/sketches/Crazy8s.pdf)) — acht handgezeichnete Lösungs-Varianten nach der Design-Sprint-Technik (Jake Knapp).
