@@ -15,14 +15,8 @@
 6. [KI-Deklaration](#6-ki-deklaration)
 7. [Anhang [Optional]](#7-anhang-optional)
 
-> **Hinweis:** Massgeblich sind die im **Unterricht** und auf **Moodle** kommunizierten Anforderungen.
-
-<!-- WICHTIG: DIE KAPITELSTRUKTUR DARF NICHT VERÄNDERT WERDEN! -->
-
-<!-- Diese Vorlage ist für eine README.md im Repository gedacht. Abschnitte mit [Optional] können weggelassen werden, wenn in den Übungen nichts anderes verlangt wird. -->
-
 ## 1. Ausgangslage
-Kurz beschreiben, welches Problem adressiert wird und welches Ergebnis angestrebt ist. Wem nützt die Lösung, wer ist beteiligt oder betroffen?
+
 - **Problem:** Während eines Auslandssemesters entstehen viele Pläne und Erinnerungen parallel in Kalendern, Gruppenchats, Google Maps, Instagram und Notizen. Dadurch gehen Details zu Events, Orten, eingeladenen Freunden und persönlichen Eindrücken schnell verloren.
 - **Ziele:** TripTales soll Aktivitäten in San Diego zentral planbar machen, Orte und Freunde mit Events verknüpfen und vergangene Erlebnisse als Journey dokumentieren. Die App soll als interaktiver, weiterführbarer SvelteKit-Prototyp mit echter Datenhaltung umgesetzt werden.
 - **Primäre Zielgruppe:** Studierende im Ausland, Reisende und junge Erwachsene, die mit Freunden Aktivitäten planen und Erinnerungen später wieder ansehen möchten.
@@ -30,13 +24,12 @@ Kurz beschreiben, welches Problem adressiert wird und welches Ergebnis angestreb
 
 
 ## 2. Lösungsidee
-Beschreibt die Lösungsidee.
+
 - **Kernfunktionalität:** Nutzerinnen und Nutzer erstellen Events mit Datum, Location, Kategorie, Beschreibung, Freunden und optionalem Event-Bild. Events können als Einzeltermin oder als wiederkehrende Serie für tägliche, wöchentliche oder monatliche Termine erstellt werden, z. B. für Lectures oder Studienwochen in der Kategorie `Education`. Events können bearbeitet, als erlebt markiert und mit Erinnerungstext sowie optionalem Memory-Bild in eine Journey überführt werden. Ergänzend gibt es Dashboard, Event-Liste, OpenStreetMap-/Pinpoint-Ansicht und Reiseideen mit Umwandlung in Events.
 - **Annahmen [Optional]:** Eine kombinierte Planungs- und Erinnerungsansicht reduziert die Streuung von Reiseinformationen. Eine echte interaktive OpenStreetMap-Ansicht ist für den Prototyp geeigneter als eine Google-Maps-Abhängigkeit mit API-Key und Billing. Studierende profitieren von wenigen klaren Workflows statt vielen isolierten Tools.
 - **Abgrenzung [Optional]:** Login und private Benutzerbereiche sind umgesetzt, jedoch ohne Rollenmodell, E-Mail-Verifikation oder Passwort-Reset. Keine echten Einladungsnachrichten und kein Chat. Bild-Uploads sind als Prototyp-Funktion auf kleine Bilddateien begrenzt; zusätzlich nutzt die App lizenzierte Fallback-Bilder, damit Urheberrecht und Storage-Komplexität kontrollierbar bleiben.
 
 ## 3. Vorgehen & Artefakte
-Die Durchführung erfolgt phasenbasiert; dokumentieren Sie die wichtigsten Ergebnisse je Phase.
 
 ### 3.1 Understand & Define
 - **Zielgruppenverständnis:** Zwei priorisierte Personas leiten Feature-Entscheidungen — **Dario, 24, Wirtschaftsinformatik-Student vor Austauschsemester in San Diego** (Primary, definiert den MVP) und **Marco, 29, Berufseinsteiger mit Reise-Affinität** (Secondary, motiviert die Erweiterungen 4.1, 4.9 und 4.10). Detaillierte Persona-Profile mit Hintergrund, Zielen, Pain Points und Zitaten siehe [`docs/personas.md`](docs/personas.md).
@@ -113,8 +106,7 @@ flowchart LR
 ### 3.4 Prototype
 
 #### 3.4.1. Entwurf (Design)
-Beschreibt die Gestaltung und Interaktion.
-> **Hinweis:** Hier wird der **Prototyp** beschrieben, nicht das **Mockup**.
+
 - **Informationsarchitektur:** `/login` öffentlicher Einstieg mit Login/Signup, danach geschützte Bereiche: `/` Dashboard mit Einladungs-Hinweisstreifen für ausstehende Einladungen, `/events` Listen- und Filteransicht, `/events/new` Erstellung, `/events/[id]` Detail/Bearbeitung/Memory, `/journey` Timeline, `/map` Orte, `/ideas` Reiseideen und `/profile` als Account-Überblick. Eine Benachrichtigungs-Glocke in der Navigation bündelt offene Einladungen und vergangene Events ohne gespeicherte Memory in einem Dropdown und ist auf jeder geschützten Seite erreichbar; die bestehenden Dashboard-Sektionen bleiben als Landing-CTA erhalten.
 - **User Interface Design:** Das UI nutzt kompakte Cards, klare Formulare, Status-Badges, Kategorie-Badges, Filterleisten, leere Zustände und passende Event-/Location-Bilder. Wiederkehrende Events zeigen Serienhinweise wie `Weekly series 3/14`; beim Löschen eines Serienevents erscheint ein eigenes Dialogformular mit Auswahl zwischen einzelnem Termin und ganzer Serie. Formulare zeigen Pflichtfeldfehler direkt am betroffenen Feld und leere Zustände erklären die nächste sinnvolle Aktion. Der Login-Screen nutzt denselben Warm-Travel-Stil wie die App und bietet Login sowie Signup als direkten Einstieg. Die Bildwelt basiert bewusst nur auf echten, lizenzierten Wikimedia-Commons-Fotos, damit Orte und Events visuell glaubwürdig wirken.
 - **Usability-Iteration:** Die Listenansichten wurden um klarere Filter- und Sortiermöglichkeiten erweitert. Events können nach Suche, Status, Kategorie und Zeitraum eingegrenzt sowie nach Datum oder letzter Bearbeitung sortiert werden. Journey-Memories können nach Suche, Kategorie und Zeitraum gefiltert sowie chronologisch gruppiert werden. Filteränderungen werden direkt angewendet; die Suche nutzt eine kurze Verzögerung, damit die Liste nicht bei jedem Tastendruck sofort neu lädt. Zur Klärung des Begriffssystems erklärt ein einklappbarer In-App-Konzept-Guide auf der Journey- und Ideas-Seite den Zusammenhang von Idea → Event → Memory → Journey samt Trip-Gruppierung; die Navigation stellt „Ideas" prominent an zweite Stelle und das Event-Formular bietet einen „Save as idea"-Einstieg für noch datumslose Einträge.
@@ -147,7 +139,7 @@ Beschreibt die Gestaltung und Interaktion.
   **Journey-Timeline mit Memory-Cards.** Alle abgeschlossenen Events mit Erinnerungen erscheinen als visuelle Zeitleiste — wahlweise nach Monat oder nach Reise gruppiert. Such-, Kategorie- und Datumsfilter wirken hier identisch zur Event-Liste.
 
 #### 3.4.2. Umsetzung (Technik)
-Fasst die technische Realisierung zusammen.
+
 - **Technologie-Stack:** SvelteKit mit Svelte 5, reine JavaScript-Modulstruktur (kein TypeScript, `checkJs: false`), MongoDB Atlas mit offiziellem Node.js Driver, Netlify Adapter, Leaflet mit OpenStreetMap-Kartenkacheln.
 - **Tooling:** Visual Studio Code, Git/GitHub, Netlify, MongoDB Atlas, Codex/ChatGPT als Planungs- und Entwicklungsassistenz.
 - **Struktur & Komponenten:** Zentrale Komponenten sind `Navigation`, `NotificationBell`, `EventCard`, `EventForm`, `CityCombobox`, `FriendPicker`, `JourneyCard`, `LeafletMapView`, `LocationPinGrid`, `EventMapPanel`, `TravelIdeaCard` und `SharePreview`.
@@ -444,8 +436,6 @@ Gemäss Aufgabenstellung wird ein kommentierter Walkthrough der Kernfunktionalit
 > **Wichtig — Stand-Differenz zur aktuellen Version:** Das Video wurde **bewusst vor** den Usability-Test-Fixes aufgezeichnet und zeigt damit den Stand des Branches `pre_usability`. Dadurch lassen sich die Verbesserungen direkt am Video-Stand ablesen: Die „Vorher"-Bilder in [§3.5.1](#351-vorher-nachher-belege) entsprechen genau dem Video-Inhalt, die „Nachher"-Bilder dokumentieren die aktuelle Version. Alle 18 Issues aus dem Usability-Test sind in der aktuellen Version umgesetzt — die Tabelle in [§3.5](#35-validate) ist die kanonische Übersicht, die Bildpaare in §3.5.1 belegen jeden einzelnen Fix.
 
 ## 4. Erweiterungen [Optional]
-Dokumentiert Erweiterungen über den Mindestumfang hinaus.
-> **Hinweis:** Jede Erweiterung ist separat nach dem folgenden Schema zu beschreiben.
 
 ### 4.1 Reiseideen in Events umwandeln
 - **Beschreibung & Nutzen:** Ideen können gespeichert, priorisiert und später in konkrete Events umgewandelt werden. Das unterstützt spontane Reiseplanung.
@@ -598,7 +588,6 @@ Dieser Abschnitt dokumentiert Repository-Struktur, NPM-Scripts, Issue-Management
 **Transparenzhinweis zur Entstehung der Methodik-Artefakte:** Die handgezeichneten Crazy-8s und der frühe Ideen-Prompt belegen die reale Frühphase; die ausformulierten Markdown-Dokumente (Personas, User Journey Map, Competitive Analysis, HMW-Fragen) wurden bewusst gegen Projektende konsolidiert und verschriftlicht, damit die Doku in sich konsistent bleibt.
 
 ## 6. KI-Deklaration
-Die folgende Deklaration ist verpflichtend und beschreibt den Einsatz von KI im Projekt.
 
 ### 6.1 KI-Tools
 - **Eingesetzte Tools**: Aktuell Anthropic Claude Code (Opus 4.7, später 4.8) in Visual Studio Code; zuvor OpenAI Codex/ChatGPT in Visual Studio Code.
@@ -616,7 +605,7 @@ Eine vollständige, kommentierte Sammlung der wichtigsten Einstiegs-Prompts lieg
 KI beschleunigt Strukturierung, Boilerplate, Dokumentation und das Finden technischer Risiken. Grenzen bestehen bei fachlicher Bewertung, tatsächlicher Nutzer-Evaluation, Secret-Handling und finaler Qualitätssicherung. Deshalb werden Build-Checks, manuelle Tests, Deployment-Prüfung und echte Evaluation separat durchgeführt.
 
 ## 7. Anhang [Optional]
-Beispiele:
+
 - **Lizenz:** Der Code dieses Projekts steht unter der MIT License (siehe [`LICENSE`](LICENSE)). Die unten aufgeführten Bilder behalten ihre jeweils dokumentierte Wikimedia-/Creative-Commons-Lizenz.
 - **Quellen:** SvelteKit Dokumentation, Netlify SvelteKit Deployment Docs, MongoDB Node.js Driver Docs, Leaflet Dokumentation, OpenStreetMap Tile Usage Policy, CARTO Basemaps (Dark Matter) für Dark-Mode-Kartenkacheln.
 - **Bildquellen:** Balboa Park: Hosiyar singh bhambhu / Wikimedia Commons, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Balboa_Park_San_Diego.jpg. La Jolla Cove: Stephen Bay / Wikimedia Commons, CC BY 4.0, https://commons.wikimedia.org/wiki/File:La_Jolla_Cove,_San_Diego.jpg. Pacific Beach: Krithika03 / Wikimedia Commons, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Pacific_Beach,_San_Diego.jpg. Gaslamp Quarter: Ekrem Canli / Wikimedia Commons, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:San_Diego_Gaslamp_Quarter.jpg.
