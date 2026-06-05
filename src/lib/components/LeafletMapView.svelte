@@ -173,6 +173,10 @@
 
 <style>
 	.map {
+		/* Own low stacking context so Leaflet's internal panes (z~400) and controls (z~1000)
+		   stay contained and slide *under* the sticky nav (z-index 20) when scrolling. */
+		position: relative;
+		z-index: 0;
 		width: 100%;
 		height: min(58vh, 560px);
 		min-height: 380px;

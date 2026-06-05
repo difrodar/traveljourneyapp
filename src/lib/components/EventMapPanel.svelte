@@ -103,6 +103,12 @@
 		background: linear-gradient(135deg, var(--accent), var(--brand));
 	}
 
+	.mini-map {
+		/* Contain Leaflet's high-z panes/controls so the map stays under the sticky nav on scroll. */
+		position: relative;
+		z-index: 0;
+	}
+
 	.map-fallback {
 		position: relative;
 		display: grid;
