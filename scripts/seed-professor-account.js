@@ -7,7 +7,8 @@
 // What it creates for `dozent`:
 //   • 3 completed past events with memories (Zürich) — events list + journey
 //   • 1 upcoming event (now+3d) — feeds the "upcoming soon" reminder (7-day window)
-//   • 1 weekly recurring series ×4 — recurring badge + delete-series dialog
+//   • 1 weekly recurring series ×12 with a 1-week reminder — recurring badge + delete-series dialog;
+//     weekly cadence keeps "Reminders due"/"Upcoming soon"/4.12 banner lit for ~3 months (grading-proof)
 //   • Trip "Japan trip" with 2 completed events + memories — /journey?groupBy=trip group
 //   • 2 travel ideas (High + Low)
 //   • 1 pending invitation FROM demo_max ("Weekend in Munich")
@@ -335,7 +336,7 @@ async function main() {
 	);
 
 	// 1 weekly recurring series ×4 — recurring badge + delete-series dialog.
-	await step("recurring: German conversation meetup x4", () =>
+	await step("recurring: German conversation meetup x12", () =>
 		createEvent(dozent, {
 			title: "German conversation meetup",
 			category: "Study",
@@ -347,7 +348,7 @@ async function main() {
 			lng: "8.5443",
 			description: "Wöchentlicher Stammtisch zum Deutsch üben.",
 			repeatFrequency: "weekly",
-			repeatCount: "4"
+			repeatCount: "12"
 		})
 	);
 
@@ -497,6 +498,17 @@ async function main() {
 		)
 	);
 
+	// 1-week reminder on the whole weekly meetup series. Weekly occurrences are exactly 7 days apart and
+	// the lead-time window is 168h (= 7 days), so the next occurrence is always within (0, 168h] -> the bell's
+	// "Reminders due", "Upcoming soon" and the 4.12 "Coming up" banner stay lit for the full series span
+	// (~3 months), independent of the exact grading day. Past occurrences simply aren't "due" (harmless).
+	await step("  reminder: weekly meetup series (keeps 4.12 visible for months)", () =>
+		db.collection("events").updateMany(
+			{ userId: dozentId, title: "German conversation meetup" },
+			{ $set: { reminderLeadHours: 168, updatedAt: now } }
+		)
+	);
+
 	console.log("\n[6/6] Done");
 	await mongo.close();
 
@@ -508,7 +520,7 @@ async function main() {
 	console.log("\n  dozent should now show:");
 	console.log("    • 3 completed events with memories (Zürich: promenade, food tour, Uetliberg)");
 	console.log(`    • 1 upcoming event (${dateOffset(3)} — Opera night) with a 1-week in-app reminder (bell "Reminders due" + "Coming up" banner)`);
-	console.log(`    • 1 weekly recurring series ×4 starting ${dateOffset(2)} (German conversation meetup)`);
+	console.log(`    • 1 weekly recurring series ×12 with a 1-week reminder starting ${dateOffset(2)} (German conversation meetup) — keeps Reminders due/Upcoming lit ~3 months`);
 	console.log("    • Trip \"Japan trip\" with Sensō-ji + Fushimi Inari (completed, in /journey?groupBy=trip)");
 	console.log("    • 2 ideas (Norway fjords High, Iceland Golden Circle Low)");
 	console.log(`    • 1 pending invitation from demo_max (${MUNICH_INVITE_TITLE}, ${dateOffset(5)})`);
