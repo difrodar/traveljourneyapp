@@ -197,7 +197,8 @@ async function createEvent(client, fields) {
 		country: "Switzerland",
 		...fields
 	});
-	const match = result.type === "redirect" ? result.location?.match(/^\/events\/([0-9a-f]+)$/) : null;
+	// Events with invitations redirect to /events/<id>?invited=1, so tolerate an optional query string.
+	const match = result.type === "redirect" ? result.location?.match(/^\/events\/([0-9a-f]+)(?:\?.*)?$/) : null;
 	if (!match) throw new Error(`createEvent unexpected: ${JSON.stringify(result)}`);
 	return match[1];
 }
@@ -486,6 +487,16 @@ async function main() {
 	);
 	await step("  photo: demo_max Munich invite", () => paintLocations(maxId, { [MUNICH_INVITE_TITLE]: IMG.munich }));
 
+	// Set a 1-week in-app reminder on the upcoming Opera night (extension 4.12). Opera night is ~3 days
+	// out, so a 168h lead-time puts it inside the "due" window now -> shows in the bell's "Reminders due"
+	// section with a countdown, plus the "Coming up" banner + reminder row on the event detail.
+	await step("  reminder: Opera night (1 week before, in-app 4.12)", () =>
+		db.collection("events").updateOne(
+			{ userId: dozentId, title: "Opera night at Opernhaus Zürich" },
+			{ $set: { reminderLeadHours: 168, updatedAt: now } }
+		)
+	);
+
 	console.log("\n[6/6] Done");
 	await mongo.close();
 
@@ -496,7 +507,7 @@ async function main() {
 	console.log(`    Password: ${DOZENT.password}`);
 	console.log("\n  dozent should now show:");
 	console.log("    • 3 completed events with memories (Zürich: promenade, food tour, Uetliberg)");
-	console.log(`    • 1 upcoming event (${dateOffset(3)} — Opera night)`);
+	console.log(`    • 1 upcoming event (${dateOffset(3)} — Opera night) with a 1-week in-app reminder (bell "Reminders due" + "Coming up" banner)`);
 	console.log(`    • 1 weekly recurring series ×4 starting ${dateOffset(2)} (German conversation meetup)`);
 	console.log("    • Trip \"Japan trip\" with Sensō-ji + Fushimi Inari (completed, in /journey?groupBy=trip)");
 	console.log("    • 2 ideas (Norway fjords High, Iceland Golden Circle Low)");
